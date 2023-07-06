@@ -328,14 +328,6 @@ Manual control of the suggestions box can be achieved by creating an instance of
 passing it to the `suggestionsBoxController` property. This will allow you to manually open, close, toggle, or 
 resize the suggestions box.
 
-## For more information
-Visit the [API Documentation](https://pub.dartlang.org/documentation/drop_down_search_field/latest/)
-
-## Team:
-| [<img src="https://avatars.githubusercontent.com/u/16646600?v=3" width="100px;"/>](https://github.com/rohanjariwala03)|[<img src="https://avatars.githubusercontent.com/u/2034925?v=3" width="100px;"/>](https://github.com/sjmcdowall)|[<img src="https://avatars.githubusercontent.com/u/5499214?v=3" width="100px;"/>](https://github.com/KaYBlitZ)|
-|---|---|---|
-|Rohan Jariwala|
-
 ## Shout out to the contributors!
 This project is the result of the collective effort of contributors who participated effectively by submitting pull requests, reporting issues, and answering questions. Thank you for your productiveness, and we hope drop_down_search_field made your life's at least a little easier!
 
