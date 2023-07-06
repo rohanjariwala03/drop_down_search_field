@@ -53,7 +53,6 @@ class _FormExampleState extends State<FormExample> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        debugPrint('tapped');
         suggestionBoxController.close();
       },
       child: Form(
