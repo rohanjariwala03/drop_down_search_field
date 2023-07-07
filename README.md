@@ -330,7 +330,7 @@ its direction whenever it detects insufficient space in the current direction. T
 particularly beneficial when the DropDownSearchField is placed within a scrollable widget or when 
 the developer wants to ensure that the list is always visible regardless of the user's screen size.
 
-#### Controlling the suggestions box
+#### Controlling the suggestionsBox
 You can manually control the suggestions box by creating a `SuggestionsBoxController` instance and 
 assigning it to the `suggestionsBoxController` property. This enables you to have control over opening, 
 closing, toggling, or resizing the suggestions box as per your requirements.
