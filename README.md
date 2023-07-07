@@ -319,7 +319,7 @@ return the `suggestionsBox`. This callback could also be used to wrap the
 By default, the suggestions box is displayed 5 pixels below the `TextField`.
 You can change this by changing the `suggestionsBoxVerticalOffset` property.
 
-#### Customizing the growth direction of the suggestions list
+#### Customizing the direction of the suggestions list
 By default, the suggestions list expands downwards. However, you can customize the growth direction 
 by using the `direction` property. It allows you to choose between `AxisDirection.down` or `AxisDirection.up`. 
 If you set it to `AxisDirection.up`, the list will grow in an upward direction. This means that the first 
