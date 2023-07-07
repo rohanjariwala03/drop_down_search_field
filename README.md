@@ -319,7 +319,7 @@ return the `suggestionsBox`. This callback could also be used to wrap the
 By default, the suggestions box is displayed 5 pixels below the `TextField`.
 You can change this by changing the `suggestionsBoxVerticalOffset` property.
 
-#### Customizing the growth direction of the suggestions list
+#### Customizing the direction of the suggestions list
 By default, the suggestions list expands downwards. However, you can customize the growth direction 
 by using the `direction` property. It allows you to choose between `AxisDirection.down` or `AxisDirection.up`. 
 If you set it to `AxisDirection.up`, the list will grow in an upward direction. This means that the first 
@@ -330,7 +330,7 @@ its direction whenever it detects insufficient space in the current direction. T
 particularly beneficial when the DropDownSearchField is placed within a scrollable widget or when 
 the developer wants to ensure that the list is always visible regardless of the user's screen size.
 
-#### Controlling the suggestions box
+#### Controlling the suggestionsBox
 You can manually control the suggestions box by creating a `SuggestionsBoxController` instance and 
 assigning it to the `suggestionsBoxController` property. This enables you to have control over opening, 
 closing, toggling, or resizing the suggestions box as per your requirements.
@@ -340,4 +340,4 @@ You can checkout detailed blog on medium.
 [drop_down_search_field](https://medium.com/@rohanjariwala03/dropdown-with-future-search-option-818a7dc1196)
 
 ## How you can help
-[Contribution Guidelines](https://github.com/rohanjariwala03/drop_down_search_field/blob/master/CONTRIBUTING.md)
+[Contribution Guidelines](https://github.com/rohanjariwala03/drop_down_search_field/blob/master/CONTRIBUTING.md) 
