@@ -340,4 +340,4 @@ You can checkout detailed blog on medium.
 [drop_down_search_field](https://medium.com/@rohanjariwala03/dropdown-with-future-search-option-818a7dc1196)
 
 ## How you can help
-[Contribution Guidelines](https://github.com/rohanjariwala03/drop_down_search_field/blob/master/CONTRIBUTING.md)
+[Contribution Guidelines](https://github.com/rohanjariwala03/drop_down_search_field/blob/master/CONTRIBUTING.md) 
