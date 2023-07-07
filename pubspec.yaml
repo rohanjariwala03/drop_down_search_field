@@ -1,7 +1,7 @@
 name: drop_down_search_field
-description: A new Flutter package project.
+description: Customizable DropdownSearchField extending features DropdownButton, TextFormField and Autocomplete.
 version: 0.0.1
-homepage:
+homepage: https://github.com/rohanjariwala03/drop_down_search_field
 
 environment:
   sdk: '>=3.0.5 <4.0.0'

@@ -48,6 +48,36 @@ class _FormExampleState extends State<FormExample> {
   String? _selectedFruit;
 
   SuggestionsBoxController suggestionBoxController = SuggestionsBoxController();
+  static final List<String> fruits = [
+    'Apple',
+    'Avocado',
+    'Banana',
+    'Blueberries',
+    'Blackberries',
+    'Cherries',
+    'Grapes',
+    'Grapefruit',
+    'Guava',
+    'Kiwi',
+    'Lychee',
+    'Mango',
+    'Orange',
+    'Papaya',
+    'Passion fruit',
+    'Peach',
+    'Pears',
+    'Pineapple',
+    'Raspberries',
+    'Strawberries',
+    'Watermelon',
+  ];
+  static List<String> getSuggestions(String query) {
+    List<String> matches = <String>[];
+    matches.addAll(fruits);
+
+    matches.retainWhere((s) => s.toLowerCase().contains(query.toLowerCase()));
+    return matches;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +99,7 @@ class _FormExampleState extends State<FormExample> {
                   controller: _dropdownSearchFieldController,
                 ),
                 suggestionsCallback: (pattern) {
-                  return FruitService.getSuggestions(pattern);
+                  return getSuggestions(pattern);
                 },
                 itemBuilder: (context, String suggestion) {
                   return ListTile(
@@ -108,40 +138,5 @@ class _FormExampleState extends State<FormExample> {
         ),
       ),
     );
-  }
-}
-
-/// A fake service to filter fruits based on a query.
-class FruitService {
-  static final List<String> fruits = [
-    'Apple',
-    'Avocado',
-    'Banana',
-    'Blueberries',
-    'Blackberries',
-    'Cherries',
-    'Grapes',
-    'Grapefruit',
-    'Guava',
-    'Kiwi',
-    'Lychee',
-    'Mango',
-    'Orange',
-    'Papaya',
-    'Passion fruit',
-    'Peach',
-    'Pears',
-    'Pineapple',
-    'Raspberries',
-    'Strawberries',
-    'Watermelon',
-  ];
-
-  static List<String> getSuggestions(String query) {
-    List<String> matches = <String>[];
-    matches.addAll(fruits);
-
-    matches.retainWhere((s) => s.toLowerCase().contains(query.toLowerCase()));
-    return matches;
   }
 }
