@@ -1,29 +1,26 @@
-<meta name='keywords' content='flutter, drop_down_search_field, autocomplete, customizable, floating'>
+<meta name='keywords' content='flutter, drop_down_search_field, autocomplete, customizable, floating, type_ahead'>
 
 [![Pub](https://img.shields.io/pub/v/drop_down_search_field)](https://pub.dev/packages/drop_down_search_field)
 
 # Flutter DropDownSearchField
-A DropDownSearchField (autocomplete) widget for Flutter, where you can show suggestions to
-users as they type
+A DropDownSearchField (autocomplete) widget for Flutter, where you can show suggestions to users as they type
 
 <img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/master/drop_down_search_field.gif">
 
 ## Features
-* Shows suggestions in an overlay that floats on top of other widgets
-* Allows you to specify what the suggestions will look like through a
-builder function
-* Allows you to specify what happens when the user taps a suggestion
-* Accepts all the parameters that traditional TextFields accept, like
-decoration, custom TextEditingController, text styling, etc.
-* Provides two versions, a normal version and a [FormField](https://docs.flutter.io/flutter/widgets/FormField-class.html)
-version that accepts validation, submitting, etc.
-* Provides high customizable; you can customize the suggestion box decoration,
-the loading bar, the animation, the debounce duration, etc.
+* Displays suggestions in a floating overlay above other widgets.
+* Allows customization of the suggestion appearance using a builder function.
+* Enables specification of the action when a user taps on a suggestion.
+* Supports all parameters typically used with TextFields, including decoration, 
+  custom TextEditingController, and text styling.
+* Offers two versions: a standard version and a FormField version that includes validation and submission features.
+* Highly customizable with options to modify the suggestion box decoration, 
+  loading bar, animation, debounce duration, and more.
 
 ## Installation
 See the [installation instructions on pub](https://pub.dartlang.org/packages/drop_down_search_field#-installing-tab-).
 
-Note: As for DropDownSearchField 1.X this package is based on Dart 2.12 (null-safety). You may also want to explore the new built in Flutter 2 widgets that have similar behavior. 
+Note: As for DropDownSearchField 1.X this package is based on Dart 3.0 (null-safety). You may also want to explore the new built in Flutter 2 widgets that have similar behavior.
 
 ## Usage examples
 You can import the package with:
@@ -143,23 +140,25 @@ Form(
   ),
 )
 ```
-Here, we assign to the `controller` property of the `textFieldConfiguration`
-a `TextEditingController` that we call `_dropDownSearchController`.
-We use this controller in the `onSuggestionSelected` callback to set the
-value of the `TextField` to the selected suggestion.
+In the `textFieldConfiguration`, we assign the `_dropDownSearchController` to 
+the `controller` property. This controller is a `TextEditingController`. 
+When a suggestion is selected, we utilize the `onSuggestionSelected` callback 
+to update the value of the `TextField` with the selected suggestion.
 
-The `validator` callback can be used like any `FormField.validator`
-function. In our example, it checks whether a value has been entered,
-and displays an error message if not. The `onSaved` callback is used to
-save the value of the field to the `_selectedFruit` member variable.
+The `validator` callback serves a similar purpose as any `FormField.validator` function. 
+In our specific example, it verifies whether a value has been entered and displays 
+an error message if it hasn't. The `onSaved` callback is employed to store the field's 
+value in the `_selectedFruit` member variable.
 
-The `transitionBuilder` allows us to customize the animation of the
-suggestion box. In this example, we are returning the suggestionsBox
-immediately, meaning that we don't want any animation.
+With the `transitionBuilder`, we have the flexibility to customize the animation 
+of the suggestion box. In the given illustration, we immediately return the 
+suggestionsBox without any animation.
 
 ### Alternative Layout Architecture:
 
-By default, DropDownSearchField uses a `ListView` to render the items created by `itemBuilder`. If you specify a `layoutArchitecture` component, it will use this component instead. For example, here's how we render the items in a grid using the standard `GridView`:
+By default, DropDownSearchField uses a `ListView` to render the items created by `itemBuilder`. 
+If you specify a `layoutArchitecture` component, it will use this component instead. For example, 
+here's how we render the items in a grid using the standard `GridView`:
 
 ```dart
 DropDownSearchField(
@@ -214,10 +213,12 @@ void initState() {
 ```
 
 #### Dialogs
-There is a known issue with opening dialogs where the suggestions box will sometimes appear too small. This is a timing issue caused by the animations described above. Currently, `showDialog` has a duration of 150 ms for the animations. DropDownSearchField has a delay of 170 ms to compensate for this. Until the end of the animation can be properly detected and fixed using the solution above, this temporary fix will work most of the time. If the suggestions box is too small, closing and reopening the keyboard will usually fix the issue.
-
-### Cupertino
-The Cupertino classes in DropDownSearchField are still new. There are also differences in the Cupertino widgets vs the Material ones. Some behavior will not translate when moving between the two.
+There is a known issue with opening dialogs where the suggestions box will sometimes appear too small. 
+This is a timing issue caused by the animations described above. Currently, `showDialog` has a duration 
+of 150 ms for the animations. DropDownSearchField has a delay of 170 ms to compensate for this. Until 
+the end of the animation can be properly detected and fixed using the solution above, this temporary fix 
+will work most of the time. If the suggestions box is too small, closing and reopening the keyboard will 
+usually fix the issue.
 
 ## Customizations
 DropDownSearchField widgets consist of a TextField and a suggestion box that shows
@@ -270,6 +271,22 @@ is an error retrieving suggestions. This will also ignore the `errorBuilder`.
 By default, the suggestions box will automatically hide when the keyboard is hidden. 
 To change this behavior, set `hideSuggestionsOnKeyboardHide` to false.
 
+#### Customizing the decoration of the suggestions box
+You can also customize the decoration of the suggestions box using the
+`suggestionsBoxDecoration` property. For example, to remove the elevation
+of the suggestions box, you can write:
+```dart
+suggestionsBoxDecoration: SuggestionsBoxDecoration(
+  elevation: 0.0
+)
+```
+
+#### Customizing the debounce duration
+The suggestions box does not fire for each character the user types. Instead,
+we wait until the user is idle for a duration of time, and then call the
+`suggestionsCallback`. The duration defaults to 300 milliseconds, but can be
+configured using the `debounceDuration` parameter.
+
 #### Customizing the animation
 You can customize the suggestion box animation through 3 parameters: the
 `animationDuration`, the `animationStart`, and the `transitionBuilder`.
@@ -298,38 +315,25 @@ In order to fully remove the animation, `transitionBuilder` should simply
 return the `suggestionsBox`. This callback could also be used to wrap the
 `suggestionsBox` with any desired widgets, not necessarily for animation.
 
-#### Customizing the debounce duration
-The suggestions box does not fire for each character the user types. Instead,
-we wait until the user is idle for a duration of time, and then call the
-`suggestionsCallback`. The duration defaults to 300 milliseconds, but can be
-configured using the `debounceDuration` parameter.
-
 #### Customizing the offset of the suggestions box
 By default, the suggestions box is displayed 5 pixels below the `TextField`.
 You can change this by changing the `suggestionsBoxVerticalOffset` property.
 
-#### Customizing the decoration of the suggestions box
-You can also customize the decoration of the suggestions box using the
-`suggestionsBoxDecoration` property. For example, to remove the elevation
-of the suggestions box, you can write:
-```dart
-suggestionsBoxDecoration: SuggestionsBoxDecoration(
-  elevation: 0.0
-)
-```
-
 #### Customizing the growth direction of the suggestions list
-By default, the list grows towards the bottom. However, you can use the `direction` property to customize the growth direction to be one of `AxisDirection.down` or `AxisDirection.up`, the latter of which will cause the list to grow up, where the first suggestion is at the bottom of the list, and the last suggestion is at the top.
+By default, the suggestions list expands downwards. However, you can customize the growth direction 
+by using the `direction` property. It allows you to choose between `AxisDirection.down` or `AxisDirection.up`. 
+If you set it to `AxisDirection.up`, the list will grow in an upward direction. This means that the first 
+suggestion will be positioned at the bottom of the list, while the last suggestion will appear at the top.
 
-Set `autoFlipDirection` to true to allow the suggestions list to automatically flip direction whenever it detects that there is not enough space for the current direction. This is useful for scenarios where the DropDownSearchField is in a scrollable widget or when the developer wants to ensure the list is always viewable despite different user screen sizes.
+By setting the `autoFlipDirection` property to `true`, the suggestions list will automatically flip 
+its direction whenever it detects insufficient space in the current direction. This feature is 
+particularly beneficial when the DropDownSearchField is placed within a scrollable widget or when 
+the developer wants to ensure that the list is always visible regardless of the user's screen size.
 
 #### Controlling the suggestions box
-Manual control of the suggestions box can be achieved by creating an instance of `SuggestionsBoxController` and 
-passing it to the `suggestionsBoxController` property. This will allow you to manually open, close, toggle, or 
-resize the suggestions box.
-
-## Shout out to the contributors!
-This project is the result of the collective effort of contributors who participated effectively by submitting pull requests, reporting issues, and answering questions. Thank you for your productiveness, and we hope drop_down_search_field made your life's at least a little easier!
+You can manually control the suggestions box by creating a `SuggestionsBoxController` instance and 
+assigning it to the `suggestionsBoxController` property. This enables you to have control over opening, 
+closing, toggling, or resizing the suggestions box as per your requirements.
 
 ## How you can help
 [Contribution Guidelines](https://github.com/rohanjariwala03/drop_down_search_field/blob/master/CONTRIBUTING.md)
