@@ -1,6 +1,6 @@
 name: drop_down_search_field
 description: Customizable DropdownSearchField extending features DropdownButton, TextFormField and Autocomplete.
-version: 0.2.0
+version: 0.3.0
 homepage: https://github.com/rohanjariwala03/drop_down_search_field
 
 environment:
