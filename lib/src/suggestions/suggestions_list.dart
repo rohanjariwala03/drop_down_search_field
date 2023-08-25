@@ -38,7 +38,8 @@ class SuggestionsList<T> extends StatefulWidget {
   final bool? keepSuggestionsOnLoading;
   final int? minCharsForSuggestions;
   final KeyboardSuggestionSelectionNotifier keyboardSuggestionSelectionNotifier;
-  final ShouldRefreshSuggestionFocusIndexNotifier shouldRefreshSuggestionFocusIndexNotifier;
+  final ShouldRefreshSuggestionFocusIndexNotifier
+      shouldRefreshSuggestionFocusIndexNotifier;
   final VoidCallback giveTextFieldFocus;
   final VoidCallback onSuggestionFocus;
   final KeyEventResult Function(FocusNode _, RawKeyEvent event) onKeyEvent;
@@ -83,7 +84,8 @@ class SuggestionsList<T> extends StatefulWidget {
   _SuggestionsListState<T> createState() => _SuggestionsListState<T>();
 }
 
-class _SuggestionsListState<T> extends State<SuggestionsList<T>> with SingleTickerProviderStateMixin {
+class _SuggestionsListState<T> extends State<SuggestionsList<T>>
+    with SingleTickerProviderStateMixin {
   Iterable<T>? _suggestions;
   late bool _suggestionsValid;
   late VoidCallback _controllerListener;
@@ -92,7 +94,8 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>> with SingleTick
   Object? _error;
   AnimationController? _animationController;
   String? _lastTextValue;
-  late final ScrollController _scrollController = widget.scrollController ?? ScrollController();
+  late final ScrollController _scrollController =
+      widget.scrollController ?? ScrollController();
   List<FocusNode> _focusNodes = [];
   int _suggestionIndex = -1;
 
@@ -170,7 +173,8 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>> with SingleTick
       final event = widget.keyboardSuggestionSelectionNotifier.value;
       if (event == null || suggestionsLength == null) return;
 
-      if (event == LogicalKeyboardKey.arrowDown && _suggestionIndex < suggestionsLength - 1) {
+      if (event == LogicalKeyboardKey.arrowDown &&
+          _suggestionIndex < suggestionsLength - 1) {
         _suggestionIndex++;
       } else if (event == LogicalKeyboardKey.arrowUp && _suggestionIndex > -1) {
         _suggestionIndex--;
@@ -213,7 +217,8 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>> with SingleTick
       Object? error;
 
       try {
-        suggestions = await widget.suggestionsCallback!(widget.controller!.text);
+        suggestions =
+            await widget.suggestionsCallback!(widget.controller!.text);
       } catch (e) {
         error = e;
       }
@@ -254,8 +259,11 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>> with SingleTick
 
   @override
   Widget build(BuildContext context) {
-    bool isEmpty = (this._suggestions?.isEmpty ?? true) && widget.controller!.text == "";
-    if ((this._suggestions == null || isEmpty) && this._isLoading == false && this._error == null) return Container();
+    bool isEmpty =
+        (this._suggestions?.isEmpty ?? true) && widget.controller!.text == "";
+    if ((this._suggestions == null || isEmpty) &&
+        this._isLoading == false &&
+        this._error == null) return Container();
 
     Widget child;
     if (this._isLoading!) {
@@ -284,7 +292,9 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>> with SingleTick
         ? widget.transitionBuilder!(context, child, this._animationController)
         : SizeTransition(
             axisAlignment: -1.0,
-            sizeFactor: CurvedAnimation(parent: this._animationController!, curve: Curves.fastOutSlowIn),
+            sizeFactor: CurvedAnimation(
+                parent: this._animationController!,
+                curve: Curves.fastOutSlowIn),
             child: child,
           );
 
@@ -294,7 +304,8 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>> with SingleTick
         maxHeight: widget.suggestionsBox!.maxHeight,
       );
     } else {
-      double maxHeight = min(widget.decoration!.constraints!.maxHeight, widget.suggestionsBox!.maxHeight);
+      double maxHeight = min(widget.decoration!.constraints!.maxHeight,
+          widget.suggestionsBox!.maxHeight);
       constraints = widget.decoration!.constraints!.copyWith(
         minHeight: min(widget.decoration!.constraints!.minHeight, maxHeight),
         maxHeight: maxHeight,
@@ -363,7 +374,8 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>> with SingleTick
             child: Text(
               'No Items Found!',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Theme.of(context).disabledColor, fontSize: 18.0),
+              style: TextStyle(
+                  color: Theme.of(context).disabledColor, fontSize: 18.0),
             ),
           );
   }
@@ -385,8 +397,9 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>> with SingleTick
           ? ScrollViewKeyboardDismissBehavior.onDrag
           : ScrollViewKeyboardDismissBehavior.manual,
       controller: _scrollController,
-      reverse:
-          widget.suggestionsBox!.direction == AxisDirection.down ? false : widget.suggestionsBox!.autoFlipListDirection,
+      reverse: widget.suggestionsBox!.direction == AxisDirection.down
+          ? false
+          : widget.suggestionsBox!.autoFlipListDirection,
       itemCount: this._suggestions!.length,
       itemBuilder: (BuildContext context, int index) {
         final suggestion = this._suggestions!.elementAt(index);
@@ -406,7 +419,8 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>> with SingleTick
         );
       },
       separatorBuilder: (BuildContext context, int index) =>
-          widget.itemSeparatorBuilder?.call(context, index) ?? const SizedBox.shrink(),
+          widget.itemSeparatorBuilder?.call(context, index) ??
+          const SizedBox.shrink(),
     );
 
     if (widget.decoration!.hasScrollbar) {

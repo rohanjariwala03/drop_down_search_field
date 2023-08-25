@@ -179,7 +179,8 @@ class TextFieldConfiguration {
 
   /// Creates a TextFieldConfiguration
   const TextFieldConfiguration(
-      {this.decoration = const InputDecoration(suffixIcon: Icon(Icons.arrow_drop_down)),
+      {this.decoration =
+          const InputDecoration(suffixIcon: Icon(Icons.arrow_drop_down)),
       this.style,
       this.controller,
       this.onChanged,
@@ -276,7 +277,8 @@ class TextFieldConfiguration {
       textCapitalization: textCapitalization ?? this.textCapitalization,
       textInputAction: textInputAction ?? this.textInputAction,
       textDirection: textDirection ?? this.textDirection,
-      enableInteractiveSelection: enableInteractiveSelection ?? this.enableInteractiveSelection,
+      enableInteractiveSelection:
+          enableInteractiveSelection ?? this.enableInteractiveSelection,
       autofillHints: autofillHints ?? this.autofillHints,
     );
   }
