@@ -43,6 +43,7 @@ class SuggestionsList<T> extends StatefulWidget {
   final VoidCallback onSuggestionFocus;
   final KeyEventResult Function(FocusNode _, RawKeyEvent event) onKeyEvent;
   final bool hideKeyboardOnDrag;
+  final bool displayAllSuggestionWhenTap;
 
   const SuggestionsList({
     super.key,
@@ -76,6 +77,7 @@ class SuggestionsList<T> extends StatefulWidget {
     required this.onSuggestionFocus,
     required this.onKeyEvent,
     required this.hideKeyboardOnDrag,
+    required this.displayAllSuggestionWhenTap,
   });
 
   @override
@@ -136,13 +138,14 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>> with SingleTick
   void didUpdateWidget(SuggestionsList<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     widget.controller!.addListener(this._controllerListener);
-    _getSuggestions();
+    _getSuggestions(widget.controller!.text);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _getSuggestions();
+    // Sending empty text when it's true so, that they can see whole list
+    _getSuggestions(widget.displayAllSuggestionWhenTap ? '' : widget.controller!.text);
   }
 
   @override
@@ -160,7 +163,7 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>> with SingleTick
     this._lastTextValue = widget.controller!.text;
 
     if (widget.getImmediateSuggestions) {
-      this._getSuggestions();
+      this._getSuggestions(widget.controller!.text);
     }
 
     widget.controller!.addListener(this._controllerListener);
@@ -194,10 +197,10 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>> with SingleTick
 
   Future<void> invalidateSuggestions() async {
     _suggestionsValid = false;
-    await _getSuggestions();
+    await _getSuggestions(widget.controller!.text);
   }
 
-  Future<void> _getSuggestions() async {
+  Future<void> _getSuggestions(String suggestion) async {
     if (_suggestionsValid) return;
     _suggestionsValid = true;
 
@@ -213,7 +216,7 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>> with SingleTick
       Object? error;
 
       try {
-        suggestions = await widget.suggestionsCallback!(widget.controller!.text);
+        suggestions = await widget.suggestionsCallback!(suggestion);
       } catch (e) {
         error = e;
       }

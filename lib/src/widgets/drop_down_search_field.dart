@@ -534,6 +534,11 @@ class DropDownSearchField<T> extends StatefulWidget {
   // Adds a callback for the suggestion box opening or closing
   final void Function(bool)? onSuggestionsBoxToggle;
 
+  // If set to true, sending text as empty.
+  // If set to false, sending text as whatever you have wrote
+  // Default is false
+  final bool displayAllSuggestionWhenTap;
+
   /// Creates a [DropDownSearchField]
   const DropDownSearchField({
     required this.suggestionsCallback,
@@ -569,6 +574,7 @@ class DropDownSearchField<T> extends StatefulWidget {
     this.minCharsForSuggestions = 0,
     this.onSuggestionsBoxToggle,
     this.hideKeyboardOnDrag = false,
+    required this.displayAllSuggestionWhenTap,
     super.key,
   })  : assert(animationStart >= 0.0 && animationStart <= 1.0),
         assert(direction == AxisDirection.down || direction == AxisDirection.up),
@@ -752,42 +758,44 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>> with Wi
       }
 
       final suggestionsList = SuggestionsList<T>(
-          suggestionsBox: _suggestionsBox,
-          decoration: widget.suggestionsBoxDecoration,
-          debounceDuration: widget.debounceDuration,
-          intercepting: widget.intercepting,
-          controller: this._effectiveController,
-          loadingBuilder: widget.loadingBuilder,
-          scrollController: widget.scrollController,
-          noItemsFoundBuilder: widget.noItemsFoundBuilder,
-          errorBuilder: widget.errorBuilder,
-          transitionBuilder: widget.transitionBuilder,
-          suggestionsCallback: widget.suggestionsCallback,
-          animationDuration: widget.animationDuration,
-          animationStart: widget.animationStart,
-          getImmediateSuggestions: widget.getImmediateSuggestions,
-          onSuggestionSelected: (T selection) {
-            if (!widget.keepSuggestionsOnSuggestionSelected) {
-              this._effectiveFocusNode!.unfocus();
-              this._suggestionsBox!.close();
-            }
-            widget.onSuggestionSelected(selection);
-          },
-          itemBuilder: widget.itemBuilder,
-          itemSeparatorBuilder: widget.itemSeparatorBuilder,
-          layoutArchitecture: widget.layoutArchitecture,
-          direction: _suggestionsBox!.direction,
-          hideOnLoading: widget.hideOnLoading,
-          hideOnEmpty: widget.hideOnEmpty,
-          hideOnError: widget.hideOnError,
-          keepSuggestionsOnLoading: widget.keepSuggestionsOnLoading,
-          minCharsForSuggestions: widget.minCharsForSuggestions,
-          keyboardSuggestionSelectionNotifier: _keyboardSuggestionSelectionNotifier,
-          shouldRefreshSuggestionFocusIndexNotifier: _shouldRefreshSuggestionsFocusIndex,
-          giveTextFieldFocus: giveTextFieldFocus,
-          onSuggestionFocus: onSuggestionFocus,
-          onKeyEvent: _onKeyEvent,
-          hideKeyboardOnDrag: widget.hideKeyboardOnDrag);
+        suggestionsBox: _suggestionsBox,
+        decoration: widget.suggestionsBoxDecoration,
+        debounceDuration: widget.debounceDuration,
+        intercepting: widget.intercepting,
+        controller: this._effectiveController,
+        loadingBuilder: widget.loadingBuilder,
+        scrollController: widget.scrollController,
+        noItemsFoundBuilder: widget.noItemsFoundBuilder,
+        errorBuilder: widget.errorBuilder,
+        transitionBuilder: widget.transitionBuilder,
+        suggestionsCallback: widget.suggestionsCallback,
+        animationDuration: widget.animationDuration,
+        animationStart: widget.animationStart,
+        getImmediateSuggestions: widget.getImmediateSuggestions,
+        onSuggestionSelected: (T selection) {
+          if (!widget.keepSuggestionsOnSuggestionSelected) {
+            this._effectiveFocusNode!.unfocus();
+            this._suggestionsBox!.close();
+          }
+          widget.onSuggestionSelected(selection);
+        },
+        itemBuilder: widget.itemBuilder,
+        itemSeparatorBuilder: widget.itemSeparatorBuilder,
+        layoutArchitecture: widget.layoutArchitecture,
+        direction: _suggestionsBox!.direction,
+        hideOnLoading: widget.hideOnLoading,
+        hideOnEmpty: widget.hideOnEmpty,
+        hideOnError: widget.hideOnError,
+        keepSuggestionsOnLoading: widget.keepSuggestionsOnLoading,
+        minCharsForSuggestions: widget.minCharsForSuggestions,
+        keyboardSuggestionSelectionNotifier: _keyboardSuggestionSelectionNotifier,
+        shouldRefreshSuggestionFocusIndexNotifier: _shouldRefreshSuggestionsFocusIndex,
+        giveTextFieldFocus: giveTextFieldFocus,
+        onSuggestionFocus: onSuggestionFocus,
+        onKeyEvent: _onKeyEvent,
+        hideKeyboardOnDrag: widget.hideKeyboardOnDrag,
+        displayAllSuggestionWhenTap: widget.displayAllSuggestionWhenTap,
+      );
 
       double w = _suggestionsBox!.textBoxWidth;
       if (widget.suggestionsBoxDecoration.constraints != null) {
