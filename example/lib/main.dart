@@ -118,6 +118,7 @@ class _FormExampleState extends State<FormExample> {
                 suggestionsBoxController: suggestionBoxController,
                 validator: (value) => value!.isEmpty ? 'Please select a fruit' : null,
                 onSaved: (value) => _selectedFruit = value,
+                displayAllSuggestionWhenTap: true,
               ),
               const Spacer(),
               ElevatedButton(
