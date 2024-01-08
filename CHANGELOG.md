@@ -1,3 +1,7 @@
+## 1.0.2 - 08/01/2024
+
+- Added supported platforms.
+
 ## 1.0.1 - 08/01/2024
 
 - Support for Different MouseCursor Types.
