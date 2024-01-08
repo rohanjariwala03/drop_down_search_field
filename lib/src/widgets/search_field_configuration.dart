@@ -138,6 +138,10 @@ class TextFieldConfiguration {
   /// Same as [TextField.cursorWidth](https://docs.flutter.io/flutter/material/TextField/cursorWidth.html)
   final double cursorWidth;
 
+  /// Which Cursor Type you want to show
+  ///
+  final MouseCursor? mouseCursor;
+
   /// The appearance of the keyboard.
   ///
   /// Same as [TextField.keyboardAppearance](https://docs.flutter.io/flutter/material/TextField/keyboardAppearance.html)
@@ -200,6 +204,7 @@ class TextFieldConfiguration {
       this.focusNode,
       this.cursorColor,
       this.cursorRadius,
+      this.mouseCursor,
       this.textInputAction,
       this.textCapitalization = TextCapitalization.none,
       this.cursorWidth = 2.0,
@@ -237,6 +242,7 @@ class TextFieldConfiguration {
       TextAlignVertical? textAlignVertical,
       Radius? cursorRadius,
       double? cursorWidth,
+      MouseCursor? mouseCursor,
       Brightness? keyboardAppearance,
       VoidCallback? onEditingComplete,
       GestureTapCallback? onTap,
@@ -269,6 +275,7 @@ class TextFieldConfiguration {
       cursorColor: cursorColor ?? this.cursorColor,
       cursorRadius: cursorRadius ?? this.cursorRadius,
       cursorWidth: cursorWidth ?? this.cursorWidth,
+      mouseCursor: mouseCursor ?? this.mouseCursor,
       keyboardAppearance: keyboardAppearance ?? this.keyboardAppearance,
       onEditingComplete: onEditingComplete ?? this.onEditingComplete,
       onTap: onTap ?? this.onTap,

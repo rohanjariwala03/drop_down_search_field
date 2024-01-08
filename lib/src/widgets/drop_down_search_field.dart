@@ -889,6 +889,7 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>> with Wi
             cursorWidth: widget.textFieldConfiguration.cursorWidth,
             cursorRadius: widget.textFieldConfiguration.cursorRadius,
             cursorColor: widget.textFieldConfiguration.cursorColor,
+            mouseCursor: widget.textFieldConfiguration.mouseCursor,
             textDirection: widget.textFieldConfiguration.textDirection,
             enableInteractiveSelection: widget.textFieldConfiguration.enableInteractiveSelection,
             readOnly: widget.hideKeyboard,
