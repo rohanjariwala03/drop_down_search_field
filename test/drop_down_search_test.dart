@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 class TestPage extends StatefulWidget {
   final int minCharsForSuggestions;
-  const TestPage({Key? key, this.minCharsForSuggestions = 0}) : super(key: key);
+  const TestPage({super.key, this.minCharsForSuggestions = 0});
 
   @override
   State<StatefulWidget> createState() => TestPageState();

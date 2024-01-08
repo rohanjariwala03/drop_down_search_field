@@ -23,24 +23,25 @@ class DropDownSearchFormField<T> extends FormField<String> {
 
   /// Creates a [DropDownSearchFormField]
   DropDownSearchFormField({
-    Key? key,
+    super.key,
     String? initialValue,
     bool getImmediateSuggestions = false,
     @Deprecated('Use autovalidateMode parameter which provides more specific '
         'behavior related to auto validation. '
         'This feature was deprecated after Flutter v1.19.0.')
     bool autovalidate = false,
-    bool enabled = true,
-    AutovalidateMode autovalidateMode = AutovalidateMode.disabled,
-    FormFieldSetter<String>? onSaved,
+    super.enabled,
+    AutovalidateMode super.autovalidateMode = AutovalidateMode.disabled,
+    super.onSaved,
     this.onReset,
-    FormFieldValidator<String>? validator,
+    super.validator,
     ErrorBuilder? errorBuilder,
     WidgetBuilder? noItemsFoundBuilder,
     WidgetBuilder? loadingBuilder,
     void Function(bool)? onSuggestionsBoxToggle,
     Duration debounceDuration = const Duration(milliseconds: 300),
-    SuggestionsBoxDecoration suggestionsBoxDecoration = const SuggestionsBoxDecoration(),
+    SuggestionsBoxDecoration suggestionsBoxDecoration =
+        const SuggestionsBoxDecoration(),
     SuggestionsBoxController? suggestionsBoxController,
     required SuggestionSelectionCallback<T> onSuggestionSelected,
     required ItemBuilder<T> itemBuilder,
@@ -67,19 +68,16 @@ class DropDownSearchFormField<T> extends FormField<String> {
     int minCharsForSuggestions = 0,
     bool hideKeyboardOnDrag = false,
     bool displayAllSuggestionWhenTap = false,
-  })  : assert(initialValue == null || textFieldConfiguration.controller == null),
+  })  : assert(
+            initialValue == null || textFieldConfiguration.controller == null),
         assert(minCharsForSuggestions >= 0),
         super(
-            key: key,
-            onSaved: onSaved,
-            validator: validator,
             initialValue: textFieldConfiguration.controller != null
                 ? textFieldConfiguration.controller!.text
                 : (initialValue ?? ''),
-            enabled: enabled,
-            autovalidateMode: autovalidateMode,
             builder: (FormFieldState<String> field) {
-              final _DropdownSearchFormFieldState state = field as _DropdownSearchFormFieldState<dynamic>;
+              final _DropdownSearchFormFieldState state =
+                  field as _DropdownSearchFormFieldState<dynamic>;
 
               return DropDownSearchField(
                 getImmediateSuggestions: getImmediateSuggestions,
@@ -91,7 +89,8 @@ class DropDownSearchFormField<T> extends FormField<String> {
                 suggestionsBoxDecoration: suggestionsBoxDecoration,
                 suggestionsBoxController: suggestionsBoxController,
                 textFieldConfiguration: textFieldConfiguration.copyWith(
-                  decoration: textFieldConfiguration.decoration.copyWith(errorText: state.errorText),
+                  decoration: textFieldConfiguration.decoration
+                      .copyWith(errorText: state.errorText),
                   onChanged: (text) {
                     state.didChange(text);
                     textFieldConfiguration.onChanged?.call(text);
@@ -113,7 +112,8 @@ class DropDownSearchFormField<T> extends FormField<String> {
                 hideOnError: hideOnError,
                 hideSuggestionsOnKeyboardHide: hideSuggestionsOnKeyboardHide,
                 keepSuggestionsOnLoading: keepSuggestionsOnLoading,
-                keepSuggestionsOnSuggestionSelected: keepSuggestionsOnSuggestionSelected,
+                keepSuggestionsOnSuggestionSelected:
+                    keepSuggestionsOnSuggestionSelected,
                 intercepting: intercepting,
                 autoFlipDirection: autoFlipDirection,
                 autoFlipListDirection: autoFlipListDirection,
@@ -126,16 +126,19 @@ class DropDownSearchFormField<T> extends FormField<String> {
             });
   @override
   // ignore: library_private_types_in_public_api
-  _DropdownSearchFormFieldState<T> createState() => _DropdownSearchFormFieldState<T>();
+  _DropdownSearchFormFieldState<T> createState() =>
+      _DropdownSearchFormFieldState<T>();
 }
 
 class _DropdownSearchFormFieldState<T> extends FormFieldState<String> {
   TextEditingController? _controller;
 
-  TextEditingController? get _effectiveController => widget.textFieldConfiguration.controller ?? _controller;
+  TextEditingController? get _effectiveController =>
+      widget.textFieldConfiguration.controller ?? _controller;
 
   @override
-  DropDownSearchFormField get widget => super.widget as DropDownSearchFormField<dynamic>;
+  DropDownSearchFormField get widget =>
+      super.widget as DropDownSearchFormField<dynamic>;
 
   @override
   void initState() {
@@ -143,30 +146,39 @@ class _DropdownSearchFormFieldState<T> extends FormFieldState<String> {
     if (widget.textFieldConfiguration.controller == null) {
       _controller = TextEditingController(text: widget.initialValue);
     } else {
-      widget.textFieldConfiguration.controller!.addListener(_handleControllerChanged);
+      widget.textFieldConfiguration.controller!
+          .addListener(_handleControllerChanged);
     }
   }
 
   @override
   void didUpdateWidget(DropDownSearchFormField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.textFieldConfiguration.controller != oldWidget.textFieldConfiguration.controller) {
-      oldWidget.textFieldConfiguration.controller?.removeListener(_handleControllerChanged);
-      widget.textFieldConfiguration.controller?.addListener(_handleControllerChanged);
+    if (widget.textFieldConfiguration.controller !=
+        oldWidget.textFieldConfiguration.controller) {
+      oldWidget.textFieldConfiguration.controller
+          ?.removeListener(_handleControllerChanged);
+      widget.textFieldConfiguration.controller
+          ?.addListener(_handleControllerChanged);
 
-      if (oldWidget.textFieldConfiguration.controller != null && widget.textFieldConfiguration.controller == null) {
-        _controller = TextEditingController.fromValue(oldWidget.textFieldConfiguration.controller!.value);
+      if (oldWidget.textFieldConfiguration.controller != null &&
+          widget.textFieldConfiguration.controller == null) {
+        _controller = TextEditingController.fromValue(
+            oldWidget.textFieldConfiguration.controller!.value);
       }
       if (widget.textFieldConfiguration.controller != null) {
         setValue(widget.textFieldConfiguration.controller!.text);
-        if (oldWidget.textFieldConfiguration.controller == null) _controller = null;
+        if (oldWidget.textFieldConfiguration.controller == null) {
+          _controller = null;
+        }
       }
     }
   }
 
   @override
   void dispose() {
-    widget.textFieldConfiguration.controller?.removeListener(_handleControllerChanged);
+    widget.textFieldConfiguration.controller
+        ?.removeListener(_handleControllerChanged);
     super.dispose();
   }
 
@@ -189,6 +201,8 @@ class _DropdownSearchFormFieldState<T> extends FormFieldState<String> {
     // notifications for changes originating from within this class -- for
     // example, the reset() method. In such cases, the FormField value will
     // already have been set.
-    if (_effectiveController!.text != value) didChange(_effectiveController!.text);
+    if (_effectiveController!.text != value) {
+      didChange(_effectiveController!.text);
+    }
   }
 }

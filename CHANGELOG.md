@@ -1,3 +1,9 @@
+## 1.0.1 - 08/01/2024
+
+- Support for Different MouseCursor Types.
+- Supporting latest dependencies.
+- resolved `dart format .`.
+
 ## 1.0.0 - 01/09/2023
 
 - Add option for onTap.

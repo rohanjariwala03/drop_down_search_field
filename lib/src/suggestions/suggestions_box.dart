@@ -79,7 +79,8 @@ class SuggestionsBox {
 
         if (widgetMounted &&
             // ignore: use_build_context_synchronously
-            (MediaQuery.of(context).viewInsets != initial || _findRootMediaQuery() != initialRootMediaQuery)) {
+            (MediaQuery.of(context).viewInsets != initial ||
+                _findRootMediaQuery() != initialRootMediaQuery)) {
           return true;
         }
       }
@@ -124,8 +125,8 @@ class SuggestionsBox {
     // height of keyboard
     double keyboardHeight = rootMediaQuery.data.viewInsets.bottom;
 
-    double maxHDesired =
-        _calculateMaxHeight(desiredDirection, box, widget, windowHeight, rootMediaQuery, keyboardHeight, textBoxAbsY);
+    double maxHDesired = _calculateMaxHeight(desiredDirection, box, widget,
+        windowHeight, rootMediaQuery, keyboardHeight, textBoxAbsY);
 
     // if there's enough room in the desired direction, update the direction and the max height
     if (maxHDesired >= autoFlipMinHeight || !autoFlipDirection) {
@@ -137,8 +138,8 @@ class SuggestionsBox {
     } else {
       // There's not enough room in the desired direction so see how much room is in the opposite direction
       AxisDirection flipped = flipAxisDirection(desiredDirection);
-      double maxHFlipped =
-          _calculateMaxHeight(flipped, box, widget, windowHeight, rootMediaQuery, keyboardHeight, textBoxAbsY);
+      double maxHFlipped = _calculateMaxHeight(flipped, box, widget,
+          windowHeight, rootMediaQuery, keyboardHeight, textBoxAbsY);
 
       // if there's more room in this opposite direction, update the direction and maxHeight
       if (maxHFlipped > maxHDesired) {
@@ -154,18 +155,32 @@ class SuggestionsBox {
     if (maxHeight < 0) maxHeight = 0;
   }
 
-  double _calculateMaxHeight(AxisDirection direction, RenderBox box, DropDownSearchField widget, double windowHeight,
-      MediaQuery rootMediaQuery, double keyboardHeight, double textBoxAbsY) {
+  double _calculateMaxHeight(
+      AxisDirection direction,
+      RenderBox box,
+      DropDownSearchField widget,
+      double windowHeight,
+      MediaQuery rootMediaQuery,
+      double keyboardHeight,
+      double textBoxAbsY) {
     return direction == AxisDirection.down
-        ? _calculateMaxHeightDown(box, widget, windowHeight, rootMediaQuery, keyboardHeight, textBoxAbsY)
-        : _calculateMaxHeightUp(box, widget, windowHeight, rootMediaQuery, keyboardHeight, textBoxAbsY);
+        ? _calculateMaxHeightDown(box, widget, windowHeight, rootMediaQuery,
+            keyboardHeight, textBoxAbsY)
+        : _calculateMaxHeightUp(box, widget, windowHeight, rootMediaQuery,
+            keyboardHeight, textBoxAbsY);
   }
 
-  double _calculateMaxHeightDown(RenderBox box, DropDownSearchField widget, double windowHeight,
-      MediaQuery rootMediaQuery, double keyboardHeight, double textBoxAbsY) {
+  double _calculateMaxHeightDown(
+      RenderBox box,
+      DropDownSearchField widget,
+      double windowHeight,
+      MediaQuery rootMediaQuery,
+      double keyboardHeight,
+      double textBoxAbsY) {
     // unsafe area, ie: iPhone X 'home button'
     // keyboardHeight includes unsafeAreaHeight, if keyboard is showing, set to 0
-    double unsafeAreaHeight = keyboardHeight == 0 ? rootMediaQuery.data.padding.bottom : 0;
+    double unsafeAreaHeight =
+        keyboardHeight == 0 ? rootMediaQuery.data.padding.bottom : 0;
 
     return windowHeight -
         keyboardHeight -
@@ -175,8 +190,13 @@ class SuggestionsBox {
         2 * widget.suggestionsBoxVerticalOffset;
   }
 
-  double _calculateMaxHeightUp(RenderBox box, DropDownSearchField widget, double windowHeight,
-      MediaQuery rootMediaQuery, double keyboardHeight, double textBoxAbsY) {
+  double _calculateMaxHeightUp(
+      RenderBox box,
+      DropDownSearchField widget,
+      double windowHeight,
+      MediaQuery rootMediaQuery,
+      double keyboardHeight,
+      double textBoxAbsY) {
     // recalculate keyboard absolute y value
     double keyboardAbsY = windowHeight - keyboardHeight;
 
@@ -188,8 +208,12 @@ class SuggestionsBox {
     double unsafeAreaHeight = rootMediaQuery.data.padding.top;
 
     return textBoxAbsY > keyboardAbsY
-        ? keyboardAbsY - unsafeAreaHeight - 2 * widget.suggestionsBoxVerticalOffset
-        : textBoxAbsY - unsafeAreaHeight - 2 * widget.suggestionsBoxVerticalOffset;
+        ? keyboardAbsY -
+            unsafeAreaHeight -
+            2 * widget.suggestionsBoxVerticalOffset
+        : textBoxAbsY -
+            unsafeAreaHeight -
+            2 * widget.suggestionsBoxVerticalOffset;
   }
 
   Future<void> onChangeMetrics() async {
