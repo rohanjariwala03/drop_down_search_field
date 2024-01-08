@@ -23,18 +23,18 @@ class DropDownSearchFormField<T> extends FormField<String> {
 
   /// Creates a [DropDownSearchFormField]
   DropDownSearchFormField({
-    Key? key,
+    super.key,
     String? initialValue,
     bool getImmediateSuggestions = false,
     @Deprecated('Use autovalidateMode parameter which provides more specific '
         'behavior related to auto validation. '
         'This feature was deprecated after Flutter v1.19.0.')
     bool autovalidate = false,
-    bool enabled = true,
-    AutovalidateMode autovalidateMode = AutovalidateMode.disabled,
-    FormFieldSetter<String>? onSaved,
+    super.enabled,
+    AutovalidateMode super.autovalidateMode = AutovalidateMode.disabled,
+    super.onSaved,
     this.onReset,
-    FormFieldValidator<String>? validator,
+    super.validator,
     ErrorBuilder? errorBuilder,
     WidgetBuilder? noItemsFoundBuilder,
     WidgetBuilder? loadingBuilder,
@@ -70,14 +70,9 @@ class DropDownSearchFormField<T> extends FormField<String> {
   })  : assert(initialValue == null || textFieldConfiguration.controller == null),
         assert(minCharsForSuggestions >= 0),
         super(
-            key: key,
-            onSaved: onSaved,
-            validator: validator,
             initialValue: textFieldConfiguration.controller != null
                 ? textFieldConfiguration.controller!.text
                 : (initialValue ?? ''),
-            enabled: enabled,
-            autovalidateMode: autovalidateMode,
             builder: (FormFieldState<String> field) {
               final _DropdownSearchFormFieldState state = field as _DropdownSearchFormFieldState<dynamic>;
 
