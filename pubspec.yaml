@@ -3,6 +3,14 @@ description: Customizable DropdownSearchField extending features DropdownButton,
 version: 1.0.1
 homepage: https://github.com/rohanjariwala03/drop_down_search_field
 
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: '>=3.0.5 <4.0.0'
   flutter: ">=1.17.0"
