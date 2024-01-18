@@ -20,34 +20,21 @@ class MaterialDropDownSearchFieldPage extends StatefulWidget {
   const MaterialDropDownSearchFieldPage({super.key, this.title});
 
   @override
-  State<MaterialDropDownSearchFieldPage> createState() =>
-      _MaterialDropDownSearchFieldPageState();
+  State<MaterialDropDownSearchFieldPage> createState() => _MaterialDropDownSearchFieldPageState();
 }
 
-class _MaterialDropDownSearchFieldPageState
-    extends State<MaterialDropDownSearchFieldPage> {
+class _MaterialDropDownSearchFieldPageState extends State<MaterialDropDownSearchFieldPage> {
   final List<TextEditingController> _controllers = [];
 
   /// Items that will be used to search
-  final List<String> foodItems = [
-    "Bread",
-    "Burger",
-    "Cheese",
-    "Milk",
-    "Milkshake",
-    "Orange"
-  ];
+  final List<String> foodItems = ["Bread", "Burger", "Cheese", "Milk", "Milkshake", "Orange"];
 
   /// This is to trigger a loading builder when searching for items
   Future<List<String>> _getFoodItems(String pattern) async {
     pattern = pattern.trim();
     if (pattern.isNotEmpty) {
-      return Future.delayed(
-          const Duration(seconds: 2),
-          () => foodItems
-              .where(
-                  (item) => item.toLowerCase().contains(pattern.toLowerCase()))
-              .toList());
+      return Future.delayed(const Duration(seconds: 2),
+          () => foodItems.where((item) => item.toLowerCase().contains(pattern.toLowerCase())).toList());
     } else {
       return Future.delayed(const Duration(seconds: 2), () => []);
     }
