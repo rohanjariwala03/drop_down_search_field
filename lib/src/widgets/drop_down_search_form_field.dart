@@ -68,6 +68,7 @@ class DropDownSearchFormField<T> extends FormField<String> {
     int minCharsForSuggestions = 0,
     bool hideKeyboardOnDrag = false,
     bool displayAllSuggestionWhenTap = false,
+    bool ignoreAccessibleNavigation = false,
   })  : assert(
             initialValue == null || textFieldConfiguration.controller == null),
         assert(minCharsForSuggestions >= 0),
@@ -122,6 +123,7 @@ class DropDownSearchFormField<T> extends FormField<String> {
                 minCharsForSuggestions: minCharsForSuggestions,
                 hideKeyboardOnDrag: hideKeyboardOnDrag,
                 displayAllSuggestionWhenTap: displayAllSuggestionWhenTap,
+                ignoreAccessibleNavigation: ignoreAccessibleNavigation,
               );
             });
   @override

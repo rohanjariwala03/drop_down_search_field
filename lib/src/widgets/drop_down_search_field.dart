@@ -531,6 +531,12 @@ class DropDownSearchField<T> extends StatefulWidget {
   /// Defaults to false
   final bool hideKeyboardOnDrag;
 
+  /// Allows a bypass of a problem on Flutter 3.7+ with the accessibility through Overlay
+  /// that prevents flutter_typeahead to register a click on the list of suggestions properly.
+  ///
+  /// Defaults to false
+  final bool ignoreAccessibleNavigation;
+
   // Adds a callback for the suggestion box opening or closing
   final void Function(bool)? onSuggestionsBoxToggle;
 
@@ -575,6 +581,7 @@ class DropDownSearchField<T> extends StatefulWidget {
     this.onSuggestionsBoxToggle,
     this.hideKeyboardOnDrag = false,
     required this.displayAllSuggestionWhenTap,
+    this.ignoreAccessibleNavigation = false,
     super.key,
   })  : assert(animationStart >= 0.0 && animationStart <= 1.0),
         assert(
@@ -855,7 +862,8 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
       // the style visually. However, when VO/TB are not enabled it is
       // necessary to use the Positioned widget to allow the elements to be
       // properly tappable.
-      return MediaQuery.of(context).accessibleNavigation
+      return MediaQuery.of(context).accessibleNavigation &&
+              !widget.ignoreAccessibleNavigation
           ? Semantics(
               container: true,
               child: Align(
@@ -911,7 +919,6 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
             cursorWidth: widget.textFieldConfiguration.cursorWidth,
             cursorRadius: widget.textFieldConfiguration.cursorRadius,
             cursorColor: widget.textFieldConfiguration.cursorColor,
-            mouseCursor: widget.textFieldConfiguration.mouseCursor,
             textDirection: widget.textFieldConfiguration.textDirection,
             enableInteractiveSelection:
                 widget.textFieldConfiguration.enableInteractiveSelection,
