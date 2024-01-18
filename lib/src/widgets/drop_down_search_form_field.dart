@@ -40,8 +40,7 @@ class DropDownSearchFormField<T> extends FormField<String> {
     WidgetBuilder? loadingBuilder,
     void Function(bool)? onSuggestionsBoxToggle,
     Duration debounceDuration = const Duration(milliseconds: 300),
-    SuggestionsBoxDecoration suggestionsBoxDecoration =
-        const SuggestionsBoxDecoration(),
+    SuggestionsBoxDecoration suggestionsBoxDecoration = const SuggestionsBoxDecoration(),
     SuggestionsBoxController? suggestionsBoxController,
     required SuggestionSelectionCallback<T> onSuggestionSelected,
     required ItemBuilder<T> itemBuilder,
@@ -68,16 +67,15 @@ class DropDownSearchFormField<T> extends FormField<String> {
     int minCharsForSuggestions = 0,
     bool hideKeyboardOnDrag = false,
     bool displayAllSuggestionWhenTap = false,
-  })  : assert(
-            initialValue == null || textFieldConfiguration.controller == null),
+    bool ignoreAccessibleNavigation = false,
+  })  : assert(initialValue == null || textFieldConfiguration.controller == null),
         assert(minCharsForSuggestions >= 0),
         super(
             initialValue: textFieldConfiguration.controller != null
                 ? textFieldConfiguration.controller!.text
                 : (initialValue ?? ''),
             builder: (FormFieldState<String> field) {
-              final _DropdownSearchFormFieldState state =
-                  field as _DropdownSearchFormFieldState<dynamic>;
+              final _DropdownSearchFormFieldState state = field as _DropdownSearchFormFieldState<dynamic>;
 
               return DropDownSearchField(
                 getImmediateSuggestions: getImmediateSuggestions,
@@ -89,8 +87,7 @@ class DropDownSearchFormField<T> extends FormField<String> {
                 suggestionsBoxDecoration: suggestionsBoxDecoration,
                 suggestionsBoxController: suggestionsBoxController,
                 textFieldConfiguration: textFieldConfiguration.copyWith(
-                  decoration: textFieldConfiguration.decoration
-                      .copyWith(errorText: state.errorText),
+                  decoration: textFieldConfiguration.decoration.copyWith(errorText: state.errorText),
                   onChanged: (text) {
                     state.didChange(text);
                     textFieldConfiguration.onChanged?.call(text);
@@ -112,8 +109,7 @@ class DropDownSearchFormField<T> extends FormField<String> {
                 hideOnError: hideOnError,
                 hideSuggestionsOnKeyboardHide: hideSuggestionsOnKeyboardHide,
                 keepSuggestionsOnLoading: keepSuggestionsOnLoading,
-                keepSuggestionsOnSuggestionSelected:
-                    keepSuggestionsOnSuggestionSelected,
+                keepSuggestionsOnSuggestionSelected: keepSuggestionsOnSuggestionSelected,
                 intercepting: intercepting,
                 autoFlipDirection: autoFlipDirection,
                 autoFlipListDirection: autoFlipListDirection,
@@ -122,23 +118,21 @@ class DropDownSearchFormField<T> extends FormField<String> {
                 minCharsForSuggestions: minCharsForSuggestions,
                 hideKeyboardOnDrag: hideKeyboardOnDrag,
                 displayAllSuggestionWhenTap: displayAllSuggestionWhenTap,
+                ignoreAccessibleNavigation: ignoreAccessibleNavigation,
               );
             });
   @override
   // ignore: library_private_types_in_public_api
-  _DropdownSearchFormFieldState<T> createState() =>
-      _DropdownSearchFormFieldState<T>();
+  _DropdownSearchFormFieldState<T> createState() => _DropdownSearchFormFieldState<T>();
 }
 
 class _DropdownSearchFormFieldState<T> extends FormFieldState<String> {
   TextEditingController? _controller;
 
-  TextEditingController? get _effectiveController =>
-      widget.textFieldConfiguration.controller ?? _controller;
+  TextEditingController? get _effectiveController => widget.textFieldConfiguration.controller ?? _controller;
 
   @override
-  DropDownSearchFormField get widget =>
-      super.widget as DropDownSearchFormField<dynamic>;
+  DropDownSearchFormField get widget => super.widget as DropDownSearchFormField<dynamic>;
 
   @override
   void initState() {
@@ -146,25 +140,19 @@ class _DropdownSearchFormFieldState<T> extends FormFieldState<String> {
     if (widget.textFieldConfiguration.controller == null) {
       _controller = TextEditingController(text: widget.initialValue);
     } else {
-      widget.textFieldConfiguration.controller!
-          .addListener(_handleControllerChanged);
+      widget.textFieldConfiguration.controller!.addListener(_handleControllerChanged);
     }
   }
 
   @override
   void didUpdateWidget(DropDownSearchFormField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.textFieldConfiguration.controller !=
-        oldWidget.textFieldConfiguration.controller) {
-      oldWidget.textFieldConfiguration.controller
-          ?.removeListener(_handleControllerChanged);
-      widget.textFieldConfiguration.controller
-          ?.addListener(_handleControllerChanged);
+    if (widget.textFieldConfiguration.controller != oldWidget.textFieldConfiguration.controller) {
+      oldWidget.textFieldConfiguration.controller?.removeListener(_handleControllerChanged);
+      widget.textFieldConfiguration.controller?.addListener(_handleControllerChanged);
 
-      if (oldWidget.textFieldConfiguration.controller != null &&
-          widget.textFieldConfiguration.controller == null) {
-        _controller = TextEditingController.fromValue(
-            oldWidget.textFieldConfiguration.controller!.value);
+      if (oldWidget.textFieldConfiguration.controller != null && widget.textFieldConfiguration.controller == null) {
+        _controller = TextEditingController.fromValue(oldWidget.textFieldConfiguration.controller!.value);
       }
       if (widget.textFieldConfiguration.controller != null) {
         setValue(widget.textFieldConfiguration.controller!.text);
@@ -177,8 +165,7 @@ class _DropdownSearchFormFieldState<T> extends FormFieldState<String> {
 
   @override
   void dispose() {
-    widget.textFieldConfiguration.controller
-        ?.removeListener(_handleControllerChanged);
+    widget.textFieldConfiguration.controller?.removeListener(_handleControllerChanged);
     super.dispose();
   }
 
