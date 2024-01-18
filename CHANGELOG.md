@@ -1,3 +1,7 @@
+## 1.0.3 - 18/01/2024
+
+- Support for ignoreAccessibleNavigation.
+
 ## 1.0.2 - 08/01/2024
 
 - Added supported platforms.
