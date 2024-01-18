@@ -45,8 +45,7 @@ class TestPageState extends State<TestPage> {
                     autofocus: true,
                     inputFormatters: [LengthLimitingTextInputFormatter(50)],
                     controller: _controller,
-                    decoration: const InputDecoration(
-                        labelText: 'Dropdown Search Field')),
+                    decoration: const InputDecoration(labelText: 'Dropdown Search Field')),
                 suggestionsCallback: (pattern) {
                   if (pattern.isNotEmpty) {
                     return ['${pattern}aaa', '${pattern}bbb'];
@@ -60,8 +59,7 @@ class TestPageState extends State<TestPage> {
                     title: Text(suggestion),
                   );
                 },
-                onSuggestionSelected: (String suggestion) =>
-                    _controller.text = suggestion,
+                onSuggestionSelected: (String suggestion) => _controller.text = suggestion,
                 minCharsForSuggestions: widget.minCharsForSuggestions,
               ),
             ],
