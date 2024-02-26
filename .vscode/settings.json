@@ -6,5 +6,16 @@
         "tappable",
         "testaaa",
         "testbbb"
-    ]
+    ],
+    "search.useGlobalIgnoreFiles": false,
+    "search.useParentIgnoreFiles": false,
+    "dart.lineLength": 120,
+    "[dart]": {
+        "editor.rulers": [
+            120
+        ]
+    },
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 120,
+    "editor.formatOnSave": true
 }
