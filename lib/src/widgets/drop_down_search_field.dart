@@ -636,8 +636,10 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>> with Wi
     super.dispose();
   }
 
-  KeyEventResult _onKeyEvent(FocusNode _, RawKeyEvent event) {
-    if (event.isKeyPressed(LogicalKeyboardKey.arrowUp) || event.isKeyPressed(LogicalKeyboardKey.arrowDown)) {
+  KeyEventResult _onKeyEvent(FocusNode _, KeyEvent event) {
+    // HardwareKeyboard.instance.isLogicalKeyPressed
+  
+    if (event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.arrowDown) {
       // do nothing to avoid puzzling users until keyboard arrow nav is implemented
     } else {
       _keyboardSuggestionSelectionNotifier.onKeyboardEvent(event);
@@ -656,16 +658,16 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>> with Wi
 
     final textFieldConfigurationFocusNode = widget.textFieldConfiguration.focusNode;
     if (textFieldConfigurationFocusNode == null) {
-      this._focusNode = FocusNode(onKey: _onKeyEvent);
+      this._focusNode = FocusNode(onKeyEvent: _onKeyEvent);
     } else if (textFieldConfigurationFocusNode.onKey == null) {
       // * we add the _onKeyEvent callback to the textFieldConfiguration focusNode
-      textFieldConfigurationFocusNode.onKey = ((node, event) {
+      textFieldConfigurationFocusNode.onKeyEvent = ((node, event) {
         final keyEventResult = _onKeyEvent(node, event);
         return keyEventResult;
       });
     } else {
-      final onKeyCopy = textFieldConfigurationFocusNode.onKey!;
-      textFieldConfigurationFocusNode.onKey = ((node, event) {
+      final onKeyCopy = textFieldConfigurationFocusNode.onKeyEvent!;
+      textFieldConfigurationFocusNode.onKeyEvent = ((node, event) {
         _onKeyEvent(node, event);
         return onKeyCopy(node, event);
       });

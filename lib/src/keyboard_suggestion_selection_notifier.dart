@@ -5,9 +5,9 @@ class KeyboardSuggestionSelectionNotifier
     extends ValueNotifier<LogicalKeyboardKey?> {
   KeyboardSuggestionSelectionNotifier() : super(null);
 
-  void onKeyboardEvent(RawKeyEvent event) {
+  void onKeyboardEvent(KeyEvent event) {
     // * we only handle key down event
-    if (event.runtimeType == RawKeyUpEvent) return;
+    if (event.runtimeType == KeyEvent) return;
 
     if (event.logicalKey == LogicalKeyboardKey.arrowDown ||
         event.logicalKey == LogicalKeyboardKey.arrowUp) {
