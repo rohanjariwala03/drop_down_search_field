@@ -1,3 +1,8 @@
+## 1.0.4 - 08/01/2024
+
+- Support for closing suggestion box when tapped outside.
+- Replaced deprecated properties with new properties.
+
 ## 1.0.3 - 08/01/2024
 
 - Support for ignoreAccessible.
