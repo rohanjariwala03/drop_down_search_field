@@ -42,7 +42,7 @@ class SuggestionsList<T> extends StatefulWidget {
       shouldRefreshSuggestionFocusIndexNotifier;
   final VoidCallback giveTextFieldFocus;
   final VoidCallback onSuggestionFocus;
-  final KeyEventResult Function(FocusNode _, RawKeyEvent event) onKeyEvent;
+  final KeyEventResult Function(FocusNode _, KeyEvent event) onKeyEvent;
   final bool hideKeyboardOnDrag;
   final bool displayAllSuggestionWhenTap;
 
@@ -241,7 +241,7 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
           this._suggestions = suggestions;
           _focusNodes = List.generate(
             _suggestions?.length ?? 0,
-            (index) => FocusNode(onKey: (_, event) {
+            (index) => FocusNode(onKeyEvent: (_, event) {
               return widget.onKeyEvent(_, event);
             }),
           );
