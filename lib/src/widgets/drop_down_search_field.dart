@@ -659,7 +659,7 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>> with Wi
     final textFieldConfigurationFocusNode = widget.textFieldConfiguration.focusNode;
     if (textFieldConfigurationFocusNode == null) {
       this._focusNode = FocusNode(onKeyEvent: _onKeyEvent);
-    } else if (textFieldConfigurationFocusNode.onKey == null) {
+    } else if (textFieldConfigurationFocusNode.onKeyEvent == null) {
       // * we add the _onKeyEvent callback to the textFieldConfiguration focusNode
       textFieldConfigurationFocusNode.onKeyEvent = ((node, event) {
         final keyEventResult = _onKeyEvent(node, event);
