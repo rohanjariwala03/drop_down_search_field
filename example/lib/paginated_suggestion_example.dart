@@ -3,14 +3,14 @@ import 'dart:math';
 import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:flutter/material.dart';
 
-class PaginatedListExample extends StatefulWidget {
-  const PaginatedListExample({super.key});
+class PaginatedSuggestionExample extends StatefulWidget {
+  const PaginatedSuggestionExample({super.key});
 
   @override
-  State<PaginatedListExample> createState() => _PaginatedListExampleState();
+  State<PaginatedSuggestionExample> createState() => _PaginatedSuggestionExampleState();
 }
 
-class _PaginatedListExampleState extends State<PaginatedListExample> {
+class _PaginatedSuggestionExampleState extends State<PaginatedSuggestionExample> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _dropdownSearchFieldController =
       TextEditingController();
@@ -31,11 +31,9 @@ class _PaginatedListExampleState extends State<PaginatedListExample> {
 
   List<String> getSuggestions(String query) {
     if (query.isNotEmpty) {
-      debugPrint('length ${names.length}');
       final tempList = names
           .where((s) => s.toLowerCase().contains(query.toLowerCase()))
           .toList();
-      debugPrint('length after ${tempList.length}');
       return tempList;
     }
     int i = 0;
