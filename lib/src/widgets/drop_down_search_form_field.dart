@@ -47,7 +47,8 @@ class DropDownSearchFormField<T> extends FormField<String> {
     required ItemBuilder<T> itemBuilder,
     IndexedWidgetBuilder? itemSeparatorBuilder,
     LayoutArchitecture? layoutArchitecture,
-    required SuggestionsCallback<T> suggestionsCallback,
+    SuggestionsCallback<T>? suggestionsCallback,
+    PaginatedSuggestionsCallback<T>? paginatedSuggestionsCallback,
     double suggestionsBoxVerticalOffset = 5.0,
     this.textFieldConfiguration = const TextFieldConfiguration(),
     AnimationTransitionBuilder? transitionBuilder,
@@ -68,6 +69,7 @@ class DropDownSearchFormField<T> extends FormField<String> {
     int minCharsForSuggestions = 0,
     bool hideKeyboardOnDrag = false,
     bool displayAllSuggestionWhenTap = false,
+    final ScrollController? scrollController,
   })  : assert(
             initialValue == null || textFieldConfiguration.controller == null),
         assert(minCharsForSuggestions >= 0),
@@ -104,6 +106,7 @@ class DropDownSearchFormField<T> extends FormField<String> {
                 itemSeparatorBuilder: itemSeparatorBuilder,
                 layoutArchitecture: layoutArchitecture,
                 suggestionsCallback: suggestionsCallback,
+                paginatedSuggestionsCallback: paginatedSuggestionsCallback,
                 animationStart: animationStart,
                 animationDuration: animationDuration,
                 direction: direction,
@@ -122,6 +125,7 @@ class DropDownSearchFormField<T> extends FormField<String> {
                 minCharsForSuggestions: minCharsForSuggestions,
                 hideKeyboardOnDrag: hideKeyboardOnDrag,
                 displayAllSuggestionWhenTap: displayAllSuggestionWhenTap,
+                scrollController: scrollController,
               );
             });
   @override

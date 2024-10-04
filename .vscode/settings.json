@@ -5,6 +5,9 @@
         "autovalidate",
         "tappable",
         "testaaa",
-        "testbbb"
-    ]
+        "testbbb",
+        "unfocus",
+        "vsync"
+    ],
+    "jira-plugin.workingProject": ""
 }
