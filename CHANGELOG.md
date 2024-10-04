@@ -1,3 +1,8 @@
+## 1.0.5 - 04/08/2024
+
+- Added support for Pagination in dropdown.
+- resolved `dart format .`.
+
 ## 1.0.4 - 08/01/2024
 
 - Support for closing suggestion box when tapped outside.

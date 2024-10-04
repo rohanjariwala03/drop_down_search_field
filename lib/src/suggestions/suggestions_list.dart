@@ -45,6 +45,7 @@ class SuggestionsList<T> extends StatefulWidget {
   final KeyEventResult Function(FocusNode _, KeyEvent event) onKeyEvent;
   final bool hideKeyboardOnDrag;
   final bool displayAllSuggestionWhenTap;
+  final PaginatedSuggestionsCallback<T>? paginatedSuggestionsCallback;
 
   const SuggestionsList({
     super.key,
@@ -79,6 +80,7 @@ class SuggestionsList<T> extends StatefulWidget {
     required this.onKeyEvent,
     required this.hideKeyboardOnDrag,
     required this.displayAllSuggestionWhenTap,
+    this.paginatedSuggestionsCallback,
   });
 
   @override
@@ -93,6 +95,7 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
   late VoidCallback _controllerListener;
   Timer? _debounceTimer;
   bool? _isLoading, _isQueued;
+  bool _paginationLoading = false;
   Object? _error;
   AnimationController? _animationController;
   String? _lastTextValue;
@@ -100,6 +103,7 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
       widget.scrollController ?? ScrollController();
   List<FocusNode> _focusNodes = [];
   int _suggestionIndex = -1;
+  int pageNumber = 0;
 
   _SuggestionsListState() {
     this._controllerListener = () {
@@ -198,6 +202,32 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
         _suggestionIndex = -1;
       }
     });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.paginatedSuggestionsCallback != null) {
+        _scrollController.addListener(() async {
+          if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent) {
+            if (_isLoading ?? false) return;
+            _isLoading = true;
+            setState(() {
+              _paginationLoading = true;
+            });
+            final olderLength = this._suggestions?.length;
+            pageNumber += 1;
+            await invalidateSuggestions();
+            if (olderLength == this._suggestions?.length) {
+              pageNumber -= 1;
+            }
+            if (mounted) {
+              setState(() {
+                _paginationLoading = false;
+              });
+            }
+          }
+        });
+      }
+    });
   }
 
   Future<void> invalidateSuggestions() async {
@@ -221,7 +251,11 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
       Object? error;
 
       try {
-        suggestions = await widget.suggestionsCallback!(suggestion);
+        if (widget.paginatedSuggestionsCallback != null) {
+          suggestions = await widget.paginatedSuggestionsCallback!(suggestion);
+        } else {
+          suggestions = await widget.suggestionsCallback!(suggestion);
+        }
       } catch (e) {
         error = e;
       }
@@ -392,38 +426,51 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
   }
 
   Widget defaultSuggestionsWidget() {
-    Widget child = ListView.separated(
-      padding: EdgeInsets.zero,
-      primary: false,
-      shrinkWrap: true,
-      keyboardDismissBehavior: widget.hideKeyboardOnDrag
-          ? ScrollViewKeyboardDismissBehavior.onDrag
-          : ScrollViewKeyboardDismissBehavior.manual,
-      controller: _scrollController,
-      reverse: widget.suggestionsBox!.direction == AxisDirection.down
-          ? false
-          : widget.suggestionsBox!.autoFlipListDirection,
-      itemCount: this._suggestions!.length,
-      itemBuilder: (BuildContext context, int index) {
-        final suggestion = this._suggestions!.elementAt(index);
-        final focusNode = _focusNodes[index];
-        return TextFieldTapRegion(
-          child: InkWell(
-            focusColor: Theme.of(context).hoverColor,
-            focusNode: focusNode,
-            child: widget.itemBuilder!(context, suggestion),
-            onTap: () {
-              // * we give the focus back to the text field
-              widget.giveTextFieldFocus();
+    Widget child = Column(
+      children: [
+        Expanded(
+          child: ListView.separated(
+            padding: EdgeInsets.zero,
+            primary: false,
+            shrinkWrap: true,
+            keyboardDismissBehavior: widget.hideKeyboardOnDrag
+                ? ScrollViewKeyboardDismissBehavior.onDrag
+                : ScrollViewKeyboardDismissBehavior.manual,
+            controller: _scrollController,
+            reverse: widget.suggestionsBox!.direction == AxisDirection.down
+                ? false
+                : widget.suggestionsBox!.autoFlipListDirection,
+            itemCount: this._suggestions!.length,
+            itemBuilder: (BuildContext context, int index) {
+              final suggestion = this._suggestions!.elementAt(index);
+              final focusNode = _focusNodes[index];
+              return TextFieldTapRegion(
+                child: InkWell(
+                  focusColor: Theme.of(context).hoverColor,
+                  focusNode: focusNode,
+                  child: widget.itemBuilder!(context, suggestion),
+                  onTap: () {
+                    // * we give the focus back to the text field
+                    widget.giveTextFieldFocus();
 
-              widget.onSuggestionSelected!(suggestion);
+                    widget.onSuggestionSelected!(suggestion);
+                  },
+                ),
+              );
             },
+            separatorBuilder: (BuildContext context, int index) =>
+                widget.itemSeparatorBuilder?.call(context, index) ??
+                const SizedBox.shrink(),
           ),
-        );
-      },
-      separatorBuilder: (BuildContext context, int index) =>
-          widget.itemSeparatorBuilder?.call(context, index) ??
-          const SizedBox.shrink(),
+        ),
+        if (_paginationLoading)
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+      ],
     );
 
     if (widget.decoration!.hasScrollbar) {
@@ -475,6 +522,19 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
         ),
       );
     }
+
+    child = Column(
+      children: [
+        Expanded(child: child),
+        if (_paginationLoading)
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+      ],
+    );
 
     child = TextFieldTapRegion(child: child);
 

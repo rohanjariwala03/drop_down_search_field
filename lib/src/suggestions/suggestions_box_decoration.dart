@@ -43,7 +43,7 @@ class SuggestionsBoxDecoration {
   /// Same as [Material.clipBehavior](https://api.flutter.dev/flutter/material/Material/clipBehavior.html)
   final Clip clipBehavior;
 
-  /// If you want to close suggestion box when use tap outside suggestionBox then pass true. 
+  /// If you want to close suggestion box when use tap outside suggestionBox then pass true.
   /// Default is true
   final bool closeSuggestionBoxWhenTapOutside;
 
@@ -57,5 +57,6 @@ class SuggestionsBoxDecoration {
       this.shadowColor = const Color(0xFF000000),
       this.constraints,
       this.clipBehavior = Clip.none,
-      this.offsetX = 0.0, this.closeSuggestionBoxWhenTapOutside = true});
+      this.offsetX = 0.0,
+      this.closeSuggestionBoxWhenTapOutside = true});
 }

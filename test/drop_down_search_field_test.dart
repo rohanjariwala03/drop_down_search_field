@@ -8,7 +8,8 @@ import 'helpers/drop_down_search_field_helper.dart';
 void main() {
   group("Material DropDownSearchField widget tests", () {
     testWidgets("Initial UI Test", (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialDropDownSearchFieldHelper.getMaterialDropDownSearchFieldPage());
+      await tester.pumpWidget(MaterialDropDownSearchFieldHelper
+          .getMaterialDropDownSearchFieldPage());
       await tester.pumpAndSettle();
 
       expect(find.text("Material DropDownSearchField test"), findsOneWidget);
@@ -17,10 +18,12 @@ void main() {
     });
 
     testWidgets("No results found test", (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialDropDownSearchFieldHelper.getMaterialDropDownSearchFieldPage());
+      await tester.pumpWidget(MaterialDropDownSearchFieldHelper
+          .getMaterialDropDownSearchFieldPage());
       await tester.pumpAndSettle();
 
-      final dropDownSearchField = find.byType(DropDownSearchFormField<String>).first;
+      final dropDownSearchField =
+          find.byType(DropDownSearchFormField<String>).first;
       await tester.tap(dropDownSearchField);
       await tester.pumpAndSettle(const Duration(seconds: 2));
       await tester.enterText(dropDownSearchField, "Chocolates");
@@ -32,10 +35,12 @@ void main() {
     });
 
     testWidgets("Search one item", (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialDropDownSearchFieldHelper.getMaterialDropDownSearchFieldPage());
+      await tester.pumpWidget(MaterialDropDownSearchFieldHelper
+          .getMaterialDropDownSearchFieldPage());
       await tester.pumpAndSettle();
 
-      final dropDownSearchField = find.byType(DropDownSearchFormField<String>).first;
+      final dropDownSearchField =
+          find.byType(DropDownSearchFormField<String>).first;
       await tester.tap(dropDownSearchField);
       await tester.pumpAndSettle(const Duration(seconds: 2));
       await tester.enterText(dropDownSearchField, "Cheese");
@@ -48,10 +53,12 @@ void main() {
     });
 
     testWidgets("Search two items", (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialDropDownSearchFieldHelper.getMaterialDropDownSearchFieldPage());
+      await tester.pumpWidget(MaterialDropDownSearchFieldHelper
+          .getMaterialDropDownSearchFieldPage());
       await tester.pumpAndSettle();
 
-      final dropDownSearchField = find.byType(DropDownSearchFormField<String>).first;
+      final dropDownSearchField =
+          find.byType(DropDownSearchFormField<String>).first;
       await tester.tap(dropDownSearchField);
       await tester.pumpAndSettle(const Duration(seconds: 2));
       await tester.enterText(dropDownSearchField, "B");
@@ -61,7 +68,8 @@ void main() {
       expect(find.text("Burger"), findsOneWidget);
     });
 
-    testWidgets("Search with first drop down search field and check the offset of the first suggestion box",
+    testWidgets(
+        "Search with first drop down search field and check the offset of the first suggestion box",
         (WidgetTester tester) async {
       // await tester.pumpWidget(MaterialDropDownSearchFieldHelper.getMaterialDropDownSearchFieldPage());
       // await tester.pumpAndSettle();
@@ -78,25 +86,34 @@ void main() {
       // expect(dropDownSearchFieldSuggestionBoxTester.offset, const Offset(0.0, 61.0));
     });
 
-    testWidgets("Search with last drop down search fields and check the offset of the last suggestion box",
+    testWidgets(
+        "Search with last drop down search fields and check the offset of the last suggestion box",
         (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialDropDownSearchFieldHelper.getMaterialDropDownSearchFieldPage());
+      await tester.pumpWidget(MaterialDropDownSearchFieldHelper
+          .getMaterialDropDownSearchFieldPage());
       await tester.pumpAndSettle();
 
-      final dropDownSearchField = find.byType(DropDownSearchFormField<String>).last;
-      final scrollView = find.descendant(of: find.byType(SingleChildScrollView), matching: find.byType(Scrollable));
+      final dropDownSearchField =
+          find.byType(DropDownSearchFormField<String>).last;
+      final scrollView = find.descendant(
+          of: find.byType(SingleChildScrollView),
+          matching: find.byType(Scrollable));
 
-      await tester.dragUntilVisible(dropDownSearchField, scrollView, const Offset(0, 1000));
+      await tester.dragUntilVisible(
+          dropDownSearchField, scrollView, const Offset(0, 1000));
       await tester.pumpAndSettle(const Duration(seconds: 2));
       await tester.tap(dropDownSearchField);
       await tester.pumpAndSettle(const Duration(seconds: 2));
       await tester.enterText(dropDownSearchField, "Milk");
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
-      final dropDownSearchFieldSuggestionBox = find.byType(CompositedTransformFollower).last;
+      final dropDownSearchFieldSuggestionBox =
+          find.byType(CompositedTransformFollower).last;
       final CompositedTransformFollower dropDownSearchFieldSuggestionBoxTester =
-          tester.widget<CompositedTransformFollower>(dropDownSearchFieldSuggestionBox);
-      expect(dropDownSearchFieldSuggestionBoxTester.offset, const Offset(0.0, -5.0));
+          tester.widget<CompositedTransformFollower>(
+              dropDownSearchFieldSuggestionBox);
+      expect(dropDownSearchFieldSuggestionBoxTester.offset,
+          const Offset(0.0, -5.0));
     });
   });
 }

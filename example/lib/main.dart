@@ -16,8 +16,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Drop down Search Field demo',
-      scrollBehavior:
-          const MaterialScrollBehavior().copyWith(dragDevices: {PointerDeviceKind.mouse, PointerDeviceKind.touch}),
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+          dragDevices: {PointerDeviceKind.mouse, PointerDeviceKind.touch}),
       home: DefaultTabController(
         length: 1,
         child: Scaffold(
@@ -43,7 +43,8 @@ class FormExample extends StatefulWidget {
 
 class _FormExampleState extends State<FormExample> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _dropdownSearchFieldController = TextEditingController();
+  final TextEditingController _dropdownSearchFieldController =
+      TextEditingController();
 
   String? _selectedFruit;
 
@@ -116,7 +117,8 @@ class _FormExampleState extends State<FormExample> {
                   _dropdownSearchFieldController.text = suggestion;
                 },
                 suggestionsBoxController: suggestionBoxController,
-                validator: (value) => value!.isEmpty ? 'Please select a fruit' : null,
+                validator: (value) =>
+                    value!.isEmpty ? 'Please select a fruit' : null,
                 onSaved: (value) => _selectedFruit = value,
                 displayAllSuggestionWhenTap: true,
               ),
