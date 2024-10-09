@@ -754,6 +754,18 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
         }
       }
     });
+    
+    dropdownFocusNode.addListener(() {
+      print('checking focus');
+
+      if (dropdownFocusNode.hasFocus) {
+        print('dropdownFocusNode has focus');
+        // _suggestionsBox!.open();
+      } else {
+        print('dropdownFocusNode does not have focus');
+        // _suggestionsBox!.close();
+      }
+    });
   }
 
   @override
@@ -911,12 +923,12 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
     });
   }
 
+  FocusNode dropdownFocusNode = FocusNode();
+
   @override
   Widget build(BuildContext context) {
-    return TapRegion(
-      onTapOutside: (event) {
-          print('outside tapped');
-        },
+    return Focus(
+      focusNode: dropdownFocusNode,
       child: CompositedTransformTarget(
         link: this._layerLink,
         child: PointerInterceptor(
