@@ -724,9 +724,9 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
       if (_effectiveFocusNode!.hasFocus) {
         this._suggestionsBox!.open();
       } else if (!_areSuggestionsFocused) {
-        // if (widget.hideSuggestionsOnKeyboardHide) {
+        if (widget.hideSuggestionsOnKeyboardHide) {
           this._suggestionsBox!.close();
-        // }
+        }
       }
 
       widget.onSuggestionsBoxToggle?.call(this._suggestionsBox!.isOpened);
@@ -893,21 +893,26 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
       // the style visually. However, when VO/TB are not enabled it is
       // necessary to use the Positioned widget to allow the elements to be
       // properly tappable.
-      return MediaQuery.of(context).accessibleNavigation
-          ? Semantics(
-              container: true,
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: w),
-                  child: compositedFollower,
+      return TapRegion(
+        onTapOutside: (event) {
+          print('outside tapped');
+        },
+        child: MediaQuery.of(context).accessibleNavigation
+            ? Semantics(
+                container: true,
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: w),
+                    child: compositedFollower,
+                  ),
                 ),
+              )
+            : Positioned(
+                width: w,
+                child: compositedFollower,
               ),
-            )
-          : Positioned(
-              width: w,
-              child: compositedFollower,
-            );
+      );
     });
   }
 
