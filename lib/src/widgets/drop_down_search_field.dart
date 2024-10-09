@@ -870,6 +870,7 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
                 : -widget.suggestionsBoxVerticalOffset),
         child: TextFieldTapRegion(
             onTapOutside: (e) {
+              print('came here');
               if (widget
                   .suggestionsBoxDecoration.closeSuggestionBoxWhenTapOutside) {
                 if (this._suggestionsBox?.isOpened ?? false) {
