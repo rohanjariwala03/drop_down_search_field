@@ -763,7 +763,9 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
         // _suggestionsBox!.open();
       } else {
         print('dropdownFocusNode does not have focus');
-        _suggestionsBox!.close();
+        Future.delayed(const Duration(milliseconds: 100), () {
+          _suggestionsBox?.close();
+        });
       }
     });
   }
