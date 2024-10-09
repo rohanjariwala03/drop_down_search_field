@@ -755,19 +755,6 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
       }
     });
     
-    dropdownFocusNode.addListener(() {
-      print('checking focus');
-
-      if (dropdownFocusNode.hasFocus) {
-        print('dropdownFocusNode has focus');
-        // _suggestionsBox!.open();
-      } else {
-        print('dropdownFocusNode does not have focus');
-        Future.delayed(const Duration(milliseconds: 1000), () {
-          _suggestionsBox?.close();
-        });
-      }
-    });
   }
 
   @override
@@ -925,55 +912,51 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
     });
   }
 
-  FocusNode dropdownFocusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
-    return Focus(
-      focusNode: dropdownFocusNode,
-      child: CompositedTransformTarget(
-        link: this._layerLink,
-        child: PointerInterceptor(
-          intercepting: widget.intercepting,
-          child: TextField(
-              focusNode: this._effectiveFocusNode,
-              controller: this._effectiveController,
-              decoration: widget.textFieldConfiguration.decoration,
-              style: widget.textFieldConfiguration.style,
-              textAlign: widget.textFieldConfiguration.textAlign,
-              enabled: widget.textFieldConfiguration.enabled,
-              keyboardType: widget.textFieldConfiguration.keyboardType,
-              autofocus: widget.textFieldConfiguration.autofocus,
-              inputFormatters: widget.textFieldConfiguration.inputFormatters,
-              autocorrect: widget.textFieldConfiguration.autocorrect,
-              maxLines: widget.textFieldConfiguration.maxLines,
-              textAlignVertical: widget.textFieldConfiguration.textAlignVertical,
-              minLines: widget.textFieldConfiguration.minLines,
-              maxLength: widget.textFieldConfiguration.maxLength,
-              maxLengthEnforcement:
-                  widget.textFieldConfiguration.maxLengthEnforcement,
-              obscureText: widget.textFieldConfiguration.obscureText,
-              onChanged: widget.textFieldConfiguration.onChanged,
-              onSubmitted: widget.textFieldConfiguration.onSubmitted,
-              onEditingComplete: widget.textFieldConfiguration.onEditingComplete,
-              onTap: widget.textFieldConfiguration.onTap,
-              onTapOutside: widget.textFieldConfiguration.onTapOutside,
-              scrollPadding: widget.textFieldConfiguration.scrollPadding,
-              textInputAction: widget.textFieldConfiguration.textInputAction,
-              textCapitalization:
-                  widget.textFieldConfiguration.textCapitalization,
-              keyboardAppearance:
-                  widget.textFieldConfiguration.keyboardAppearance,
-              cursorWidth: widget.textFieldConfiguration.cursorWidth,
-              cursorRadius: widget.textFieldConfiguration.cursorRadius,
-              cursorColor: widget.textFieldConfiguration.cursorColor,
-              mouseCursor: widget.textFieldConfiguration.mouseCursor,
-              textDirection: widget.textFieldConfiguration.textDirection,
-              enableInteractiveSelection:
-                  widget.textFieldConfiguration.enableInteractiveSelection,
-              readOnly: widget.hideKeyboard,
-              autofillHints: widget.textFieldConfiguration.autofillHints),
-        ),
+    return CompositedTransformTarget(
+      link: this._layerLink,
+      child: PointerInterceptor(
+        intercepting: widget.intercepting,
+        child: TextField(
+            focusNode: this._effectiveFocusNode,
+            controller: this._effectiveController,
+            decoration: widget.textFieldConfiguration.decoration,
+            style: widget.textFieldConfiguration.style,
+            textAlign: widget.textFieldConfiguration.textAlign,
+            enabled: widget.textFieldConfiguration.enabled,
+            keyboardType: widget.textFieldConfiguration.keyboardType,
+            autofocus: widget.textFieldConfiguration.autofocus,
+            inputFormatters: widget.textFieldConfiguration.inputFormatters,
+            autocorrect: widget.textFieldConfiguration.autocorrect,
+            maxLines: widget.textFieldConfiguration.maxLines,
+            textAlignVertical: widget.textFieldConfiguration.textAlignVertical,
+            minLines: widget.textFieldConfiguration.minLines,
+            maxLength: widget.textFieldConfiguration.maxLength,
+            maxLengthEnforcement:
+                widget.textFieldConfiguration.maxLengthEnforcement,
+            obscureText: widget.textFieldConfiguration.obscureText,
+            onChanged: widget.textFieldConfiguration.onChanged,
+            onSubmitted: widget.textFieldConfiguration.onSubmitted,
+            onEditingComplete: widget.textFieldConfiguration.onEditingComplete,
+            onTap: widget.textFieldConfiguration.onTap,
+            onTapOutside: widget.textFieldConfiguration.onTapOutside,
+            scrollPadding: widget.textFieldConfiguration.scrollPadding,
+            textInputAction: widget.textFieldConfiguration.textInputAction,
+            textCapitalization:
+                widget.textFieldConfiguration.textCapitalization,
+            keyboardAppearance:
+                widget.textFieldConfiguration.keyboardAppearance,
+            cursorWidth: widget.textFieldConfiguration.cursorWidth,
+            cursorRadius: widget.textFieldConfiguration.cursorRadius,
+            cursorColor: widget.textFieldConfiguration.cursorColor,
+            mouseCursor: widget.textFieldConfiguration.mouseCursor,
+            textDirection: widget.textFieldConfiguration.textDirection,
+            enableInteractiveSelection:
+                widget.textFieldConfiguration.enableInteractiveSelection,
+            readOnly: widget.hideKeyboard,
+            autofillHints: widget.textFieldConfiguration.autofillHints),
       ),
     );
   }
