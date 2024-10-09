@@ -7,10 +7,12 @@ class PaginatedSuggestionExample extends StatefulWidget {
   const PaginatedSuggestionExample({super.key});
 
   @override
-  State<PaginatedSuggestionExample> createState() => _PaginatedSuggestionExampleState();
+  State<PaginatedSuggestionExample> createState() =>
+      _PaginatedSuggestionExampleState();
 }
 
-class _PaginatedSuggestionExampleState extends State<PaginatedSuggestionExample> {
+class _PaginatedSuggestionExampleState
+    extends State<PaginatedSuggestionExample> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _dropdownSearchFieldController =
       TextEditingController();

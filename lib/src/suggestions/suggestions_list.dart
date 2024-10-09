@@ -275,8 +275,8 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
           this._suggestions = suggestions;
           _focusNodes = List.generate(
             _suggestions?.length ?? 0,
-            (index) => FocusNode(onKeyEvent: (_, event) {
-              return widget.onKeyEvent(_, event);
+            (index) => FocusNode(onKeyEvent: (focusNode, event) {
+              return widget.onKeyEvent(focusNode, event);
             }),
           );
         });
@@ -426,49 +426,45 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
   }
 
   Widget defaultSuggestionsWidget() {
-    Widget child = Column(
+    Widget child = Stack(
       children: [
-        Expanded(
-          child: ListView.separated(
-            padding: EdgeInsets.zero,
-            primary: false,
-            shrinkWrap: true,
-            keyboardDismissBehavior: widget.hideKeyboardOnDrag
-                ? ScrollViewKeyboardDismissBehavior.onDrag
-                : ScrollViewKeyboardDismissBehavior.manual,
-            controller: _scrollController,
-            reverse: widget.suggestionsBox!.direction == AxisDirection.down
-                ? false
-                : widget.suggestionsBox!.autoFlipListDirection,
-            itemCount: this._suggestions!.length,
-            itemBuilder: (BuildContext context, int index) {
-              final suggestion = this._suggestions!.elementAt(index);
-              final focusNode = _focusNodes[index];
-              return TextFieldTapRegion(
-                child: InkWell(
-                  focusColor: Theme.of(context).hoverColor,
-                  focusNode: focusNode,
-                  child: widget.itemBuilder!(context, suggestion),
-                  onTap: () {
-                    // * we give the focus back to the text field
-                    widget.giveTextFieldFocus();
+        ListView.separated(
+          padding: EdgeInsets.zero,
+          primary: false,
+          shrinkWrap: true,
+          keyboardDismissBehavior: widget.hideKeyboardOnDrag
+              ? ScrollViewKeyboardDismissBehavior.onDrag
+              : ScrollViewKeyboardDismissBehavior.manual,
+          controller: _scrollController,
+          reverse: widget.suggestionsBox!.direction == AxisDirection.down
+              ? false
+              : widget.suggestionsBox!.autoFlipListDirection,
+          itemCount: this._suggestions!.length,
+          itemBuilder: (BuildContext context, int index) {
+            final suggestion = this._suggestions!.elementAt(index);
+            final focusNode = _focusNodes[index];
+            return TextFieldTapRegion(
+              child: InkWell(
+                focusColor: Theme.of(context).hoverColor,
+                focusNode: focusNode,
+                child: widget.itemBuilder!(context, suggestion),
+                onTap: () {
+                  // * we give the focus back to the text field
+                  widget.giveTextFieldFocus();
 
-                    widget.onSuggestionSelected!(suggestion);
-                  },
-                ),
-              );
-            },
-            separatorBuilder: (BuildContext context, int index) =>
-                widget.itemSeparatorBuilder?.call(context, index) ??
-                const SizedBox.shrink(),
-          ),
+                  widget.onSuggestionSelected!(suggestion);
+                },
+              ),
+            );
+          },
+          separatorBuilder: (BuildContext context, int index) =>
+              widget.itemSeparatorBuilder?.call(context, index) ??
+              const SizedBox.shrink(),
         ),
         if (_paginationLoading)
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
+          const Align(
+            alignment: Alignment.bottomCenter,
+            child: CircularProgressIndicator(),
           ),
       ],
     );
@@ -523,15 +519,13 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
       );
     }
 
-    child = Column(
+    child = Stack(
       children: [
-        Expanded(child: child),
+        child,
         if (_paginationLoading)
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
+          const Align(
+            alignment: Alignment.bottomCenter,
+            child: CircularProgressIndicator(),
           ),
       ],
     );
