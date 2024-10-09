@@ -893,73 +893,73 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
       // the style visually. However, when VO/TB are not enabled it is
       // necessary to use the Positioned widget to allow the elements to be
       // properly tappable.
-      return TapRegion(
-        onTapOutside: (event) {
-          print('outside tapped');
-        },
-        child: MediaQuery.of(context).accessibleNavigation
-            ? Semantics(
-                container: true,
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: w),
-                    child: compositedFollower,
-                  ),
+      return MediaQuery.of(context).accessibleNavigation
+          ? Semantics(
+              container: true,
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: w),
+                  child: compositedFollower,
                 ),
-              )
-            : Positioned(
-                width: w,
-                child: compositedFollower,
               ),
-      );
+            )
+          : Positioned(
+              width: w,
+              child: compositedFollower,
+            );
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return CompositedTransformTarget(
-      link: this._layerLink,
-      child: PointerInterceptor(
-        intercepting: widget.intercepting,
-        child: TextField(
-            focusNode: this._effectiveFocusNode,
-            controller: this._effectiveController,
-            decoration: widget.textFieldConfiguration.decoration,
-            style: widget.textFieldConfiguration.style,
-            textAlign: widget.textFieldConfiguration.textAlign,
-            enabled: widget.textFieldConfiguration.enabled,
-            keyboardType: widget.textFieldConfiguration.keyboardType,
-            autofocus: widget.textFieldConfiguration.autofocus,
-            inputFormatters: widget.textFieldConfiguration.inputFormatters,
-            autocorrect: widget.textFieldConfiguration.autocorrect,
-            maxLines: widget.textFieldConfiguration.maxLines,
-            textAlignVertical: widget.textFieldConfiguration.textAlignVertical,
-            minLines: widget.textFieldConfiguration.minLines,
-            maxLength: widget.textFieldConfiguration.maxLength,
-            maxLengthEnforcement:
-                widget.textFieldConfiguration.maxLengthEnforcement,
-            obscureText: widget.textFieldConfiguration.obscureText,
-            onChanged: widget.textFieldConfiguration.onChanged,
-            onSubmitted: widget.textFieldConfiguration.onSubmitted,
-            onEditingComplete: widget.textFieldConfiguration.onEditingComplete,
-            onTap: widget.textFieldConfiguration.onTap,
-            onTapOutside: widget.textFieldConfiguration.onTapOutside,
-            scrollPadding: widget.textFieldConfiguration.scrollPadding,
-            textInputAction: widget.textFieldConfiguration.textInputAction,
-            textCapitalization:
-                widget.textFieldConfiguration.textCapitalization,
-            keyboardAppearance:
-                widget.textFieldConfiguration.keyboardAppearance,
-            cursorWidth: widget.textFieldConfiguration.cursorWidth,
-            cursorRadius: widget.textFieldConfiguration.cursorRadius,
-            cursorColor: widget.textFieldConfiguration.cursorColor,
-            mouseCursor: widget.textFieldConfiguration.mouseCursor,
-            textDirection: widget.textFieldConfiguration.textDirection,
-            enableInteractiveSelection:
-                widget.textFieldConfiguration.enableInteractiveSelection,
-            readOnly: widget.hideKeyboard,
-            autofillHints: widget.textFieldConfiguration.autofillHints),
+    return TapRegion(
+      onTapOutside: (event) {
+          print('outside tapped');
+        },
+      child: CompositedTransformTarget(
+        link: this._layerLink,
+        child: PointerInterceptor(
+          intercepting: widget.intercepting,
+          child: TextField(
+              focusNode: this._effectiveFocusNode,
+              controller: this._effectiveController,
+              decoration: widget.textFieldConfiguration.decoration,
+              style: widget.textFieldConfiguration.style,
+              textAlign: widget.textFieldConfiguration.textAlign,
+              enabled: widget.textFieldConfiguration.enabled,
+              keyboardType: widget.textFieldConfiguration.keyboardType,
+              autofocus: widget.textFieldConfiguration.autofocus,
+              inputFormatters: widget.textFieldConfiguration.inputFormatters,
+              autocorrect: widget.textFieldConfiguration.autocorrect,
+              maxLines: widget.textFieldConfiguration.maxLines,
+              textAlignVertical: widget.textFieldConfiguration.textAlignVertical,
+              minLines: widget.textFieldConfiguration.minLines,
+              maxLength: widget.textFieldConfiguration.maxLength,
+              maxLengthEnforcement:
+                  widget.textFieldConfiguration.maxLengthEnforcement,
+              obscureText: widget.textFieldConfiguration.obscureText,
+              onChanged: widget.textFieldConfiguration.onChanged,
+              onSubmitted: widget.textFieldConfiguration.onSubmitted,
+              onEditingComplete: widget.textFieldConfiguration.onEditingComplete,
+              onTap: widget.textFieldConfiguration.onTap,
+              onTapOutside: widget.textFieldConfiguration.onTapOutside,
+              scrollPadding: widget.textFieldConfiguration.scrollPadding,
+              textInputAction: widget.textFieldConfiguration.textInputAction,
+              textCapitalization:
+                  widget.textFieldConfiguration.textCapitalization,
+              keyboardAppearance:
+                  widget.textFieldConfiguration.keyboardAppearance,
+              cursorWidth: widget.textFieldConfiguration.cursorWidth,
+              cursorRadius: widget.textFieldConfiguration.cursorRadius,
+              cursorColor: widget.textFieldConfiguration.cursorColor,
+              mouseCursor: widget.textFieldConfiguration.mouseCursor,
+              textDirection: widget.textFieldConfiguration.textDirection,
+              enableInteractiveSelection:
+                  widget.textFieldConfiguration.enableInteractiveSelection,
+              readOnly: widget.hideKeyboard,
+              autofillHints: widget.textFieldConfiguration.autofillHints),
+        ),
       ),
     );
   }
