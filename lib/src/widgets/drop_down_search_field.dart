@@ -870,6 +870,7 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
                     widget.suggestionsBoxVerticalOffset
                 : -widget.suggestionsBoxVerticalOffset),
         child: TextFieldTapRegion(
+            key: UniqueKey(),
             onTapOutside: (e) {
               print('outside tapped of this one');
               if (widget
