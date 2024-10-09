@@ -754,6 +754,17 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
         }
       }
     });
+
+    _effectiveFocusNode?.addListener(() {
+      print('listning');
+      if (_effectiveFocusNode!.hasFocus) {
+        // this._suggestionsBox!.open();
+        print('open suggestions');
+      } else {
+        // this._suggestionsBox!.close();
+        print('close suggestions');
+      }
+    });
   }
 
   @override
