@@ -724,9 +724,9 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
       if (_effectiveFocusNode!.hasFocus) {
         this._suggestionsBox!.open();
       } else if (!_areSuggestionsFocused) {
-        if (widget.hideSuggestionsOnKeyboardHide) {
+        // if (widget.hideSuggestionsOnKeyboardHide) {
           this._suggestionsBox!.close();
-        }
+        // }
       }
 
       widget.onSuggestionsBoxToggle?.call(this._suggestionsBox!.isOpened);
