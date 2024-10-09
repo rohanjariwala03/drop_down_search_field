@@ -1,3 +1,8 @@
+## 1.0.6 - 09/10/2024
+
+- Fixes for height and circular progress bar position for paginated list.
+- resolved `dart format .`.
+
 ## 1.0.5 - 04/08/2024
 
 - Added support for Pagination in dropdown.
