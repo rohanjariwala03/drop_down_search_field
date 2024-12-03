@@ -1,3 +1,8 @@
+## 1.1.0 - 03/12/2024
+- Multiple item selection dropdown added.
+- Fixes for searchable dropdown.
+- Resolved issues requested by users.
+
 ## 1.0.6 - 09/10/2024
 
 - Fixes for height and circular progress bar position for paginated list.

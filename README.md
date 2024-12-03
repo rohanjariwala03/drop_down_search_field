@@ -16,6 +16,8 @@ A DropDownSearchField (autocomplete) widget for Flutter, where you can show sugg
 * Offers two versions: a standard version and a FormField version that includes validation and submission features.
 * Highly customizable with options to modify the suggestion box decoration, 
   loading bar, animation, debounce duration, and more.
+* Supports multi-select dropdowns.
+* Supports paginated suggestions.
 
 ## Installation
 See the [installation instructions on pub](https://pub.dartlang.org/packages/drop_down_search_field#-installing-tab-).
@@ -340,4 +342,4 @@ You can checkout detailed blog on medium.
 [drop_down_search_field](https://medium.com/@rohanjariwala03/dropdown-with-future-search-option-818a7dc1196)
 
 ## How you can help
-[Contribution Guidelines](https://github.com/rohanjariwala03/drop_down_search_field/blob/master/CONTRIBUTING.md) 
+[Contribution Guidelines](https://github.com/rohanjariwala03/drop_down_search_field/blob/master/CONTRIBUTING.md)
