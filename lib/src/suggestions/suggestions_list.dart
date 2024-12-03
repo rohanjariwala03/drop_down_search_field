@@ -17,6 +17,7 @@ class SuggestionsList<T> extends StatefulWidget {
   final TextEditingController? controller;
   final bool getImmediateSuggestions;
   final SuggestionSelectionCallback<T>? onSuggestionSelected;
+  final SuggestionMultiSelectionCallback<T>? onSuggestionMultiSelected;
   final SuggestionsCallback<T>? suggestionsCallback;
   final ItemBuilder<T>? itemBuilder;
   final IndexedWidgetBuilder? itemSeparatorBuilder;
@@ -46,6 +47,8 @@ class SuggestionsList<T> extends StatefulWidget {
   final bool hideKeyboardOnDrag;
   final bool displayAllSuggestionWhenTap;
   final PaginatedSuggestionsCallback<T>? paginatedSuggestionsCallback;
+  final bool isMultiSelectDropdown;
+  final List<T>? initiallySelectedItems;
 
   const SuggestionsList({
     super.key,
@@ -54,6 +57,7 @@ class SuggestionsList<T> extends StatefulWidget {
     this.intercepting = false,
     this.getImmediateSuggestions = false,
     this.onSuggestionSelected,
+    this.onSuggestionMultiSelected,
     this.suggestionsCallback,
     this.itemBuilder,
     this.itemSeparatorBuilder,
@@ -81,6 +85,8 @@ class SuggestionsList<T> extends StatefulWidget {
     required this.hideKeyboardOnDrag,
     required this.displayAllSuggestionWhenTap,
     this.paginatedSuggestionsCallback,
+    required this.isMultiSelectDropdown,
+    this.initiallySelectedItems,
   });
 
   @override
@@ -444,17 +450,37 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
             final suggestion = this._suggestions!.elementAt(index);
             final focusNode = _focusNodes[index];
             return TextFieldTapRegion(
-              child: InkWell(
-                focusColor: Theme.of(context).hoverColor,
-                focusNode: focusNode,
-                child: widget.itemBuilder!(context, suggestion),
-                onTap: () {
-                  // * we give the focus back to the text field
-                  widget.giveTextFieldFocus();
+              child: widget.isMultiSelectDropdown
+                  ? StatefulBuilder(
+                      builder: (context, setState) {
+                        final isSelected =
+                            widget.initiallySelectedItems?.contains(suggestion) ?? false;
+                        return CheckboxListTile(
+                          title: widget.itemBuilder!(context, suggestion),
+                          value: isSelected,
+                          onChanged: (bool? checked) {
+                            // widget.controller?.text = widget.initiallySelectedItems
+                            //         ?.map((e) => e.toString())
+                            //         .join(', ') ??
+                            //     '';
+                            widget.onSuggestionMultiSelected!(
+                                suggestion, checked ?? false);
+                            setState(() {});
+                          },
+                        );
+                      },
+                    )
+                  : InkWell(
+                      focusColor: Theme.of(context).hoverColor,
+                      focusNode: focusNode,
+                      child: widget.itemBuilder!(context, suggestion),
+                      onTap: () {
+                        // * we give the focus back to the text field
+                        widget.giveTextFieldFocus();
 
-                  widget.onSuggestionSelected!(suggestion);
-                },
-              ),
+                        widget.onSuggestionSelected!(suggestion);
+                      },
+                    ),
             );
           },
           separatorBuilder: (BuildContext context, int index) =>
@@ -492,17 +518,38 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
         final focusNode = _focusNodes[index];
 
         return TextFieldTapRegion(
-          child: InkWell(
-            focusColor: Theme.of(context).hoverColor,
-            focusNode: focusNode,
-            child: widget.itemBuilder!(context, suggestion),
-            onTap: () {
-              // * we give the focus back to the text field
-              widget.giveTextFieldFocus();
+          child: widget.isMultiSelectDropdown
+              ? StatefulBuilder(
+                  builder: (context, setState) {
+                    final isSelected = widget.controller?.text
+                            .contains(suggestion.toString()) ??
+                        false;
+                    return CheckboxListTile(
+                      title: widget.itemBuilder!(context, suggestion),
+                      value: isSelected,
+                      onChanged: (bool? checked) {
+                        // widget.controller?.text = widget.initiallySelectedItems
+                        //         ?.map((e) => e.toString())
+                        //         .join(', ') ??
+                        //     '';
+                        widget.onSuggestionMultiSelected!(
+                            suggestion, checked ?? false);
+                        setState(() {});
+                      },
+                    );
+                  },
+                )
+              : InkWell(
+                  focusColor: Theme.of(context).hoverColor,
+                  focusNode: focusNode,
+                  child: widget.itemBuilder!(context, suggestion),
+                  onTap: () {
+                    // * we give the focus back to the text field
+                    widget.giveTextFieldFocus();
 
-              widget.onSuggestionSelected!(suggestion);
-            },
-          ),
+                    widget.onSuggestionSelected!(suggestion);
+                  },
+                ),
         );
       }),
       _scrollController,
