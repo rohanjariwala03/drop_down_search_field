@@ -931,6 +931,7 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
               if (widget
                   .suggestionsBoxDecoration.closeSuggestionBoxWhenTapOutside) {
                 if (this._suggestionsBox?.isOpened ?? false) {
+                  this._focusNode?.unfocus();
                   this._suggestionsBox?.close();
                 }
               }
