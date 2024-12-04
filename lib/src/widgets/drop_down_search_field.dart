@@ -649,7 +649,8 @@ class DropDownSearchField<T> extends StatefulWidget {
         ),
         assert(
           !isMultiSelectDropdown ||
-              (onSuggestionMultiSelected != null && initiallySelectedItems != null),
+              (onSuggestionMultiSelected != null &&
+                  initiallySelectedItems != null),
           'onSuggestionMultiSelected and initiallySelectedItems must be provided when isMultiSelectDropdown is true.',
         );
 
@@ -921,7 +922,11 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
                 ? _suggestionsBox!.textBoxHeight +
                     widget.suggestionsBoxVerticalOffset
                 : -widget.suggestionsBoxVerticalOffset),
-        child: TextFieldTapRegion(
+        child: FractionalTranslation(
+          translation: _suggestionsBox!.direction == AxisDirection.down
+              ? const Offset(0, 0)
+              : const Offset(0.0, -1.0),
+          child: TextFieldTapRegion(
             onTapOutside: (e) {
               if (widget
                   .suggestionsBoxDecoration.closeSuggestionBoxWhenTapOutside) {
@@ -930,13 +935,9 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
                 }
               }
             },
-            child: _suggestionsBox!.direction == AxisDirection.down
-                ? suggestionsList
-                : FractionalTranslation(
-                    translation:
-                        const Offset(0.0, -1.0), // visually flips list to go up
-                    child: suggestionsList,
-                  )),
+            child: suggestionsList,
+          ),
+        ),
       );
 
       // When wrapped in the Positioned widget, the suggestions box widget

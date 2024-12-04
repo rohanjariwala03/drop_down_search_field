@@ -83,7 +83,8 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
                 transitionBuilder: (context, suggestionsBox, controller) {
                   return suggestionsBox;
                 },
-                onMultiSuggestionSelected: (String suggestion, bool isSelected) {
+                onMultiSuggestionSelected:
+                    (String suggestion, bool isSelected) {
                   // No need to set the text field value for multi-select
                   if (isSelected) {
                     _selectedNames.add(suggestion);
@@ -93,8 +94,9 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
                   setState(() {});
                 },
                 suggestionsBoxController: suggestionBoxController,
-                validator: (value) =>
-                    _selectedNames.isEmpty ? 'Please select at least one name' : null,
+                validator: (value) => _selectedNames.isEmpty
+                    ? 'Please select at least one name'
+                    : null,
                 displayAllSuggestionWhenTap: true,
               ),
               const Spacer(),
@@ -105,7 +107,8 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
                     _formKey.currentState!.save();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Your favorite names are $_selectedNames.'),
+                        content:
+                            Text('Your favorite names are $_selectedNames.'),
                       ),
                     );
                   }

@@ -453,8 +453,9 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
               child: widget.isMultiSelectDropdown
                   ? StatefulBuilder(
                       builder: (context, setState) {
-                        final isSelected =
-                            widget.initiallySelectedItems?.contains(suggestion) ?? false;
+                        final isSelected = widget.initiallySelectedItems
+                                ?.contains(suggestion) ??
+                            false;
                         return CheckboxListTile(
                           title: widget.itemBuilder!(context, suggestion),
                           value: isSelected,

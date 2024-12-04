@@ -108,7 +108,8 @@ class _PaginatedSuggestionExampleState
                       _formKey.currentState!.save();
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Your favorite name is $_selectedName.'),
+                          content:
+                              Text('Your favorite name is $_selectedName.'),
                         ),
                       );
                     }
