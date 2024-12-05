@@ -5,26 +5,15 @@ import 'package:drop_down_search_field/src/widgets/drop_down_search_field.dart';
 import 'package:drop_down_search_field/src/widgets/search_field_configuration.dart';
 import 'package:flutter/material.dart';
 
-/// A [FormField](https://docs.flutter.io/flutter/widgets/FormField-class.html)
-/// implementation of [DropdownSearchField], that allows the value to be saved,
-/// validated, etc.
-///
-/// See also:
-///
-/// * [DropdownSearchField], A [TextField](https://docs.flutter.io/flutter/material/TextField-class.html)
-/// that displays a list of suggestions as the user types
-class DropDownSearchFormField<T> extends FormField<String> {
-  /// The configuration of the [TextField](https://docs.flutter.io/flutter/material/TextField-class.html)
-  /// that the DropdownSearchField widget displays
+class MultiSelectDropdownSearchFormField<T> extends FormField<List<T>> {
   final TextFieldConfiguration textFieldConfiguration;
-
-  // Adds a callback for resetting the form field
   final void Function()? onReset;
+  final List<T> initiallySelectedItems;
+  final SuggestionMultiSelectionCallback<T> onMultiSuggestionSelected;
 
-  /// Creates a [DropDownSearchFormField]
-  DropDownSearchFormField({
+  MultiSelectDropdownSearchFormField({
     super.key,
-    String? initialValue,
+    List<T>? initialValue,
     bool getImmediateSuggestions = false,
     @Deprecated('Use autovalidateMode parameter which provides more specific '
         'behavior related to auto validation. '
@@ -34,6 +23,8 @@ class DropDownSearchFormField<T> extends FormField<String> {
     AutovalidateMode super.autovalidateMode = AutovalidateMode.disabled,
     super.onSaved,
     this.onReset,
+    required this.initiallySelectedItems,
+    required this.onMultiSuggestionSelected,
     super.validator,
     ErrorBuilder? errorBuilder,
     WidgetBuilder? noItemsFoundBuilder,
@@ -43,7 +34,6 @@ class DropDownSearchFormField<T> extends FormField<String> {
     SuggestionsBoxDecoration suggestionsBoxDecoration =
         const SuggestionsBoxDecoration(),
     SuggestionsBoxController? suggestionsBoxController,
-    required SuggestionSelectionCallback<T> onSuggestionSelected,
     required ItemBuilder<T> itemBuilder,
     IndexedWidgetBuilder? itemSeparatorBuilder,
     LayoutArchitecture? layoutArchitecture,
@@ -76,12 +66,10 @@ class DropDownSearchFormField<T> extends FormField<String> {
         assert(minCharsForSuggestions >= 0,
             'minCharsForSuggestions must be non-negative.'),
         super(
-            initialValue: textFieldConfiguration.controller != null
-                ? textFieldConfiguration.controller!.text
-                : (initialValue ?? ''),
-            builder: (FormFieldState<String> field) {
-              final _DropdownSearchFormFieldState state =
-                  field as _DropdownSearchFormFieldState<dynamic>;
+            initialValue: initialValue ?? [],
+            builder: (FormFieldState<List<T>> field) {
+              final MultiSelectDropdownSearchFormFieldState<T> state =
+                  field as MultiSelectDropdownSearchFormFieldState<T>;
 
               return DropDownSearchField(
                 getImmediateSuggestions: getImmediateSuggestions,
@@ -96,13 +84,21 @@ class DropDownSearchFormField<T> extends FormField<String> {
                   decoration: textFieldConfiguration.decoration
                       .copyWith(errorText: state.errorText),
                   onChanged: (text) {
-                    state.didChange(text);
+                    state.didChange(state.value);
                     textFieldConfiguration.onChanged?.call(text);
                   },
                   controller: state._effectiveController,
                 ),
                 suggestionsBoxVerticalOffset: suggestionsBoxVerticalOffset,
-                onSuggestionSelected: onSuggestionSelected,
+                // onSuggestionSelected: (suggestion) {
+                //   state._handleSelection(suggestion);
+                //   // Keep the dropdown open for more selections
+                // },
+                initiallySelectedItems: initiallySelectedItems,
+                onSuggestionMultiSelected: (suggestion, selected) {
+                  state._handleSelection(suggestion);
+                  onMultiSuggestionSelected(suggestion, selected);
+                },
                 onSuggestionsBoxToggle: onSuggestionsBoxToggle,
                 itemBuilder: itemBuilder,
                 itemSeparatorBuilder: itemSeparatorBuilder,
@@ -128,30 +124,31 @@ class DropDownSearchFormField<T> extends FormField<String> {
                 hideKeyboardOnDrag: hideKeyboardOnDrag,
                 displayAllSuggestionWhenTap: displayAllSuggestionWhenTap,
                 scrollController: scrollController,
-                isMultiSelectDropdown: false,
+                isMultiSelectDropdown: true,
               );
             });
+
   @override
-  // ignore: library_private_types_in_public_api
-  _DropdownSearchFormFieldState<T> createState() =>
-      _DropdownSearchFormFieldState<T>();
+  MultiSelectDropdownSearchFormFieldState<T> createState() =>
+      MultiSelectDropdownSearchFormFieldState<T>();
 }
 
-class _DropdownSearchFormFieldState<T> extends FormFieldState<String> {
+class MultiSelectDropdownSearchFormFieldState<T>
+    extends FormFieldState<List<T>> {
   TextEditingController? _controller;
 
   TextEditingController? get _effectiveController =>
       widget.textFieldConfiguration.controller ?? _controller;
 
   @override
-  DropDownSearchFormField get widget =>
-      super.widget as DropDownSearchFormField<dynamic>;
+  MultiSelectDropdownSearchFormField<T> get widget =>
+      super.widget as MultiSelectDropdownSearchFormField<T>;
 
   @override
   void initState() {
     super.initState();
     if (widget.textFieldConfiguration.controller == null) {
-      _controller = TextEditingController(text: widget.initialValue);
+      _controller = TextEditingController();
     } else {
       widget.textFieldConfiguration.controller!
           .addListener(_handleControllerChanged);
@@ -159,7 +156,7 @@ class _DropdownSearchFormFieldState<T> extends FormFieldState<String> {
   }
 
   @override
-  void didUpdateWidget(DropDownSearchFormField oldWidget) {
+  void didUpdateWidget(MultiSelectDropdownSearchFormField<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.textFieldConfiguration.controller !=
         oldWidget.textFieldConfiguration.controller) {
@@ -174,7 +171,7 @@ class _DropdownSearchFormFieldState<T> extends FormFieldState<String> {
             oldWidget.textFieldConfiguration.controller!.value);
       }
       if (widget.textFieldConfiguration.controller != null) {
-        setValue(widget.textFieldConfiguration.controller!.text);
+        setValue([widget.textFieldConfiguration.controller!.text as T]);
         if (oldWidget.textFieldConfiguration.controller == null) {
           _controller = null;
         }
@@ -193,7 +190,7 @@ class _DropdownSearchFormFieldState<T> extends FormFieldState<String> {
   void reset() {
     super.reset();
     setState(() {
-      _effectiveController!.text = widget.initialValue!;
+      _effectiveController!.text = '';
       if (widget.onReset != null) {
         widget.onReset!();
       }
@@ -201,15 +198,20 @@ class _DropdownSearchFormFieldState<T> extends FormFieldState<String> {
   }
 
   void _handleControllerChanged() {
-    // Suppress changes that originated from within this class.
-    //
-    // In the case where a controller has been passed in to this widget, we
-    // register this change listener. In these cases, we'll also receive change
-    // notifications for changes originating from within this class -- for
-    // example, the reset() method. In such cases, the FormField value will
-    // already have been set.
+    // ignore: unrelated_type_equality_checks
     if (_effectiveController!.text != value) {
-      didChange(_effectiveController!.text);
+      didChange([_effectiveController!.text as T]);
     }
+  }
+
+  void _handleSelection(T suggestion) {
+    setState(() {
+      if (value!.contains(suggestion)) {
+        value!.remove(suggestion);
+      } else {
+        value!.add(suggestion);
+      }
+    });
+    didChange(value);
   }
 }

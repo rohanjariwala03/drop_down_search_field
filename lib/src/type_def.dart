@@ -13,3 +13,6 @@ typedef AnimationTransitionBuilder = Widget Function(
     BuildContext context, Widget child, AnimationController? controller);
 typedef LayoutArchitecture = Widget Function(
     Iterable<Widget> items, ScrollController controller);
+
+typedef SuggestionMultiSelectionCallback<T> = void Function(
+    T suggestion, bool selected);

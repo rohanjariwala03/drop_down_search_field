@@ -1,6 +1,8 @@
 import 'dart:ui';
+import 'package:example/example_widgets/multi_select_example.dart';
+import 'package:example/example_widgets/paginated_suggestion_example.dart';
+import 'package:example/example_widgets/form_field_example.dart';
 import 'package:flutter/material.dart';
-import 'package:drop_down_search_field/drop_down_search_field.dart';
 
 void main() => runApp(const MyApp());
 
@@ -21,122 +23,54 @@ class _MyAppState extends State<MyApp> {
       home: DefaultTabController(
         length: 1,
         child: Scaffold(
-            appBar: AppBar(
-              title: const Text('Dropdown Search Field Demo'),
-            ),
-            body: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: const FormExample(),
-            )),
-      ),
-    );
-  }
-}
-
-class FormExample extends StatefulWidget {
-  const FormExample({super.key});
-
-  @override
-  // ignore: library_private_types_in_public_api
-  _FormExampleState createState() => _FormExampleState();
-}
-
-class _FormExampleState extends State<FormExample> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _dropdownSearchFieldController =
-      TextEditingController();
-
-  String? _selectedFruit;
-
-  SuggestionsBoxController suggestionBoxController = SuggestionsBoxController();
-  static final List<String> fruits = [
-    'Apple',
-    'Avocado',
-    'Banana',
-    'Blueberries',
-    'Blackberries',
-    'Cherries',
-    'Grapes',
-    'Grapefruit',
-    'Guava',
-    'Kiwi',
-    'Lychee',
-    'Mango',
-    'Orange',
-    'Papaya',
-    'Passion fruit',
-    'Peach',
-    'Pears',
-    'Pineapple',
-    'Raspberries',
-    'Strawberries',
-    'Watermelon',
-  ];
-  static List<String> getSuggestions(String query) {
-    List<String> matches = <String>[];
-    matches.addAll(fruits);
-
-    matches.retainWhere((s) => s.toLowerCase().contains(query.toLowerCase()));
-    return matches;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        suggestionBoxController.close();
-      },
-      child: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const Text('What is your favorite fruit?'),
-              DropDownSearchFormField(
-                textFieldConfiguration: TextFieldConfiguration(
-                  decoration: const InputDecoration(labelText: 'Fruit'),
-                  controller: _dropdownSearchFieldController,
+          appBar: AppBar(
+            title: const Text('Dropdown Search Field Demo'),
+          ),
+          body: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Center(
+              child: Builder(
+                builder: (context) => Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const FormFieldExample()),
+                        );
+                      },
+                      child: const Text('Form Field Example'),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const MultiSelectDropdown()),
+                        );
+                      },
+                      child: const Text('Multi Select Example'),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const PaginatedSuggestionExample()),
+                        );
+                      },
+                      child: const Text('Paginated Suggestion Example'),
+                    ),
+                  ],
                 ),
-                suggestionsCallback: (pattern) {
-                  return getSuggestions(pattern);
-                },
-                itemBuilder: (context, String suggestion) {
-                  return ListTile(
-                    title: Text(suggestion),
-                  );
-                },
-                itemSeparatorBuilder: (context, index) {
-                  return const Divider();
-                },
-                transitionBuilder: (context, suggestionsBox, controller) {
-                  return suggestionsBox;
-                },
-                onSuggestionSelected: (String suggestion) {
-                  _dropdownSearchFieldController.text = suggestion;
-                },
-                suggestionsBoxController: suggestionBoxController,
-                validator: (value) =>
-                    value!.isEmpty ? 'Please select a fruit' : null,
-                onSaved: (value) => _selectedFruit = value,
-                displayAllSuggestionWhenTap: true,
               ),
-              const Spacer(),
-              ElevatedButton(
-                child: const Text('Submit'),
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('You love $_selectedFruit to eat'),
-                      ),
-                    );
-                  }
-                },
-              )
-            ],
+            ),
           ),
         ),
       ),

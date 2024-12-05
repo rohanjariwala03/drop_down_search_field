@@ -3,23 +3,20 @@ import 'dart:math';
 import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:flutter/material.dart';
 
-class PaginatedSuggestionExample extends StatefulWidget {
-  const PaginatedSuggestionExample({super.key});
+class MultiSelectDropdown extends StatefulWidget {
+  const MultiSelectDropdown({super.key});
 
   @override
-  State<PaginatedSuggestionExample> createState() =>
-      _PaginatedSuggestionExampleState();
+  State<MultiSelectDropdown> createState() => _MultiSelectDropdownState();
 }
 
-class _PaginatedSuggestionExampleState
-    extends State<PaginatedSuggestionExample> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
   final TextEditingController _dropdownSearchFieldController =
       TextEditingController();
-  SuggestionsBoxController suggestionBoxController = SuggestionsBoxController();
-  String? _selectedName;
-
+  final List<String> _selectedNames = [];
   final List<String> names = [];
+  SuggestionsBoxController suggestionBoxController = SuggestionsBoxController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String generateRandomName() {
     const characters = 'abcdefghijklmnopqrstuvwxyz';
@@ -48,28 +45,33 @@ class _PaginatedSuggestionExampleState
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        suggestionBoxController.close();
-      },
-      child: Form(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Multi Select Example'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: Form(
         key: _formKey,
         child: Padding(
           padding: const EdgeInsets.all(32.0),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const Text('What is your favorite name?'),
-              DropDownSearchFormField(
+            children: [
+              const Text('What are your favorite names?'),
+              MultiSelectDropdownSearchFormField<String>(
                 textFieldConfiguration: TextFieldConfiguration(
-                  decoration: const InputDecoration(labelText: 'Name'),
+                  decoration: const InputDecoration(labelText: 'Names'),
                   controller: _dropdownSearchFieldController,
                 ),
                 paginatedSuggestionsCallback: (pattern) async {
-                  // await Future.delayed(const Duration(seconds: 5));
                   final suggestionsToReturn = getSuggestions(pattern);
                   return suggestionsToReturn;
                 },
+                initiallySelectedItems: _selectedNames,
                 itemBuilder: (context, String suggestion) {
                   return ListTile(
                     title: Text(suggestion),
@@ -81,13 +83,20 @@ class _PaginatedSuggestionExampleState
                 transitionBuilder: (context, suggestionsBox, controller) {
                   return suggestionsBox;
                 },
-                onSuggestionSelected: (String suggestion) {
-                  _dropdownSearchFieldController.text = suggestion;
+                onMultiSuggestionSelected:
+                    (String suggestion, bool isSelected) {
+                  // No need to set the text field value for multi-select
+                  if (isSelected) {
+                    _selectedNames.add(suggestion);
+                  } else {
+                    _selectedNames.remove(suggestion);
+                  }
+                  setState(() {});
                 },
                 suggestionsBoxController: suggestionBoxController,
-                validator: (value) =>
-                    value!.isEmpty ? 'Please select a name' : null,
-                onSaved: (value) => _selectedName = value,
+                validator: (value) => _selectedNames.isEmpty
+                    ? 'Please select at least one name'
+                    : null,
                 displayAllSuggestionWhenTap: true,
               ),
               const Spacer(),
@@ -98,7 +107,8 @@ class _PaginatedSuggestionExampleState
                     _formKey.currentState!.save();
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Your favorite name is $_selectedName.'),
+                        content:
+                            Text('Your favorite names are $_selectedNames.'),
                       ),
                     );
                   }

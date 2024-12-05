@@ -305,7 +305,32 @@ class DropDownSearchField<T> extends StatefulWidget {
   ///   _controller.text = suggestion['name'];
   /// }
   /// ```
-  final SuggestionSelectionCallback<T> onSuggestionSelected;
+  final SuggestionSelectionCallback<T>? onSuggestionSelected;
+
+  /// Called when multiple suggestions are selected.
+  ///
+  /// This callback must not be null. It is called by the DropDownSearchField widget and
+  /// provided with the list of values of the selected suggestions.
+  ///
+  /// For example, you might want to navigate to a specific view when the user
+  /// selects multiple suggestions:
+  /// ```dart
+  /// onSuggestionMultiSelected: (suggestions) {
+  ///   Navigator.of(context).push(MaterialPageRoute(
+  ///     builder: (context) => SearchResults(
+  ///       searchItems: suggestions
+  ///     )
+  ///   ));
+  /// }
+  /// ```
+  ///
+  /// Or to set the value of the text field:
+  /// ```dart
+  /// onSuggestionMultiSelected: (suggestions) {
+  ///   _controller.text = suggestions.map((s) => s['name']).join(', ');
+  /// }
+  /// ```
+  final SuggestionMultiSelectionCallback<T>? onSuggestionMultiSelected;
 
   /// Called for each suggestion returned by [suggestionsCallback] to build the
   /// corresponding widget.
@@ -557,6 +582,13 @@ class DropDownSearchField<T> extends StatefulWidget {
   // Default is false
   final bool displayAllSuggestionWhenTap;
 
+  // If set to true, the dropdown will be a multi-select dropdown
+  // If set to false, the dropdown will be a single-select dropdown
+  final bool isMultiSelectDropdown;
+
+  // The selected items in the dropdown when it is a multi-select dropdown
+  final List<T>? initiallySelectedItems;
+
   /// Creates a [DropDownSearchField]
   const DropDownSearchField({
     this.suggestionsCallback,
@@ -565,7 +597,8 @@ class DropDownSearchField<T> extends StatefulWidget {
     this.itemSeparatorBuilder,
     this.layoutArchitecture,
     this.intercepting = false,
-    required this.onSuggestionSelected,
+    this.onSuggestionSelected,
+    this.onSuggestionMultiSelected,
     this.textFieldConfiguration = const TextFieldConfiguration(),
     this.suggestionsBoxDecoration = const SuggestionsBoxDecoration(),
     this.debounceDuration = const Duration(milliseconds: 300),
@@ -594,6 +627,8 @@ class DropDownSearchField<T> extends StatefulWidget {
     this.onSuggestionsBoxToggle,
     this.hideKeyboardOnDrag = false,
     required this.displayAllSuggestionWhenTap,
+    required this.isMultiSelectDropdown,
+    this.initiallySelectedItems,
     super.key,
   })  : assert(animationStart >= 0.0 && animationStart <= 1.0),
         assert(
@@ -607,6 +642,16 @@ class DropDownSearchField<T> extends StatefulWidget {
               !(suggestionsCallback != null &&
                   paginatedSuggestionsCallback != null),
           'Either suggestionsCallback or paginatedSuggestionsCallback must be provided, but not both.',
+        ),
+        assert(
+          !(onSuggestionSelected != null && onSuggestionMultiSelected != null),
+          'Only one of onSuggestionSelected or onSuggestionMultiSelected must be provided.',
+        ),
+        assert(
+          !isMultiSelectDropdown ||
+              (onSuggestionMultiSelected != null &&
+                  initiallySelectedItems != null),
+          'onSuggestionMultiSelected and initiallySelectedItems must be provided when isMultiSelectDropdown is true.',
         );
 
   @override
@@ -813,13 +858,20 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
         animationDuration: widget.animationDuration,
         animationStart: widget.animationStart,
         getImmediateSuggestions: widget.getImmediateSuggestions,
-        onSuggestionSelected: (T selection) {
-          if (!widget.keepSuggestionsOnSuggestionSelected) {
-            this._effectiveFocusNode!.unfocus();
-            this._suggestionsBox!.close();
-          }
-          widget.onSuggestionSelected(selection);
-        },
+        onSuggestionSelected: widget.onSuggestionSelected == null
+            ? null
+            : (T selection) {
+                if (!widget.keepSuggestionsOnSuggestionSelected) {
+                  this._effectiveFocusNode!.unfocus();
+                  this._suggestionsBox!.close();
+                }
+                widget.onSuggestionSelected!(selection);
+              },
+        onSuggestionMultiSelected: widget.onSuggestionMultiSelected == null
+            ? null
+            : (suggestion, selected) {
+                widget.onSuggestionMultiSelected!(suggestion, selected);
+              },
         itemBuilder: widget.itemBuilder,
         itemSeparatorBuilder: widget.itemSeparatorBuilder,
         layoutArchitecture: widget.layoutArchitecture,
@@ -838,6 +890,8 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
         onKeyEvent: _onKeyEvent,
         hideKeyboardOnDrag: widget.hideKeyboardOnDrag,
         displayAllSuggestionWhenTap: widget.displayAllSuggestionWhenTap,
+        isMultiSelectDropdown: widget.isMultiSelectDropdown,
+        initiallySelectedItems: widget.initiallySelectedItems,
       );
 
       double w = _suggestionsBox!.textBoxWidth;
@@ -868,22 +922,23 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
                 ? _suggestionsBox!.textBoxHeight +
                     widget.suggestionsBoxVerticalOffset
                 : -widget.suggestionsBoxVerticalOffset),
-        child: TextFieldTapRegion(
+        child: FractionalTranslation(
+          translation: _suggestionsBox!.direction == AxisDirection.down
+              ? const Offset(0, 0)
+              : const Offset(0.0, -1.0),
+          child: TextFieldTapRegion(
             onTapOutside: (e) {
               if (widget
                   .suggestionsBoxDecoration.closeSuggestionBoxWhenTapOutside) {
                 if (this._suggestionsBox?.isOpened ?? false) {
+                  this._focusNode?.unfocus();
                   this._suggestionsBox?.close();
                 }
               }
             },
-            child: _suggestionsBox!.direction == AxisDirection.down
-                ? suggestionsList
-                : FractionalTranslation(
-                    translation:
-                        const Offset(0.0, -1.0), // visually flips list to go up
-                    child: suggestionsList,
-                  )),
+            child: suggestionsList,
+          ),
+        ),
       );
 
       // When wrapped in the Positioned widget, the suggestions box widget
