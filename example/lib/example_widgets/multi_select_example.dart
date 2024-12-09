@@ -77,6 +77,10 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
                     title: Text(suggestion),
                   );
                 },
+                suggestionsBoxDecoration: SuggestionsBoxDecoration(
+                  scrollBarDecoration: ScrollBarDecoration(
+                      thumbColor: Colors.orange, thickness: 10),
+                ),
                 itemSeparatorBuilder: (context, index) {
                   return const Divider();
                 },

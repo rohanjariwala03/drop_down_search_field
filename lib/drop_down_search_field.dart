@@ -9,3 +9,4 @@ export 'package:drop_down_search_field/src/suggestions/suggestions_box_controlle
 export 'package:drop_down_search_field/src/suggestions/suggestions_box_decoration.dart';
 export 'package:drop_down_search_field/src/suggestions/suggestions_list.dart';
 export 'package:drop_down_search_field/src/suggestions/suggestions_box.dart';
+export 'package:drop_down_search_field/src/suggestions/suggestion_box_scroll_bar_decoration.dart';

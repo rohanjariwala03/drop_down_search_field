@@ -7,6 +7,8 @@ A DropDownSearchField (autocomplete) widget for Flutter, where you can show sugg
 
 <img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/master/drop_down_search_field.gif">
 
+<img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/master/paginated_dropdown_search_field.gif">
+
 ## Features
 * Displays suggestions in a floating overlay above other widgets.
 * Allows customization of the suggestion appearance using a builder function.
@@ -337,9 +339,16 @@ You can manually control the suggestions box by creating a `SuggestionsBoxContro
 assigning it to the `suggestionsBoxController` property. This enables you to have control over opening, 
 closing, toggling, or resizing the suggestions box as per your requirements.
 
-## Blog
+You can also customize suggestion box scroll bar by using property called `scrollBarDecoration` inside `suggestionsBoxDecoration`. This allows you to control color, thickness, margin and more.
+
+<!-- ## Blog
 You can checkout detailed blog on medium.
-[drop_down_search_field](https://medium.com/@rohanjariwala03/dropdown-with-future-search-option-818a7dc1196)
+[drop_down_search_field](https://medium.com/@rohanjariwala03/dropdown-with-future-search-option-818a7dc1196) -->
 
 ## How you can help
 [Contribution Guidelines](https://github.com/rohanjariwala03/drop_down_search_field/blob/master/CONTRIBUTING.md)
+
+
+## TODO
+- Add More Examples.
+- Give more customization options to users such as color, style and sizing.
