@@ -457,6 +457,7 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
                                 ?.contains(suggestion) ??
                             false;
                         return CheckboxListTile(
+                          controlAffinity: ListTileControlAffinity.leading,
                           title: widget.itemBuilder!(context, suggestion),
                           value: isSelected,
                           onChanged: (bool? checked) {
@@ -500,9 +501,14 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
       child = MediaQuery.removePadding(
         context: context,
         removeTop: true,
-        child: Scrollbar(
-          controller: _scrollController,
-          child: child,
+        child: Theme(
+          data: ThemeData(
+            scrollbarTheme: getScrollbarTheme(),
+          ),
+          child: Scrollbar(
+            controller: _scrollController,
+            child: child,
+          ),
         ),
       );
     }
@@ -557,12 +563,17 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
     );
 
     if (widget.decoration!.hasScrollbar) {
-      child = MediaQuery.removePadding(
-        context: context,
-        removeTop: true,
-        child: Scrollbar(
-          controller: _scrollController,
-          child: child,
+      child = Theme(
+        data: ThemeData(
+          scrollbarTheme: getScrollbarTheme(),
+        ),
+        child: MediaQuery.removePadding(
+          context: context,
+          removeTop: true,
+          child: Scrollbar(
+            controller: _scrollController,
+            child: child,
+          ),
         ),
       );
     }
@@ -581,5 +592,20 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
     child = TextFieldTapRegion(child: child);
 
     return child;
+  }
+
+  ScrollbarThemeData? getScrollbarTheme() {
+    return const ScrollbarThemeData().copyWith(
+      thickness: WidgetStatePropertyAll(
+          widget.decoration?.scrollBarDecoration?.thickness),
+      thumbColor: WidgetStatePropertyAll(
+          widget.decoration?.scrollBarDecoration?.thumbColor),
+      radius: widget.decoration?.scrollBarDecoration?.radius,
+      thumbVisibility: WidgetStatePropertyAll(
+          widget.decoration?.scrollBarDecoration?.thumbVisibility),
+      crossAxisMargin: widget.decoration?.scrollBarDecoration?.crossAxisMargin,
+      mainAxisMargin: widget.decoration?.scrollBarDecoration?.mainAxisMargin,
+      interactive: widget.decoration?.scrollBarDecoration?.interactive,
+    );
   }
 }

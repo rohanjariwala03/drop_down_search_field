@@ -1,3 +1,4 @@
+import 'package:drop_down_search_field/src/suggestions/suggestion_box_scroll_bar_decoration.dart';
 import 'package:flutter/material.dart';
 
 /// Supply an instance of this class to the [DropDownSearchField.suggestionsBoxDecoration]
@@ -47,16 +48,26 @@ class SuggestionsBoxDecoration {
   /// Default is true
   final bool closeSuggestionBoxWhenTapOutside;
 
+  /// The decoration to use for the scrollbar in the suggestions box.
+  ///
+  /// This can be used to customize the appearance of the scrollbar, such as
+  /// its color, thickness, and other visual properties.
+  ///
+  /// If null, the default scrollbar decoration will be used.
+  final ScrollBarDecoration? scrollBarDecoration;
+
   /// Creates a SuggestionsBoxDecoration
-  const SuggestionsBoxDecoration(
-      {this.elevation = 4.0,
-      this.color,
-      this.shape,
-      this.hasScrollbar = true,
-      this.borderRadius,
-      this.shadowColor = const Color(0xFF000000),
-      this.constraints,
-      this.clipBehavior = Clip.none,
-      this.offsetX = 0.0,
-      this.closeSuggestionBoxWhenTapOutside = true});
+  const SuggestionsBoxDecoration({
+    this.elevation = 4.0,
+    this.color,
+    this.shape,
+    this.hasScrollbar = true,
+    this.borderRadius,
+    this.shadowColor = const Color(0xFF000000),
+    this.constraints,
+    this.clipBehavior = Clip.none,
+    this.offsetX = 0.0,
+    this.closeSuggestionBoxWhenTapOutside = true,
+    this.scrollBarDecoration,
+  });
 }

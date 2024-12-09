@@ -1,3 +1,8 @@
+## 1.1.1 - 09/12/2024
+- Suggestion box Scrollbar customization.
+- Resolved issues requested by users.
+- Added More example videos.
+
 ## 1.1.0 - 03/12/2024
 - Multiple item selection dropdown added.
 - Fixes for searchable dropdown.
