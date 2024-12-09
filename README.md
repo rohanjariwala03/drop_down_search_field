@@ -5,9 +5,9 @@
 # Flutter DropDownSearchField
 A DropDownSearchField (autocomplete) widget for Flutter, where you can show suggestions to users as they type
 
-<img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/master/assets/drop_down_search_field.gif">
+<img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/master/drop_down_search_field.gif">
 
-<img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/master/assets/paginated_dropdown_search_field.gif">
+<img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/master/paginated_dropdown_search_field.gif">
 
 ## Features
 * Displays suggestions in a floating overlay above other widgets.
