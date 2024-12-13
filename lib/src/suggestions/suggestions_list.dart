@@ -158,8 +158,10 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Sending empty text when it's true so, that they can see whole list
-    _getSuggestions(
-        widget.displayAllSuggestionWhenTap ? '' : widget.controller!.text);
+    if (widget.displayAllSuggestionWhenTap) {
+      _getSuggestions(
+          widget.displayAllSuggestionWhenTap ? '' : widget.controller!.text);
+    }
   }
 
   @override
@@ -306,7 +308,9 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
         (this._suggestions?.isEmpty ?? true) && widget.controller!.text == "";
     if ((this._suggestions == null || isEmpty) &&
         this._isLoading == false &&
-        this._error == null) return Container();
+        this._error == null) {
+      return Container();
+    }
 
     Widget child;
     if (this._isLoading!) {

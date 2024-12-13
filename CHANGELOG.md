@@ -1,3 +1,8 @@
+## 1.1.2 - 13/12/2024
+- Added support for not to display when no search.
+- Bug Fixes reported on Github.
+- Static Analysis Fixes.
+
 ## 1.1.1 - 09/12/2024
 - Suggestion box Scrollbar customization.
 - Resolved issues requested by users.
