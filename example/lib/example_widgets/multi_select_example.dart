@@ -71,6 +71,23 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
                   ),
                   controller: _dropdownSearchFieldController,
                 ),
+                chipBuilder: (context, itemData) {
+                  return Chip(
+                    label: Text(itemData),
+                    onDeleted: () {
+                      _selectedNames.remove(itemData);
+                      setState(() {});
+                    },
+                    backgroundColor: Colors.orange,
+                    labelStyle: const TextStyle(color: Colors.white),
+                    deleteIcon: const Icon(Icons.close, color: Colors.white),
+                    deleteIconColor: Colors.white,
+                    side: const BorderSide(color: Colors.orange),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  );
+                },
                 paginatedSuggestionsCallback: (pattern) async {
                   final suggestionsToReturn = getSuggestions(pattern);
                   return suggestionsToReturn;
@@ -104,30 +121,20 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
                 suggestionsBoxController: suggestionBoxController,
                 displayAllSuggestionWhenTap: true,
                 dropdownBoxConfiguration: DropdownBoxConfiguration(
-                    scrollbarConfiguration:
-                        ScrollbarConfiguration(thickness: 5),
-                    enabled: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Selected Items',
-                      hintStyle: TextStyle(color: Colors.grey.shade600),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.red),
-                      ),
+                  scrollbarConfiguration: ScrollbarConfiguration(thickness: 5),
+                  enabled: true,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Selected Items',
+                    hintStyle: TextStyle(color: Colors.grey.shade600),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
                     ),
-                    chipConfiguration: ChipConfiguration(
-                      backgroundColor: Colors.orange,
-                      labelStyle: const TextStyle(color: Colors.white),
-                      deleteIcon: const Icon(Icons.close, color: Colors.white),
-                      deleteIconColor: Colors.white,
-                      side: const BorderSide(color: Colors.orange),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    )),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
+                  ),
+                ),
               ),
               const Spacer(),
               ElevatedButton(

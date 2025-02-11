@@ -1,8 +1,6 @@
-import 'package:drop_down_search_field/src/multi_selection_widgets/chips_configuration.dart';
 import 'package:drop_down_search_field/src/multi_selection_widgets/scrollbar_configuration.dart';
 import 'package:flutter/material.dart';
 
-export 'package:drop_down_search_field/src/multi_selection_widgets/chips_configuration.dart';
 export 'package:drop_down_search_field/src/multi_selection_widgets/scrollbar_configuration.dart';
 
 /// Supply an instance of this class to the [DropDownSearchField.DropdownBoxConfiguration]
@@ -44,11 +42,6 @@ class DropdownBoxConfiguration {
   /// This property allows you to customize the padding around the box.
   final EdgeInsets scrollPadding;
 
-  /// The configuration for the chips displayed in the dropdown box.
-  ///
-  /// This property allows you to customize the appearance and behavior of the chips.
-  final ChipConfiguration chipConfiguration;
-
   /// The configuration for the scrollbar displayed in the dropdown box.
   ///
   /// This property allows you to customize the appearance and behavior of the scrollbar.
@@ -63,7 +56,6 @@ class DropdownBoxConfiguration {
     this.onTap,
     this.onTapOutside,
     this.scrollPadding = const EdgeInsets.all(20.0),
-    this.chipConfiguration = const ChipConfiguration(),
     this.scrollbarConfiguration,
   });
 
@@ -76,7 +68,6 @@ class DropdownBoxConfiguration {
     GestureTapCallback? onTap,
     TapRegionCallback? onTapOutside,
     EdgeInsets? scrollPadding,
-    ChipConfiguration? chipConfiguration,
     ScrollbarConfiguration? scrollbarConfiguration,
   }) {
     return DropdownBoxConfiguration(
@@ -87,7 +78,6 @@ class DropdownBoxConfiguration {
       onTap: onTap ?? this.onTap,
       onTapOutside: onTapOutside ?? this.onTapOutside,
       scrollPadding: scrollPadding ?? this.scrollPadding,
-      chipConfiguration: chipConfiguration ?? this.chipConfiguration,
       scrollbarConfiguration:
           scrollbarConfiguration ?? this.scrollbarConfiguration,
     );

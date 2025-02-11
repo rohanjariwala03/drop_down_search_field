@@ -12,6 +12,7 @@ class MultiSelectDropdownSearchFormField<T> extends FormField<List<T>> {
   final List<T> initiallySelectedItems;
   final SuggestionMultiSelectionCallback<T> onMultiSuggestionSelected;
   final DropdownBoxConfiguration? dropdownBoxConfiguration;
+  final ChipBuilder<T>? chipBuilder;
 
   MultiSelectDropdownSearchFormField({
     super.key,
@@ -28,6 +29,7 @@ class MultiSelectDropdownSearchFormField<T> extends FormField<List<T>> {
     required this.initiallySelectedItems,
     required this.onMultiSuggestionSelected,
     this.dropdownBoxConfiguration,
+    required this.chipBuilder,
     // super.validator,
     ErrorBuilder? errorBuilder,
     WidgetBuilder? noItemsFoundBuilder,
@@ -125,6 +127,7 @@ class MultiSelectDropdownSearchFormField<T> extends FormField<List<T>> {
                 scrollController: scrollController,
                 isMultiSelectDropdown: true,
                 multiSelectDropdownBoxConfiguration: dropdownBoxConfiguration,
+                chipBuilder: chipBuilder,
                 // validator: validator,
               );
             });

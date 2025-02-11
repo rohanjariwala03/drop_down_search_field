@@ -597,6 +597,11 @@ class DropDownSearchField<T> extends StatefulWidget {
   /// Validator for the [FormField](https://docs.flutter.io/flutter/widgets/FormField-class.html)
   final FormFieldValidator<List<T>>? validator;
 
+  /// The builder for the chips that are displayed in the dropdown
+  ///
+  /// This property allows you to customize the appearance and behavior of the chips
+  final ChipBuilder<T>? chipBuilder;
+
   /// Creates a [DropDownSearchField]
   const DropDownSearchField({
     this.suggestionsCallback,
@@ -639,6 +644,7 @@ class DropDownSearchField<T> extends StatefulWidget {
     this.initiallySelectedItems,
     this.multiSelectDropdownBoxConfiguration,
     this.validator,
+    this.chipBuilder,
     super.key,
   })  : assert(animationStart >= 0.0 && animationStart <= 1.0),
         assert(
@@ -996,6 +1002,7 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
                 dropdownBoxConfiguration:
                     widget.multiSelectDropdownBoxConfiguration ??
                         const DropdownBoxConfiguration(),
+                chipBuilder: widget.chipBuilder,
                 // validator: widget.validator,
               )
             : textFieldWidget(),

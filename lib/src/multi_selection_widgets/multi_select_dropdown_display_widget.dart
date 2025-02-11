@@ -2,6 +2,11 @@ import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:flutter/material.dart';
 
 class MultiSelectDropdownDisplayWidget<T> extends StatefulWidget {
+  /// The builder for the chips that are displayed in the dropdown
+  ///
+  /// This property allows you to customize the appearance and behavior of the chips
+  final ChipBuilder<T>? chipBuilder;
+
   /// The configuration of the [TextField](https://docs.flutter.io/flutter/material/TextField-class.html)
   /// that the DropDownSearchField widget displays
   final TextFieldConfiguration textFieldConfiguration;
@@ -27,7 +32,8 @@ class MultiSelectDropdownDisplayWidget<T> extends StatefulWidget {
   // final FormFieldValidator<List<T>>? validator;
 
   const MultiSelectDropdownDisplayWidget(
-      {required this.initiallySelectedItems,
+      {required this.chipBuilder,
+      required this.initiallySelectedItems,
       required this.textFieldConfiguration,
       required this.focusNode,
       this.dropdownBoxConfiguration = const DropdownBoxConfiguration(),
@@ -131,77 +137,7 @@ class _MultiSelectDropdownDisplayWidgetState<T>
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: widget.initiallySelectedItems.map((item) {
-                      return Chip(
-                        label: Text(
-                          item.toString(),
-                          style: widget.dropdownBoxConfiguration
-                              .chipConfiguration.labelStyle,
-                        ),
-                        labelStyle: widget.dropdownBoxConfiguration
-                            .chipConfiguration.labelStyle,
-                        padding: widget.dropdownBoxConfiguration
-                                .chipConfiguration.padding ??
-                            EdgeInsets.zero,
-                        onDeleted: () {
-                          setState(() {
-                            widget.initiallySelectedItems.remove(item);
-                          });
-                          widget.dropdownBoxConfiguration.onChanged?.call(
-                            widget.initiallySelectedItems
-                                .map((e) => e.toString())
-                                .toList(),
-                          );
-                          widget.dropdownBoxConfiguration.chipConfiguration
-                              .onDelete
-                              ?.call(
-                            widget.initiallySelectedItems
-                                .map((e) => e.toString())
-                                .toList(),
-                          );
-                        },
-                        deleteIcon: widget.dropdownBoxConfiguration
-                            .chipConfiguration.deleteIcon,
-                        backgroundColor: widget.dropdownBoxConfiguration
-                            .chipConfiguration.backgroundColor,
-                        elevation: widget.dropdownBoxConfiguration
-                            .chipConfiguration.elevation,
-                        shadowColor: widget.dropdownBoxConfiguration
-                            .chipConfiguration.shadowColor,
-                        surfaceTintColor: widget.dropdownBoxConfiguration
-                            .chipConfiguration.surfaceTintColor,
-                        visualDensity: widget.dropdownBoxConfiguration
-                            .chipConfiguration.visualDensity,
-                        materialTapTargetSize: widget.dropdownBoxConfiguration
-                            .chipConfiguration.materialTapTargetSize,
-                        labelPadding: widget.dropdownBoxConfiguration
-                            .chipConfiguration.labelPadding,
-                        avatar: widget
-                            .dropdownBoxConfiguration.chipConfiguration.avatar,
-                        clipBehavior: widget.dropdownBoxConfiguration
-                            .chipConfiguration.clipBehavior,
-                        side: widget
-                            .dropdownBoxConfiguration.chipConfiguration.side,
-                        shape: widget
-                            .dropdownBoxConfiguration.chipConfiguration.shape,
-                        iconTheme: widget.dropdownBoxConfiguration
-                            .chipConfiguration.iconTheme,
-                        avatarBoxConstraints: widget.dropdownBoxConfiguration
-                            .chipConfiguration.avatarBoxConstraints,
-                        deleteIconBoxConstraints: widget
-                            .dropdownBoxConfiguration
-                            .chipConfiguration
-                            .deleteIconBoxConstraints,
-                        deleteIconColor: widget.dropdownBoxConfiguration
-                            .chipConfiguration.deleteIconColor,
-                        deleteButtonTooltipMessage: widget
-                            .dropdownBoxConfiguration
-                            .chipConfiguration
-                            .deleteButtonTooltipMessage,
-                        chipAnimationStyle: widget.dropdownBoxConfiguration
-                            .chipConfiguration.chipAnimationStyle,
-                        color: widget
-                            .dropdownBoxConfiguration.chipConfiguration.color,
-                      );
+                      return widget.chipBuilder!(context, item);
                     }).toList(),
                   ),
                 ),
