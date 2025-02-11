@@ -9,6 +9,8 @@ A DropDownSearchField (autocomplete) widget for Flutter, where you can show sugg
 
 <img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/master/paginated_dropdown_search_field.gif">
 
+<img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/master/multi_select_dropdown_search_field.gif">
+
 ## Features
 * Displays suggestions in a floating overlay above other widgets.
 * Allows customization of the suggestion appearance using a builder function.
@@ -167,9 +169,9 @@ here's how we render the items in a grid using the standard `GridView`:
 ```dart
 DropDownSearchField(
     ...,
-  layoutArchitecture: (items, scrollContoller) {
+  layoutArchitecture: (items, scrollController) {
         return ListView(
-            controller: scrollContoller,
+            controller: scrollController,
             shrinkWrap: true,
             children: [
               GridView.count(
@@ -305,7 +307,7 @@ For example:
 transitionBuilder: (context, suggestionsBox, animationController) =>
   FadeTransition(
     child: suggestionsBox,
-    opafruit: CurvedAnimation(
+    opacity: CurvedAnimation(
       parent: animationController,
       curve: Curves.fastOutSlowIn
     ),
