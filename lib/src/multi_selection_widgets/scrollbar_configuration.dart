@@ -1,6 +1,12 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class ScrollbarConfiguration {
+  /// The controller for the scroll view.
+  ///
+  /// This property allows you to control the scroll view.
+  final ScrollController? scrollController;
+
   /// Whether the scrollbar should always be shown.
   ///
   /// Defaults to false.
@@ -28,7 +34,11 @@ class ScrollbarConfiguration {
   /// The color of the border of the track of the scrollbar.
   final Color? trackBorderColor;
 
+  /// Called when a pointer signal occurs in the scroll view.
+  final void Function(PointerSignalEvent)? onPointerSignal;
+
   const ScrollbarConfiguration({
+    this.scrollController,
     this.isAlwaysShown = false,
     this.thickness = 6.0,
     this.radius,
@@ -36,5 +46,6 @@ class ScrollbarConfiguration {
     this.thumbColor,
     this.trackColor,
     this.trackBorderColor,
+    this.onPointerSignal,
   });
 }

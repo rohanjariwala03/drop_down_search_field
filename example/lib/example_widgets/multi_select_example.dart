@@ -82,6 +82,7 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
                     labelStyle: const TextStyle(color: Colors.white),
                     deleteIcon: const Icon(Icons.close, color: Colors.white),
                     deleteIconColor: Colors.white,
+                    deleteButtonTooltipMessage: '',
                     side: const BorderSide(color: Colors.orange),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),

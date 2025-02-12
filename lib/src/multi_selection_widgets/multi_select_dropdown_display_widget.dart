@@ -1,4 +1,5 @@
 import 'package:drop_down_search_field/drop_down_search_field.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class MultiSelectDropdownDisplayWidget<T> extends StatefulWidget {
@@ -129,16 +130,33 @@ class _MultiSelectDropdownDisplayWidgetState<T>
               ))
             : Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 5),
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    spacing: 5,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: widget.initiallySelectedItems.map((item) {
-                      return widget.chipBuilder!(context, item);
-                    }).toList(),
+                child: Listener(
+                  onPointerSignal: widget.dropdownBoxConfiguration
+                          .scrollbarConfiguration?.onPointerSignal ??
+                      (event) {
+                        if (event is PointerScrollEvent) {
+                          final offset = event.scrollDelta.dy;
+                          final newOffset = _scrollController.offset + offset;
+                          if (newOffset >= 0 &&
+                              newOffset <=
+                                  _scrollController.position.maxScrollExtent) {
+                            _scrollController.jumpTo(newOffset);
+                          }
+                        }
+                      },
+                  child: SingleChildScrollView(
+                    controller: widget.dropdownBoxConfiguration
+                            .scrollbarConfiguration?.scrollController ??
+                        _scrollController,
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      spacing: 5,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: widget.initiallySelectedItems.map((item) {
+                        return widget.chipBuilder!(context, item);
+                      }).toList(),
+                    ),
                   ),
                 ),
               ),
