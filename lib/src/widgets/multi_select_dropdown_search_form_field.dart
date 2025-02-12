@@ -2,6 +2,7 @@ import 'package:drop_down_search_field/src/suggestions/suggestions_box_controlle
 import 'package:drop_down_search_field/src/suggestions/suggestions_box_decoration.dart';
 import 'package:drop_down_search_field/src/type_def.dart';
 import 'package:drop_down_search_field/src/widgets/drop_down_search_field.dart';
+import 'package:drop_down_search_field/src/multi_selection_widgets/multi_select_drop_down_box_configuration.dart';
 import 'package:drop_down_search_field/src/widgets/search_field_configuration.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +11,8 @@ class MultiSelectDropdownSearchFormField<T> extends FormField<List<T>> {
   final void Function()? onReset;
   final List<T> initiallySelectedItems;
   final SuggestionMultiSelectionCallback<T> onMultiSuggestionSelected;
+  final DropdownBoxConfiguration? dropdownBoxConfiguration;
+  final ChipBuilder<T>? chipBuilder;
 
   MultiSelectDropdownSearchFormField({
     super.key,
@@ -25,7 +28,9 @@ class MultiSelectDropdownSearchFormField<T> extends FormField<List<T>> {
     this.onReset,
     required this.initiallySelectedItems,
     required this.onMultiSuggestionSelected,
-    super.validator,
+    this.dropdownBoxConfiguration,
+    required this.chipBuilder,
+    // super.validator,
     ErrorBuilder? errorBuilder,
     WidgetBuilder? noItemsFoundBuilder,
     WidgetBuilder? loadingBuilder,
@@ -90,10 +95,6 @@ class MultiSelectDropdownSearchFormField<T> extends FormField<List<T>> {
                   controller: state._effectiveController,
                 ),
                 suggestionsBoxVerticalOffset: suggestionsBoxVerticalOffset,
-                // onSuggestionSelected: (suggestion) {
-                //   state._handleSelection(suggestion);
-                //   // Keep the dropdown open for more selections
-                // },
                 initiallySelectedItems: initiallySelectedItems,
                 onSuggestionMultiSelected: (suggestion, selected) {
                   state._handleSelection(suggestion);
@@ -125,6 +126,9 @@ class MultiSelectDropdownSearchFormField<T> extends FormField<List<T>> {
                 displayAllSuggestionWhenTap: displayAllSuggestionWhenTap,
                 scrollController: scrollController,
                 isMultiSelectDropdown: true,
+                multiSelectDropdownBoxConfiguration: dropdownBoxConfiguration,
+                chipBuilder: chipBuilder,
+                // validator: validator,
               );
             });
 

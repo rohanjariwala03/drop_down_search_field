@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:drop_down_search_field/src/keyboard_suggestion_selection_notifier.dart';
 import 'package:drop_down_search_field/src/should_refresh_suggestion_focus_index_notifier.dart';
-import 'package:drop_down_search_field/src/suggestions/suggestions_box.dart';
-import 'package:drop_down_search_field/src/suggestions/suggestions_box_decoration.dart';
-import 'package:drop_down_search_field/src/type_def.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -49,6 +47,8 @@ class SuggestionsList<T> extends StatefulWidget {
   final PaginatedSuggestionsCallback<T>? paginatedSuggestionsCallback;
   final bool isMultiSelectDropdown;
   final List<T>? initiallySelectedItems;
+  final SuggestionsBoxController? suggestionsBoxController;
+  final Widget? textFieldWidget;
 
   const SuggestionsList({
     super.key,
@@ -87,6 +87,8 @@ class SuggestionsList<T> extends StatefulWidget {
     this.paginatedSuggestionsCallback,
     required this.isMultiSelectDropdown,
     this.initiallySelectedItems,
+    required this.suggestionsBoxController,
+    this.textFieldWidget,
   });
 
   @override
@@ -110,6 +112,7 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
   List<FocusNode> _focusNodes = [];
   int _suggestionIndex = -1;
   int pageNumber = 0;
+  final multiSelectSearchFieldFocus = FocusNode();
 
   _SuggestionsListState() {
     this._controllerListener = () {
@@ -306,7 +309,9 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
         (this._suggestions?.isEmpty ?? true) && widget.controller!.text == "";
     if ((this._suggestions == null || isEmpty) &&
         this._isLoading == false &&
-        this._error == null) return Container();
+        this._error == null) {
+      return Container();
+    }
 
     Widget child;
     if (this._isLoading!) {
@@ -329,6 +334,19 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
       }
     } else {
       child = createSuggestionsWidget();
+    }
+
+    if (widget.isMultiSelectDropdown) {
+      child = Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: widget.textFieldWidget,
+          ),
+          Flexible(child: child),
+        ],
+      );
     }
 
     final animationChild = widget.transitionBuilder != null

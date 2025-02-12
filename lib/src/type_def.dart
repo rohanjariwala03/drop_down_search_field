@@ -16,3 +16,5 @@ typedef LayoutArchitecture = Widget Function(
 
 typedef SuggestionMultiSelectionCallback<T> = void Function(
     T suggestion, bool selected);
+
+typedef ChipBuilder<T> = Widget Function(BuildContext context, T itemData);

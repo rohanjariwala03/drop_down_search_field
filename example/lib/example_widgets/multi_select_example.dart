@@ -64,9 +64,31 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
               const Text('What are your favorite names?'),
               MultiSelectDropdownSearchFormField<String>(
                 textFieldConfiguration: TextFieldConfiguration(
-                  decoration: const InputDecoration(labelText: 'Names'),
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Type to search',
+                    hintStyle: TextStyle(color: Colors.grey),
+                  ),
                   controller: _dropdownSearchFieldController,
                 ),
+                chipBuilder: (context, itemData) {
+                  return Chip(
+                    label: Text(itemData),
+                    onDeleted: () {
+                      _selectedNames.remove(itemData);
+                      setState(() {});
+                    },
+                    backgroundColor: Colors.orange,
+                    labelStyle: const TextStyle(color: Colors.white),
+                    deleteIcon: const Icon(Icons.close, color: Colors.white),
+                    deleteIconColor: Colors.white,
+                    deleteButtonTooltipMessage: '',
+                    side: const BorderSide(color: Colors.orange),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  );
+                },
                 paginatedSuggestionsCallback: (pattern) async {
                   final suggestionsToReturn = getSuggestions(pattern);
                   return suggestionsToReturn;
@@ -98,10 +120,22 @@ class _MultiSelectDropdownState extends State<MultiSelectDropdown> {
                   setState(() {});
                 },
                 suggestionsBoxController: suggestionBoxController,
-                validator: (value) => _selectedNames.isEmpty
-                    ? 'Please select at least one name'
-                    : null,
                 displayAllSuggestionWhenTap: true,
+                dropdownBoxConfiguration: DropdownBoxConfiguration(
+                  scrollbarConfiguration: ScrollbarConfiguration(thickness: 5),
+                  enabled: true,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Selected Items',
+                    hintStyle: TextStyle(color: Colors.grey.shade600),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
+                  ),
+                ),
               ),
               const Spacer(),
               ElevatedButton(

@@ -6,6 +6,8 @@ import 'package:drop_down_search_field/src/suggestions/suggestions_box_controlle
 import 'package:drop_down_search_field/src/suggestions/suggestions_box_decoration.dart';
 import 'package:drop_down_search_field/src/suggestions/suggestions_list.dart';
 import 'package:drop_down_search_field/src/type_def.dart';
+import 'package:drop_down_search_field/src/multi_selection_widgets/multi_select_drop_down_box_configuration.dart';
+import 'package:drop_down_search_field/src/multi_selection_widgets/multi_select_dropdown_display_widget.dart';
 import 'package:drop_down_search_field/src/widgets/search_field_configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -589,6 +591,17 @@ class DropDownSearchField<T> extends StatefulWidget {
   // The selected items in the dropdown when it is a multi-select dropdown
   final List<T>? initiallySelectedItems;
 
+  // The configuration of the dropdown box when it is a multi-select dropdown
+  final DropdownBoxConfiguration? multiSelectDropdownBoxConfiguration;
+
+  /// Validator for the [FormField](https://docs.flutter.io/flutter/widgets/FormField-class.html)
+  final FormFieldValidator<List<T>>? validator;
+
+  /// The builder for the chips that are displayed in the dropdown
+  ///
+  /// This property allows you to customize the appearance and behavior of the chips
+  final ChipBuilder<T>? chipBuilder;
+
   /// Creates a [DropDownSearchField]
   const DropDownSearchField({
     this.suggestionsCallback,
@@ -629,6 +642,9 @@ class DropDownSearchField<T> extends StatefulWidget {
     required this.displayAllSuggestionWhenTap,
     required this.isMultiSelectDropdown,
     this.initiallySelectedItems,
+    this.multiSelectDropdownBoxConfiguration,
+    this.validator,
+    this.chipBuilder,
     super.key,
   })  : assert(animationStart >= 0.0 && animationStart <= 1.0),
         assert(
@@ -652,7 +668,11 @@ class DropDownSearchField<T> extends StatefulWidget {
               (onSuggestionMultiSelected != null &&
                   initiallySelectedItems != null),
           'onSuggestionMultiSelected and initiallySelectedItems must be provided when isMultiSelectDropdown is true.',
-        );
+        ),
+        assert(
+            isMultiSelectDropdown ||
+                multiSelectDropdownBoxConfiguration == null,
+            'Cannot provide multiSelectDropdownBoxConfiguration when isMultiSelectDropdown is false.');
 
   @override
   // ignore: library_private_types_in_public_api
@@ -892,6 +912,8 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
         displayAllSuggestionWhenTap: widget.displayAllSuggestionWhenTap,
         isMultiSelectDropdown: widget.isMultiSelectDropdown,
         initiallySelectedItems: widget.initiallySelectedItems,
+        suggestionsBoxController: widget.suggestionsBoxController,
+        textFieldWidget: textFieldWidget(),
       );
 
       double w = _suggestionsBox!.textBoxWidth;
@@ -972,45 +994,58 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
       link: this._layerLink,
       child: PointerInterceptor(
         intercepting: widget.intercepting,
-        child: TextField(
-            focusNode: this._effectiveFocusNode,
-            controller: this._effectiveController,
-            decoration: widget.textFieldConfiguration.decoration,
-            style: widget.textFieldConfiguration.style,
-            textAlign: widget.textFieldConfiguration.textAlign,
-            enabled: widget.textFieldConfiguration.enabled,
-            keyboardType: widget.textFieldConfiguration.keyboardType,
-            autofocus: widget.textFieldConfiguration.autofocus,
-            inputFormatters: widget.textFieldConfiguration.inputFormatters,
-            autocorrect: widget.textFieldConfiguration.autocorrect,
-            maxLines: widget.textFieldConfiguration.maxLines,
-            textAlignVertical: widget.textFieldConfiguration.textAlignVertical,
-            minLines: widget.textFieldConfiguration.minLines,
-            maxLength: widget.textFieldConfiguration.maxLength,
-            maxLengthEnforcement:
-                widget.textFieldConfiguration.maxLengthEnforcement,
-            obscureText: widget.textFieldConfiguration.obscureText,
-            onChanged: widget.textFieldConfiguration.onChanged,
-            onSubmitted: widget.textFieldConfiguration.onSubmitted,
-            onEditingComplete: widget.textFieldConfiguration.onEditingComplete,
-            onTap: widget.textFieldConfiguration.onTap,
-            onTapOutside: widget.textFieldConfiguration.onTapOutside,
-            scrollPadding: widget.textFieldConfiguration.scrollPadding,
-            textInputAction: widget.textFieldConfiguration.textInputAction,
-            textCapitalization:
-                widget.textFieldConfiguration.textCapitalization,
-            keyboardAppearance:
-                widget.textFieldConfiguration.keyboardAppearance,
-            cursorWidth: widget.textFieldConfiguration.cursorWidth,
-            cursorRadius: widget.textFieldConfiguration.cursorRadius,
-            cursorColor: widget.textFieldConfiguration.cursorColor,
-            mouseCursor: widget.textFieldConfiguration.mouseCursor,
-            textDirection: widget.textFieldConfiguration.textDirection,
-            enableInteractiveSelection:
-                widget.textFieldConfiguration.enableInteractiveSelection,
-            readOnly: widget.hideKeyboard,
-            autofillHints: widget.textFieldConfiguration.autofillHints),
+        child: widget.isMultiSelectDropdown
+            ? MultiSelectDropdownDisplayWidget<T>(
+                initiallySelectedItems: widget.initiallySelectedItems ?? [],
+                textFieldConfiguration: widget.textFieldConfiguration,
+                focusNode: this._effectiveFocusNode,
+                dropdownBoxConfiguration:
+                    widget.multiSelectDropdownBoxConfiguration ??
+                        const DropdownBoxConfiguration(),
+                chipBuilder: widget.chipBuilder,
+                // validator: widget.validator,
+              )
+            : textFieldWidget(),
       ),
+    );
+  }
+
+  Widget textFieldWidget() {
+    return TextField(
+      focusNode: this._effectiveFocusNode,
+      controller: this._effectiveController,
+      decoration: widget.textFieldConfiguration.decoration,
+      style: widget.textFieldConfiguration.style,
+      textAlign: widget.textFieldConfiguration.textAlign,
+      enabled: widget.textFieldConfiguration.enabled,
+      keyboardType: widget.textFieldConfiguration.keyboardType,
+      autofocus: widget.textFieldConfiguration.autofocus,
+      inputFormatters: widget.textFieldConfiguration.inputFormatters,
+      autocorrect: widget.textFieldConfiguration.autocorrect,
+      maxLines: widget.textFieldConfiguration.maxLines,
+      textAlignVertical: widget.textFieldConfiguration.textAlignVertical,
+      minLines: widget.textFieldConfiguration.minLines,
+      maxLength: widget.textFieldConfiguration.maxLength,
+      maxLengthEnforcement: widget.textFieldConfiguration.maxLengthEnforcement,
+      obscureText: widget.textFieldConfiguration.obscureText,
+      onChanged: widget.textFieldConfiguration.onChanged,
+      onSubmitted: widget.textFieldConfiguration.onSubmitted,
+      onEditingComplete: widget.textFieldConfiguration.onEditingComplete,
+      onTap: widget.textFieldConfiguration.onTap,
+      onTapOutside: widget.textFieldConfiguration.onTapOutside,
+      scrollPadding: widget.textFieldConfiguration.scrollPadding,
+      textInputAction: widget.textFieldConfiguration.textInputAction,
+      textCapitalization: widget.textFieldConfiguration.textCapitalization,
+      keyboardAppearance: widget.textFieldConfiguration.keyboardAppearance,
+      cursorWidth: widget.textFieldConfiguration.cursorWidth,
+      cursorRadius: widget.textFieldConfiguration.cursorRadius,
+      cursorColor: widget.textFieldConfiguration.cursorColor,
+      mouseCursor: widget.textFieldConfiguration.mouseCursor,
+      textDirection: widget.textFieldConfiguration.textDirection,
+      enableInteractiveSelection:
+          widget.textFieldConfiguration.enableInteractiveSelection,
+      readOnly: widget.hideKeyboard,
+      autofillHints: widget.textFieldConfiguration.autofillHints,
     );
   }
 }

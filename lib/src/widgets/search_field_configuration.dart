@@ -183,8 +183,7 @@ class TextFieldConfiguration {
 
   /// Creates a TextFieldConfiguration
   const TextFieldConfiguration(
-      {this.decoration =
-          const InputDecoration(suffixIcon: Icon(Icons.arrow_drop_down)),
+      {this.decoration = const InputDecoration(),
       this.style,
       this.controller,
       this.onChanged,

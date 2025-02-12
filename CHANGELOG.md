@@ -1,3 +1,15 @@
+## 1.1.2+2 - 12/02/2025
+- Hotfix release for Multi select dropdown.
+- Scroll Support for Selected Items with Mouse wheel.
+
+## 1.1.2+1 - 11/02/2025
+- Hotfix release for Multi select dropdown.
+
+## 1.1.2 - 11/02/2025
+- Added more support for Multi Select dropdown.
+- Configurations for Multi select dropdown.
+- Resolved issues requested by users.
+
 ## 1.1.1 - 09/12/2024
 - Suggestion box Scrollbar customization.
 - Resolved issues requested by users.

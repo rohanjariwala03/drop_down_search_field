@@ -93,8 +93,9 @@ class DropDownSearchFormField<T> extends FormField<String> {
                 suggestionsBoxDecoration: suggestionsBoxDecoration,
                 suggestionsBoxController: suggestionsBoxController,
                 textFieldConfiguration: textFieldConfiguration.copyWith(
-                  decoration: textFieldConfiguration.decoration
-                      .copyWith(errorText: state.errorText),
+                  decoration: textFieldConfiguration.decoration.copyWith(
+                      errorText: state.errorText,
+                      suffixIcon: const Icon(Icons.arrow_drop_down)),
                   onChanged: (text) {
                     state.didChange(text);
                     textFieldConfiguration.onChanged?.call(text);
