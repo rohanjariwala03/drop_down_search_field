@@ -1,4 +1,4 @@
-## 1.1.2+3 - 11/04/2025
+## 1.1.3 - 11/04/2025
 - Hotfix release for Multi select dropdown.
 - Resolved issues requested by users.
 
