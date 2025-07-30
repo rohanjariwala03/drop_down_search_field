@@ -49,6 +49,8 @@ class SuggestionsList<T> extends StatefulWidget {
   final List<T>? initiallySelectedItems;
   final SuggestionsBoxController? suggestionsBoxController;
   final Widget? textFieldWidget;
+  // Custom equality function
+  final bool Function(T item1, T item2)? equalityFunction;
 
   const SuggestionsList({
     super.key,
@@ -89,6 +91,7 @@ class SuggestionsList<T> extends StatefulWidget {
     this.initiallySelectedItems,
     required this.suggestionsBoxController,
     this.textFieldWidget,
+    this.equalityFunction, // Initialize the equality function
   });
 
   @override
@@ -471,18 +474,18 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
               child: widget.isMultiSelectDropdown
                   ? StatefulBuilder(
                       builder: (context, setState) {
-                        final isSelected = widget.initiallySelectedItems
-                                ?.contains(suggestion) ??
-                            false;
+                        final isSelected = widget.initiallySelectedItems?.any(
+                              (item) =>
+                                  widget.equalityFunction
+                                      ?.call(item, suggestion) ??
+                                  item == suggestion,
+                            ) ??
+                            false; // Use custom equality function
                         return CheckboxListTile(
                           controlAffinity: ListTileControlAffinity.leading,
                           title: widget.itemBuilder!(context, suggestion),
                           value: isSelected,
                           onChanged: (bool? checked) {
-                            // widget.controller?.text = widget.initiallySelectedItems
-                            //         ?.map((e) => e.toString())
-                            //         .join(', ') ??
-                            //     '';
                             widget.onSuggestionMultiSelected!(
                                 suggestion, checked ?? false);
                             setState(() {});

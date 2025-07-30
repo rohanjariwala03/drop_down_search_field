@@ -602,6 +602,15 @@ class DropDownSearchField<T> extends StatefulWidget {
   /// This property allows you to customize the appearance and behavior of the chips
   final ChipBuilder<T>? chipBuilder;
 
+  /// A custom equality function to compare two items of type T.
+  ///
+  /// This function is used to determine if two items are considered equal.
+  /// It can be useful in scenarios like multi-select dropdowns where you need
+  /// to check if an item is already selected.
+  ///
+  /// If not provided, the default equality comparison will be used.
+  final bool Function(T item1, T item2)? multiSelectEquality;
+
   /// Creates a [DropDownSearchField]
   const DropDownSearchField({
     this.suggestionsCallback,
@@ -645,6 +654,7 @@ class DropDownSearchField<T> extends StatefulWidget {
     this.multiSelectDropdownBoxConfiguration,
     this.validator,
     this.chipBuilder,
+    this.multiSelectEquality,
     super.key,
   })  : assert(animationStart >= 0.0 && animationStart <= 1.0),
         assert(
@@ -914,6 +924,7 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
         initiallySelectedItems: widget.initiallySelectedItems,
         suggestionsBoxController: widget.suggestionsBoxController,
         textFieldWidget: textFieldWidget(),
+        equalityFunction: widget.multiSelectEquality,
       );
 
       double w = _suggestionsBox!.textBoxWidth;
