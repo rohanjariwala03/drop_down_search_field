@@ -728,13 +728,13 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
   @override
   void didChangeMetrics() {
     // Catch keyboard event and orientation change; resize suggestions list
-    this._suggestionsBox!.onChangeMetrics();
+    _suggestionsBox!.onChangeMetrics();
   }
 
   @override
   void dispose() {
-    this._suggestionsBox!.close();
-    this._suggestionsBox!.widgetMounted = false;
+    _suggestionsBox!.close();
+    _suggestionsBox!.widgetMounted = false;
     WidgetsBinding.instance.removeObserver(this);
     _keyboardVisibilitySubscription?.cancel();
     _effectiveFocusNode!.removeListener(_focusNodeListener);
@@ -764,13 +764,13 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
     WidgetsBinding.instance.addObserver(this);
 
     if (widget.textFieldConfiguration.controller == null) {
-      this._textEditingController = TextEditingController();
+      _textEditingController = TextEditingController();
     }
 
     final textFieldConfigurationFocusNode =
         widget.textFieldConfiguration.focusNode;
     if (textFieldConfigurationFocusNode == null) {
-      this._focusNode = FocusNode(onKeyEvent: _onKeyEvent);
+      _focusNode = FocusNode(onKeyEvent: _onKeyEvent);
     } else if (textFieldConfigurationFocusNode.onKeyEvent == null) {
       // * we add the _onKeyEvent callback to the textFieldConfiguration focusNode
       textFieldConfigurationFocusNode.onKeyEvent = ((node, event) {
@@ -785,7 +785,7 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
       });
     }
 
-    this._suggestionsBox = SuggestionsBox(
+    _suggestionsBox = SuggestionsBox(
       context,
       widget.direction,
       widget.autoFlipDirection,
@@ -793,26 +793,25 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
       widget.autoFlipMinHeight,
     );
 
-    widget.suggestionsBoxController?.suggestionsBox = this._suggestionsBox;
-    widget.suggestionsBoxController?.effectiveFocusNode =
-        this._effectiveFocusNode;
+    widget.suggestionsBoxController?.suggestionsBox = _suggestionsBox;
+    widget.suggestionsBoxController?.effectiveFocusNode = _effectiveFocusNode;
 
-    this._focusNodeListener = () {
+    _focusNodeListener = () {
       if (_effectiveFocusNode!.hasFocus) {
-        this._suggestionsBox!.open();
+        _suggestionsBox!.open();
       } else if (!_areSuggestionsFocused) {
         if (widget.hideSuggestionsOnKeyboardHide) {
-          this._suggestionsBox!.close();
+          _suggestionsBox!.close();
         }
       }
 
-      widget.onSuggestionsBoxToggle?.call(this._suggestionsBox!.isOpened);
+      widget.onSuggestionsBoxToggle?.call(_suggestionsBox!.isOpened);
     };
 
-    this._effectiveFocusNode!.addListener(_focusNodeListener);
+    _effectiveFocusNode!.addListener(_focusNodeListener);
 
     // hide suggestions box on keyboard closed
-    this._keyboardVisibilitySubscription =
+    _keyboardVisibilitySubscription =
         _keyboardVisibility?.listen((bool isVisible) {
       if (widget.hideSuggestionsOnKeyboardHide && !isVisible) {
         _effectiveFocusNode!.unfocus();
@@ -821,13 +820,13 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
 
     WidgetsBinding.instance.addPostFrameCallback((duration) {
       if (mounted) {
-        this._initOverlayEntry();
+        _initOverlayEntry();
         // calculate initial suggestions list size
-        this._suggestionsBox!.resize();
+        _suggestionsBox!.resize();
 
         // in case we already missed the focus event
-        if (this._effectiveFocusNode!.hasFocus) {
-          this._suggestionsBox!.open();
+        if (_effectiveFocusNode!.hasFocus) {
+          _suggestionsBox!.open();
         }
       }
     });
@@ -878,7 +877,7 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
   }
 
   void _initOverlayEntry() {
-    this._suggestionsBox!.overlayEntry = OverlayEntry(builder: (context) {
+    _suggestionsBox!.overlayEntry = OverlayEntry(builder: (context) {
       void giveTextFieldFocus() {
         _effectiveFocusNode?.requestFocus();
         _areSuggestionsFocused = false;
@@ -895,7 +894,7 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
         decoration: widget.suggestionsBoxDecoration,
         debounceDuration: widget.debounceDuration,
         intercepting: widget.intercepting,
-        controller: this._effectiveController,
+        controller: _effectiveController,
         loadingBuilder: widget.loadingBuilder,
         scrollController: widget.scrollController,
         noItemsFoundBuilder: widget.noItemsFoundBuilder,
@@ -910,8 +909,8 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
             ? null
             : (T selection) {
                 if (!widget.keepSuggestionsOnSuggestionSelected) {
-                  this._effectiveFocusNode!.unfocus();
-                  this._suggestionsBox!.close();
+                  _effectiveFocusNode!.unfocus();
+                  _suggestionsBox!.close();
                 }
                 widget.onSuggestionSelected!(selection);
               },
@@ -965,7 +964,7 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
       }
 
       final Widget compositedFollower = CompositedTransformFollower(
-        link: this._layerLink,
+        link: _layerLink,
         showWhenUnlinked: false,
         offset: Offset(
             widget.suggestionsBoxDecoration.offsetX,
@@ -982,9 +981,9 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
               onTapOutside: (e) {
                 if (widget.suggestionsBoxDecoration
                     .closeSuggestionBoxWhenTapOutside) {
-                  if (this._suggestionsBox?.isOpened ?? false) {
-                    this._focusNode?.unfocus();
-                    this._suggestionsBox?.close();
+                  if (_suggestionsBox?.isOpened ?? false) {
+                    _focusNode?.unfocus();
+                    _suggestionsBox?.close();
                   }
                 }
               },
@@ -1022,14 +1021,14 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
   @override
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
-      link: this._layerLink,
+      link: _layerLink,
       child: PointerInterceptor(
         intercepting: widget.intercepting,
         child: widget.isMultiSelectDropdown
             ? MultiSelectDropdownDisplayWidget<T>(
                 initiallySelectedItems: widget.initiallySelectedItems ?? [],
                 textFieldConfiguration: widget.textFieldConfiguration,
-                focusNode: this._effectiveFocusNode,
+                focusNode: _effectiveFocusNode,
                 dropdownBoxConfiguration:
                     widget.multiSelectDropdownBoxConfiguration ??
                         const DropdownBoxConfiguration(),
@@ -1043,8 +1042,8 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
 
   Widget textFieldWidget() {
     return TextField(
-      focusNode: this._effectiveFocusNode,
-      controller: this._effectiveController,
+      focusNode: _effectiveFocusNode,
+      controller: _effectiveController,
       decoration: widget.textFieldConfiguration.decoration,
       style: widget.textFieldConfiguration.style,
       textAlign: widget.textFieldConfiguration.textAlign,

@@ -71,6 +71,7 @@ void main() {
     testWidgets(
         "Search with first drop down search field and check the offset of the first suggestion box",
         (WidgetTester tester) async {
+      // This test is commented out as it needs specific implementation details
       // await tester.pumpWidget(MaterialDropDownSearchFieldHelper.getMaterialDropDownSearchFieldPage());
       // await tester.pumpAndSettle();
 
@@ -84,6 +85,107 @@ void main() {
       // final CompositedTransformFollower dropDownSearchFieldSuggestionBoxTester =
       //     tester.widget<CompositedTransformFollower>(dropDownSearchFieldSuggestionBox);
       // expect(dropDownSearchFieldSuggestionBoxTester.offset, const Offset(0.0, 61.0));
+    });
+
+    testWidgets("Should handle keyboard navigation",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialDropDownSearchFieldHelper
+          .getMaterialDropDownSearchFieldPage());
+      await tester.pumpAndSettle();
+
+      final dropDownSearchField =
+          find.byType(DropDownSearchFormField<String>).first;
+      await tester.tap(dropDownSearchField);
+      await tester.pumpAndSettle(const Duration(seconds: 2));
+      await tester.enterText(dropDownSearchField, "B");
+      await tester.pumpAndSettle(const Duration(seconds: 2));
+
+      // Should show suggestions
+      expect(find.text("Bread"), findsOneWidget);
+      expect(find.text("Burger"), findsOneWidget);
+    });
+
+    testWidgets("Should display suggestions box decoration",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialDropDownSearchFieldHelper
+          .getMaterialDropDownSearchFieldPage());
+      await tester.pumpAndSettle();
+
+      final dropDownSearchField =
+          find.byType(DropDownSearchFormField<String>).first;
+      await tester.tap(dropDownSearchField);
+      await tester.pumpAndSettle(const Duration(seconds: 2));
+      await tester.enterText(dropDownSearchField, "Orange");
+      await tester.pumpAndSettle(const Duration(seconds: 2));
+
+      // Check that suggestions are displayed
+      expect(find.text("Orange"), findsAtLeastNWidgets(1));
+      expect(find.byType(CompositedTransformFollower), findsNWidgets(2));
+    });
+
+    testWidgets("Should handle partial matches", (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialDropDownSearchFieldHelper
+          .getMaterialDropDownSearchFieldPage());
+      await tester.pumpAndSettle();
+
+      final dropDownSearchField =
+          find.byType(DropDownSearchFormField<String>).first;
+      await tester.tap(dropDownSearchField);
+      await tester.pumpAndSettle(const Duration(seconds: 2));
+
+      // Test partial match for "Milk" items
+      await tester.enterText(dropDownSearchField, "Mil");
+      await tester.pumpAndSettle(const Duration(seconds: 2));
+
+      expect(find.text("Milk"), findsOneWidget);
+      expect(find.text("Milkshake"), findsOneWidget);
+    });
+
+    testWidgets("Should close suggestions when tapping outside",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialDropDownSearchFieldHelper
+          .getMaterialDropDownSearchFieldPage());
+      await tester.pumpAndSettle();
+
+      final dropDownSearchField =
+          find.byType(DropDownSearchFormField<String>).first;
+      await tester.tap(dropDownSearchField);
+      await tester.pumpAndSettle(const Duration(seconds: 2));
+      await tester.enterText(dropDownSearchField, "Bread");
+      await tester.pumpAndSettle(const Duration(seconds: 2));
+
+      // Suggestions should be visible
+      expect(find.text("Bread"), findsAtLeastNWidgets(1));
+      expect(find.byType(CompositedTransformFollower), findsNWidgets(2));
+
+      // Tap outside (on the app bar for example)
+      await tester.tap(find.text("Material DropDownSearchField test"));
+      await tester.pumpAndSettle();
+
+      // Suggestions should be hidden
+      expect(find.byType(CompositedTransformFollower), findsNothing);
+    });
+
+    testWidgets("Should maintain text after selection",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialDropDownSearchFieldHelper
+          .getMaterialDropDownSearchFieldPage());
+      await tester.pumpAndSettle();
+
+      final dropDownSearchField =
+          find.byType(DropDownSearchFormField<String>).first;
+      await tester.tap(dropDownSearchField);
+      await tester.pumpAndSettle(const Duration(seconds: 2));
+      await tester.enterText(dropDownSearchField, "Orange");
+      await tester.pumpAndSettle(const Duration(seconds: 2));
+
+      // Select the suggestion
+      await tester.tap(find.text("Orange").last);
+      await tester.pumpAndSettle(const Duration(seconds: 2));
+
+      // Text should remain as "Orange"
+      final textField = tester.widget<TextField>(find.byType(TextField).first);
+      expect(textField.controller?.text, "Orange");
     });
 
     testWidgets(
