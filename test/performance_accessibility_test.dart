@@ -35,8 +35,7 @@ class _PerformanceTestPageState extends State<PerformanceTestPage> {
       'Fig',
       'Grape'
     ];
-    return words[(DateTime.now().millisecondsSinceEpoch + largeDataset.length) %
-        words.length];
+    return words[DateTime.now().millisecondsSinceEpoch % words.length];
   }
 
   Future<List<String>> _searchItems(String pattern) async {
