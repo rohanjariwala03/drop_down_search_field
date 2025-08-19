@@ -12,7 +12,6 @@ import 'package:drop_down_search_field/src/widgets/fractional_translation_widget
 import 'package:drop_down_search_field/src/widgets/search_field_configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/rendering.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 /// # Flutter DropDownSearchField
