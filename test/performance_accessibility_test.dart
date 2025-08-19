@@ -444,7 +444,7 @@ void main() {
           home: StatefulBuilder(
             builder: (context, setState) {
               buildCount++;
-              return PerformanceTestPage(itemCount: 50);
+              return const PerformanceTestPage(itemCount: 50);
             },
           ),
         ),
@@ -459,7 +459,7 @@ void main() {
           home: StatefulBuilder(
             builder: (context, setState) {
               buildCount++;
-              return PerformanceTestPage(itemCount: 50);
+              return const PerformanceTestPage(itemCount: 50);
             },
           ),
         ),
