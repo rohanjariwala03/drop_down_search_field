@@ -8,6 +8,7 @@ import 'package:drop_down_search_field/src/suggestions/suggestions_list.dart';
 import 'package:drop_down_search_field/src/type_def.dart';
 import 'package:drop_down_search_field/src/multi_selection_widgets/multi_select_drop_down_box_configuration.dart';
 import 'package:drop_down_search_field/src/multi_selection_widgets/multi_select_dropdown_display_widget.dart';
+import 'package:drop_down_search_field/src/widgets/fractional_translation_widget.dart';
 import 'package:drop_down_search_field/src/widgets/search_field_configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -847,14 +848,30 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
     bool isScrolling = _scrollPosition!.isScrollingNotifier.value;
     _resizeOnScrollTimer?.cancel();
     if (isScrolling) {
-      // Scroll started
+      // Scroll started - use a more defensive approach during scrolling
       _resizeOnScrollTimer =
           Timer.periodic(_resizeOnScrollRefreshRate, (timer) {
-        _suggestionsBox!.resize();
+        // Check if the widget is still mounted and the suggestions box is available
+        if (mounted && _suggestionsBox != null && _suggestionsBox!.isOpened) {
+          // Schedule the resize for the next frame to avoid layout conflicts
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted &&
+                _suggestionsBox != null &&
+                _suggestionsBox!.isOpened) {
+              _suggestionsBox!.resize();
+            }
+          });
+        }
       });
     } else {
-      // Scroll finished
-      _suggestionsBox!.resize();
+      // Scroll finished - safe to resize immediately
+      if (mounted && _suggestionsBox != null && _suggestionsBox!.isOpened) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && _suggestionsBox != null && _suggestionsBox!.isOpened) {
+            _suggestionsBox!.resize();
+          }
+        });
+      }
     }
   }
 
@@ -954,21 +971,23 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
                 ? _suggestionsBox!.textBoxHeight +
                     widget.suggestionsBoxVerticalOffset
                 : -widget.suggestionsBoxVerticalOffset),
-        child: FractionalTranslation(
-          translation: _suggestionsBox!.direction == AxisDirection.down
-              ? const Offset(0, 0)
-              : const Offset(0.0, -1.0),
-          child: TextFieldTapRegion(
-            onTapOutside: (e) {
-              if (widget
-                  .suggestionsBoxDecoration.closeSuggestionBoxWhenTapOutside) {
-                if (_suggestionsBox?.isOpened ?? false) {
-                  _focusNode?.unfocus();
-                  _suggestionsBox?.close();
+        child: RepaintBoundary(
+          child: SafeFractionalTranslation(
+            translation: _suggestionsBox!.direction == AxisDirection.down
+                ? const Offset(0, 0)
+                : const Offset(0.0, -1.0),
+            child: TextFieldTapRegion(
+              onTapOutside: (e) {
+                if (widget.suggestionsBoxDecoration
+                    .closeSuggestionBoxWhenTapOutside) {
+                  if (_suggestionsBox?.isOpened ?? false) {
+                    _focusNode?.unfocus();
+                    _suggestionsBox?.close();
+                  }
                 }
-              }
-            },
-            child: suggestionsList,
+              },
+              child: suggestionsList,
+            ),
           ),
         ),
       );
