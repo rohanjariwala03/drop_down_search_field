@@ -60,13 +60,10 @@ class _SimpleMultiSelectTestPageState extends State<SimpleMultiSelectTestPage> {
                 );
               },
               suggestionsCallback: (pattern) {
-                print(
-                    'DEBUG: suggestionsCallback called with pattern: "$pattern"');
                 final filtered = allItems
                     .where((item) =>
                         item.toLowerCase().contains(pattern.toLowerCase()))
                     .toList();
-                print('DEBUG: filtered results: $filtered');
                 return filtered;
               },
               itemBuilder: (context, String suggestion) {
@@ -102,7 +99,6 @@ void main() {
         .pumpWidget(const MaterialApp(home: SimpleMultiSelectTestPage()));
     await tester.pumpAndSettle();
 
-    print('DEBUG: Initial state - looking for multiselect');
     debugDumpApp();
 
     // Tap on the multi-select dropdown to open it
@@ -110,23 +106,16 @@ void main() {
     await tester.tap(multiSelect);
     await tester.pumpAndSettle();
 
-    print('DEBUG: After tapping multiselect');
-
     final textField = find.byType(TextField);
-    print('DEBUG: Found ${textField.evaluate().length} text fields');
 
     if (textField.evaluate().isNotEmpty) {
       // Search for 'React'
       await tester.enterText(textField, 'React');
       await tester.pumpAndSettle();
 
-      print('DEBUG: After entering "React"');
-
-      // Print all Text widgets
       final allTexts = find.byType(Text);
       for (int i = 0; i < allTexts.evaluate().length; i++) {
-        final textWidget = tester.widget<Text>(allTexts.at(i));
-        print('DEBUG: Found text widget: "${textWidget.data}"');
+        tester.widget<Text>(allTexts.at(i));
       }
     }
   });
