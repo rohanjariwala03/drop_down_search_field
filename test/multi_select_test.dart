@@ -6,7 +6,8 @@ class SimpleMultiSelectTestPage extends StatefulWidget {
   const SimpleMultiSelectTestPage({super.key});
 
   @override
-  State<SimpleMultiSelectTestPage> createState() => _SimpleMultiSelectTestPageState();
+  State<SimpleMultiSelectTestPage> createState() =>
+      _SimpleMultiSelectTestPageState();
 }
 
 class _SimpleMultiSelectTestPageState extends State<SimpleMultiSelectTestPage> {
@@ -95,8 +96,8 @@ void main() {
   group('Multi Select Tests', () {
     testWidgets('should display multi select dropdown',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: SimpleMultiSelectTestPage()));
+      await tester
+          .pumpWidget(const MaterialApp(home: SimpleMultiSelectTestPage()));
       await tester.pumpAndSettle();
 
       expect(find.byType(MultiSelectDropdownSearchFormField<String>),
@@ -106,8 +107,8 @@ void main() {
 
     testWidgets('should show suggestions when typing',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: SimpleMultiSelectTestPage()));
+      await tester
+          .pumpWidget(const MaterialApp(home: SimpleMultiSelectTestPage()));
       await tester.pumpAndSettle();
 
       final textField = find.byType(TextField);
@@ -125,8 +126,8 @@ void main() {
 
     testWidgets('should filter items based on search',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: SimpleMultiSelectTestPage()));
+      await tester
+          .pumpWidget(const MaterialApp(home: SimpleMultiSelectTestPage()));
       await tester.pumpAndSettle();
 
       final textField = find.byType(TextField);
@@ -146,8 +147,8 @@ void main() {
 
     testWidgets('should handle empty search results',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: SimpleMultiSelectTestPage()));
+      await tester
+          .pumpWidget(const MaterialApp(home: SimpleMultiSelectTestPage()));
       await tester.pumpAndSettle();
 
       final textField = find.byType(TextField);
@@ -163,8 +164,8 @@ void main() {
 
     testWidgets('should display form field correctly',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: SimpleMultiSelectTestPage()));
+      await tester
+          .pumpWidget(const MaterialApp(home: SimpleMultiSelectTestPage()));
       await tester.pumpAndSettle();
 
       // Check basic UI elements
@@ -174,8 +175,8 @@ void main() {
 
     testWidgets('should allow text input and suggestions',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: SimpleMultiSelectTestPage()));
+      await tester
+          .pumpWidget(const MaterialApp(home: SimpleMultiSelectTestPage()));
       await tester.pumpAndSettle();
 
       final textField = find.byType(TextField);

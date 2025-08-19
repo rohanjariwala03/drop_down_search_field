@@ -113,7 +113,8 @@ void main() {
       expect(find.text("4444bbb"), findsOneWidget);
     });
 
-    testWidgets('should handle controller text initialization', (WidgetTester tester) async {
+    testWidgets('should handle controller text initialization',
+        (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(home: TestPage()));
       await tester.pumpAndSettle();
 
@@ -142,7 +143,7 @@ void main() {
       // Enter empty text (should return empty list from suggestionsCallback)
       tester.testTextInput.enterText("");
       await tester.pumpAndSettle(const Duration(milliseconds: 2000));
-      
+
       // No suggestions should be shown
       expect(find.textContaining("aaa"), findsNothing);
       expect(find.textContaining("bbb"), findsNothing);
@@ -164,14 +165,15 @@ void main() {
       expect(find.text('Dropdown Search Field'), findsOneWidget);
     });
 
-    testWidgets('should handle suggestion selection', (WidgetTester tester) async {
+    testWidgets('should handle suggestion selection',
+        (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(home: TestPage()));
       await tester.pumpAndSettle();
 
       // Enter text to show suggestions
       tester.testTextInput.enterText("test");
       await tester.pumpAndSettle(const Duration(milliseconds: 2000));
-      
+
       // Tap on a suggestion
       await tester.tap(find.text("testaaa"));
       await tester.pumpAndSettle();
@@ -181,7 +183,8 @@ void main() {
       expect(textField.controller?.text, "testaaa");
     });
 
-    testWidgets('should handle rapid text changes', (WidgetTester tester) async {
+    testWidgets('should handle rapid text changes',
+        (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(home: TestPage()));
       await tester.pumpAndSettle();
 
@@ -198,7 +201,8 @@ void main() {
       expect(find.text("abcbbb"), findsOneWidget);
     });
 
-    testWidgets('should display no items found builder when configured', (WidgetTester tester) async {
+    testWidgets('should display no items found builder when configured',
+        (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(home: TestPage()));
       await tester.pumpAndSettle();
 
@@ -213,25 +217,28 @@ void main() {
 
       // Check that the widget is inside a Form
       expect(find.byType(Form), findsOneWidget);
-      
+
       // The form key should be accessible
       final form = tester.widget<Form>(find.byType(Form));
       expect(form.child, isA<ListView>());
     });
 
-    testWidgets('should dispose resources properly', (WidgetTester tester) async {
+    testWidgets('should dispose resources properly',
+        (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(home: TestPage()));
       await tester.pumpAndSettle();
 
       // Navigate away to trigger dispose
-      await tester.pumpWidget(const MaterialApp(home: Scaffold(body: Text('New Page'))));
+      await tester.pumpWidget(
+          const MaterialApp(home: Scaffold(body: Text('New Page'))));
       await tester.pumpAndSettle();
 
       // This test mainly ensures no exceptions are thrown during disposal
       expect(find.text('New Page'), findsOneWidget);
     });
 
-    testWidgets('should handle ListView configuration', (WidgetTester tester) async {
+    testWidgets('should handle ListView configuration',
+        (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(home: TestPage()));
       await tester.pumpAndSettle();
 
@@ -240,7 +247,8 @@ void main() {
       expect(listView.padding, const EdgeInsets.symmetric(horizontal: 16.0));
     });
 
-    testWidgets('suggestions should update based on pattern changes', (WidgetTester tester) async {
+    testWidgets('suggestions should update based on pattern changes',
+        (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(home: TestPage()));
       await tester.pumpAndSettle();
 

@@ -26,14 +26,23 @@ class _PerformanceTestPageState extends State<PerformanceTestPage> {
   }
 
   String _generateRandomText() {
-    final words = ['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry', 'Fig', 'Grape'];
-    return words[(DateTime.now().millisecondsSinceEpoch + largeDataset.length) % words.length];
+    final words = [
+      'Apple',
+      'Banana',
+      'Cherry',
+      'Date',
+      'Elderberry',
+      'Fig',
+      'Grape'
+    ];
+    return words[(DateTime.now().millisecondsSinceEpoch + largeDataset.length) %
+        words.length];
   }
 
   Future<List<String>> _searchItems(String pattern) async {
     // Simulate some processing time
     await Future.delayed(const Duration(milliseconds: 10));
-    
+
     return largeDataset
         .where((item) => item.toLowerCase().contains(pattern.toLowerCase()))
         .take(50) // Limit results for performance
@@ -172,10 +181,10 @@ void main() {
 
       // Measure performance of search operation
       final stopwatch = Stopwatch()..start();
-      
+
       await tester.enterText(textField, 'Item');
       await tester.pumpAndSettle();
-      
+
       stopwatch.stop();
 
       // Search should complete within reasonable time
@@ -199,12 +208,12 @@ void main() {
 
       // Simulate rapid typing
       final stopwatch = Stopwatch()..start();
-      
+
       for (int i = 0; i < 10; i++) {
         await tester.enterText(textField, 'Search$i');
         await tester.pump(const Duration(milliseconds: 50));
       }
-      
+
       await tester.pumpAndSettle();
       stopwatch.stop();
 
@@ -231,7 +240,7 @@ void main() {
       await tester.enterText(textField, 'Ite');
       await tester.pump(const Duration(milliseconds: 100));
       await tester.enterText(textField, 'Item');
-      
+
       // Wait for debounce to complete
       await tester.pumpAndSettle();
 
@@ -285,7 +294,7 @@ void main() {
 
       // Should show suggestions with proper semantic labels
       expect(find.text('Screen Reader Compatible'), findsOneWidget);
-      
+
       // Check if suggestions have proper semantics
       final suggestionSemantics = tester.getSemantics(
         find.text('Screen Reader Compatible'),
@@ -293,7 +302,8 @@ void main() {
       expect(suggestionSemantics, isNotNull);
     });
 
-    testWidgets('should handle keyboard navigation', (WidgetTester tester) async {
+    testWidgets('should handle keyboard navigation',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(home: AccessibilityTestPage()),
       );
@@ -325,14 +335,16 @@ void main() {
 
       // Should show accessible no results message
       expect(find.text('No features found'), findsOneWidget);
-      
+
       final noResultsSemantics = tester.getSemantics(
         find.text('No features found'),
       );
-      expect(noResultsSemantics.label, contains('No accessibility features found'));
+      expect(noResultsSemantics.label,
+          contains('No accessibility features found'));
     });
 
-    testWidgets('should support high contrast mode', (WidgetTester tester) async {
+    testWidgets('should support high contrast mode',
+        (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(home: AccessibilityTestPage()),
       );
@@ -340,7 +352,8 @@ void main() {
 
       // Check that basic UI elements are present and visible
       expect(find.text('Accessibility Features'), findsOneWidget);
-      expect(find.byIcon(Icons.accessibility), findsNothing); // No suggestions shown yet
+      expect(find.byIcon(Icons.accessibility),
+          findsNothing); // No suggestions shown yet
 
       final textField = find.byType(TextField);
       await tester.tap(textField);
@@ -425,7 +438,7 @@ void main() {
     testWidgets('should handle widget rebuilds efficiently',
         (WidgetTester tester) async {
       int buildCount = 0;
-      
+
       await tester.pumpWidget(
         MaterialApp(
           home: StatefulBuilder(

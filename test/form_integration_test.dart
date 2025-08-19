@@ -6,7 +6,8 @@ class FormIntegrationTestPage extends StatefulWidget {
   const FormIntegrationTestPage({super.key});
 
   @override
-  State<FormIntegrationTestPage> createState() => _FormIntegrationTestPageState();
+  State<FormIntegrationTestPage> createState() =>
+      _FormIntegrationTestPageState();
 }
 
 class _FormIntegrationTestPageState extends State<FormIntegrationTestPage> {
@@ -16,7 +17,13 @@ class _FormIntegrationTestPageState extends State<FormIntegrationTestPage> {
   final TextEditingController _cityController = TextEditingController();
 
   final List<String> countries = ['USA', 'Canada', 'UK', 'Germany', 'France'];
-  final List<String> cities = ['New York', 'Toronto', 'London', 'Berlin', 'Paris'];
+  final List<String> cities = [
+    'New York',
+    'Toronto',
+    'London',
+    'Berlin',
+    'Paris'
+  ];
 
   String? _validationResult;
 
@@ -178,8 +185,8 @@ void main() {
   group('Form Integration Tests', () {
     testWidgets('should display form with all fields',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: FormIntegrationTestPage()));
+      await tester
+          .pumpWidget(const MaterialApp(home: FormIntegrationTestPage()));
       await tester.pumpAndSettle();
 
       expect(find.byType(Form), findsOneWidget);
@@ -192,8 +199,8 @@ void main() {
 
     testWidgets('should show validation errors when form is submitted empty',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: FormIntegrationTestPage()));
+      await tester
+          .pumpWidget(const MaterialApp(home: FormIntegrationTestPage()));
       await tester.pumpAndSettle();
 
       // Submit form without filling any fields
@@ -209,8 +216,8 @@ void main() {
 
     testWidgets('should validate dropdown selections',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: FormIntegrationTestPage()));
+      await tester
+          .pumpWidget(const MaterialApp(home: FormIntegrationTestPage()));
       await tester.pumpAndSettle();
 
       // Fill name field
@@ -234,8 +241,8 @@ void main() {
 
     testWidgets('should allow valid form submission',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: FormIntegrationTestPage()));
+      await tester
+          .pumpWidget(const MaterialApp(home: FormIntegrationTestPage()));
       await tester.pumpAndSettle();
 
       // Fill name field
@@ -269,8 +276,8 @@ void main() {
     });
 
     testWidgets('should reset form correctly', (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: FormIntegrationTestPage()));
+      await tester
+          .pumpWidget(const MaterialApp(home: FormIntegrationTestPage()));
       await tester.pumpAndSettle();
 
       // Fill all fields
@@ -294,7 +301,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // All fields should be empty
-      final nameField = tester.widget<TextFormField>(find.byType(TextFormField));
+      final nameField =
+          tester.widget<TextFormField>(find.byType(TextFormField));
       expect(nameField.controller?.text, isEmpty);
 
       // Controllers should be cleared
@@ -307,8 +315,8 @@ void main() {
 
     testWidgets('should handle dropdown suggestions correctly',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: FormIntegrationTestPage()));
+      await tester
+          .pumpWidget(const MaterialApp(home: FormIntegrationTestPage()));
       await tester.pumpAndSettle();
 
       // Test country suggestions
@@ -325,8 +333,8 @@ void main() {
     });
 
     testWidgets('should handle no results found', (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: FormIntegrationTestPage()));
+      await tester
+          .pumpWidget(const MaterialApp(home: FormIntegrationTestPage()));
       await tester.pumpAndSettle();
 
       // Test with non-existent country
@@ -341,8 +349,8 @@ void main() {
 
     testWidgets('should integrate with form state management',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: FormIntegrationTestPage()));
+      await tester
+          .pumpWidget(const MaterialApp(home: FormIntegrationTestPage()));
       await tester.pumpAndSettle();
 
       // Submit empty form to trigger validation
@@ -365,8 +373,8 @@ void main() {
 
     testWidgets('should handle multiple dropdown fields independently',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: FormIntegrationTestPage()));
+      await tester
+          .pumpWidget(const MaterialApp(home: FormIntegrationTestPage()));
       await tester.pumpAndSettle();
 
       // Test country dropdown

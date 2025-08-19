@@ -87,7 +87,8 @@ void main() {
       // expect(dropDownSearchFieldSuggestionBoxTester.offset, const Offset(0.0, 61.0));
     });
 
-    testWidgets("Should handle keyboard navigation", (WidgetTester tester) async {
+    testWidgets("Should handle keyboard navigation",
+        (WidgetTester tester) async {
       await tester.pumpWidget(MaterialDropDownSearchFieldHelper
           .getMaterialDropDownSearchFieldPage());
       await tester.pumpAndSettle();
@@ -104,7 +105,8 @@ void main() {
       expect(find.text("Burger"), findsOneWidget);
     });
 
-    testWidgets("Should clear suggestions when text is cleared", (WidgetTester tester) async {
+    testWidgets("Should clear suggestions when text is cleared",
+        (WidgetTester tester) async {
       await tester.pumpWidget(MaterialDropDownSearchFieldHelper
           .getMaterialDropDownSearchFieldPage());
       await tester.pumpAndSettle();
@@ -136,13 +138,14 @@ void main() {
       await tester.tap(dropDownSearchField);
       await tester.pumpAndSettle();
       await tester.enterText(dropDownSearchField, "Milk");
-      
+
       // Should show loading indicator during the 2-second delay
       await tester.pump(const Duration(milliseconds: 500));
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets("Should display suggestions box decoration", (WidgetTester tester) async {
+    testWidgets("Should display suggestions box decoration",
+        (WidgetTester tester) async {
       await tester.pumpWidget(MaterialDropDownSearchFieldHelper
           .getMaterialDropDownSearchFieldPage());
       await tester.pumpAndSettle();
@@ -159,7 +162,8 @@ void main() {
       expect(find.byType(CompositedTransformFollower), findsNWidgets(2));
     });
 
-    testWidgets("Should handle case insensitive search", (WidgetTester tester) async {
+    testWidgets("Should handle case insensitive search",
+        (WidgetTester tester) async {
       await tester.pumpWidget(MaterialDropDownSearchFieldHelper
           .getMaterialDropDownSearchFieldPage());
       await tester.pumpAndSettle();
@@ -168,7 +172,7 @@ void main() {
           find.byType(DropDownSearchFormField<String>).first;
       await tester.tap(dropDownSearchField);
       await tester.pumpAndSettle(const Duration(seconds: 2));
-      
+
       // Test with lowercase
       await tester.enterText(dropDownSearchField, "cheese");
       await tester.pumpAndSettle(const Duration(seconds: 2));
@@ -189,16 +193,17 @@ void main() {
           find.byType(DropDownSearchFormField<String>).first;
       await tester.tap(dropDownSearchField);
       await tester.pumpAndSettle(const Duration(seconds: 2));
-      
+
       // Test partial match for "Milk" items
       await tester.enterText(dropDownSearchField, "Mil");
       await tester.pumpAndSettle(const Duration(seconds: 2));
-      
+
       expect(find.text("Milk"), findsOneWidget);
       expect(find.text("Milkshake"), findsOneWidget);
     });
 
-    testWidgets("Should close suggestions when tapping outside", (WidgetTester tester) async {
+    testWidgets("Should close suggestions when tapping outside",
+        (WidgetTester tester) async {
       await tester.pumpWidget(MaterialDropDownSearchFieldHelper
           .getMaterialDropDownSearchFieldPage());
       await tester.pumpAndSettle();
@@ -222,7 +227,8 @@ void main() {
       expect(find.byType(CompositedTransformFollower), findsNothing);
     });
 
-    testWidgets("Should maintain text after selection", (WidgetTester tester) async {
+    testWidgets("Should maintain text after selection",
+        (WidgetTester tester) async {
       await tester.pumpWidget(MaterialDropDownSearchFieldHelper
           .getMaterialDropDownSearchFieldPage());
       await tester.pumpAndSettle();

@@ -11,33 +11,105 @@ class PaginatedTestPage extends StatefulWidget {
 
 class _PaginatedTestPageState extends State<PaginatedTestPage> {
   final TextEditingController _controller = TextEditingController();
-  
+
   // Simulated large dataset
   final List<String> allCountries = [
-    'Afghanistan', 'Albania', 'Algeria', 'Argentina', 'Armenia', 'Australia',
-    'Austria', 'Azerbaijan', 'Bahrain', 'Bangladesh', 'Belarus', 'Belgium',
-    'Brazil', 'Bulgaria', 'Cambodia', 'Cameroon', 'Canada', 'Chile',
-    'China', 'Colombia', 'Croatia', 'Czech Republic', 'Denmark', 'Ecuador',
-    'Egypt', 'Estonia', 'Finland', 'France', 'Georgia', 'Germany',
-    'Ghana', 'Greece', 'Hungary', 'Iceland', 'India', 'Indonesia',
-    'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Japan',
-    'Jordan', 'Kazakhstan', 'Kenya', 'Kuwait', 'Latvia', 'Lebanon',
-    'Lithuania', 'Luxembourg', 'Malaysia', 'Mexico', 'Morocco', 'Netherlands',
-    'New Zealand', 'Nigeria', 'Norway', 'Pakistan', 'Peru', 'Philippines',
-    'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 'Saudi Arabia',
-    'Singapore', 'Slovakia', 'Slovenia', 'South Africa', 'South Korea', 'Spain',
-    'Sri Lanka', 'Sweden', 'Switzerland', 'Thailand', 'Turkey', 'Ukraine',
-    'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Venezuela', 'Vietnam'
+    'Afghanistan',
+    'Albania',
+    'Algeria',
+    'Argentina',
+    'Armenia',
+    'Australia',
+    'Austria',
+    'Azerbaijan',
+    'Bahrain',
+    'Bangladesh',
+    'Belarus',
+    'Belgium',
+    'Brazil',
+    'Bulgaria',
+    'Cambodia',
+    'Cameroon',
+    'Canada',
+    'Chile',
+    'China',
+    'Colombia',
+    'Croatia',
+    'Czech Republic',
+    'Denmark',
+    'Ecuador',
+    'Egypt',
+    'Estonia',
+    'Finland',
+    'France',
+    'Georgia',
+    'Germany',
+    'Ghana',
+    'Greece',
+    'Hungary',
+    'Iceland',
+    'India',
+    'Indonesia',
+    'Iran',
+    'Iraq',
+    'Ireland',
+    'Israel',
+    'Italy',
+    'Japan',
+    'Jordan',
+    'Kazakhstan',
+    'Kenya',
+    'Kuwait',
+    'Latvia',
+    'Lebanon',
+    'Lithuania',
+    'Luxembourg',
+    'Malaysia',
+    'Mexico',
+    'Morocco',
+    'Netherlands',
+    'New Zealand',
+    'Nigeria',
+    'Norway',
+    'Pakistan',
+    'Peru',
+    'Philippines',
+    'Poland',
+    'Portugal',
+    'Qatar',
+    'Romania',
+    'Russia',
+    'Saudi Arabia',
+    'Singapore',
+    'Slovakia',
+    'Slovenia',
+    'South Africa',
+    'South Korea',
+    'Spain',
+    'Sri Lanka',
+    'Sweden',
+    'Switzerland',
+    'Thailand',
+    'Turkey',
+    'Ukraine',
+    'United Arab Emirates',
+    'United Kingdom',
+    'United States',
+    'Uruguay',
+    'Venezuela',
+    'Vietnam'
   ];
 
   // Simulate paginated API call
   Future<List<String>> _getCountries(String pattern) async {
-    await Future.delayed(const Duration(milliseconds: 500)); // Simulate network delay
-    
+    await Future.delayed(
+        const Duration(milliseconds: 500)); // Simulate network delay
+
     final filtered = allCountries
-        .where((country) => country.toLowerCase().contains(pattern.toLowerCase()))
+        .where(
+            (country) => country.toLowerCase().contains(pattern.toLowerCase()))
         .toList();
-    
+
     // Return first 10 items (simulate pagination)
     return filtered.take(10).toList();
   }
@@ -104,8 +176,7 @@ void main() {
   group('Paginated Tests', () {
     testWidgets('should display paginated dropdown field',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: PaginatedTestPage()));
+      await tester.pumpWidget(const MaterialApp(home: PaginatedTestPage()));
       await tester.pumpAndSettle();
 
       expect(find.byType(DropDownSearchFormField<String>), findsOneWidget);
@@ -115,8 +186,7 @@ void main() {
 
     testWidgets('should show loading indicator during search',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: PaginatedTestPage()));
+      await tester.pumpWidget(const MaterialApp(home: PaginatedTestPage()));
       await tester.pumpAndSettle();
 
       final textField = find.byType(TextField);
@@ -133,8 +203,7 @@ void main() {
 
     testWidgets('should respect minimum characters for suggestions',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: PaginatedTestPage()));
+      await tester.pumpWidget(const MaterialApp(home: PaginatedTestPage()));
       await tester.pumpAndSettle();
 
       final textField = find.byType(TextField);
@@ -152,8 +221,7 @@ void main() {
 
     testWidgets('should show suggestions after minimum characters',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: PaginatedTestPage()));
+      await tester.pumpWidget(const MaterialApp(home: PaginatedTestPage()));
       await tester.pumpAndSettle();
 
       final textField = find.byType(TextField);
@@ -171,8 +239,7 @@ void main() {
 
     testWidgets('should limit results to 10 items',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: PaginatedTestPage()));
+      await tester.pumpWidget(const MaterialApp(home: PaginatedTestPage()));
       await tester.pumpAndSettle();
 
       final textField = find.byType(TextField);
@@ -190,8 +257,7 @@ void main() {
 
     testWidgets('should handle selection correctly',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: PaginatedTestPage()));
+      await tester.pumpWidget(const MaterialApp(home: PaginatedTestPage()));
       await tester.pumpAndSettle();
 
       final textField = find.byType(TextField);
@@ -212,8 +278,7 @@ void main() {
 
     testWidgets('should show no results message when appropriate',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: PaginatedTestPage()));
+      await tester.pumpWidget(const MaterialApp(home: PaginatedTestPage()));
       await tester.pumpAndSettle();
 
       final textField = find.byType(TextField);
@@ -229,8 +294,7 @@ void main() {
 
     testWidgets('should handle debounce correctly',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: PaginatedTestPage()));
+      await tester.pumpWidget(const MaterialApp(home: PaginatedTestPage()));
       await tester.pumpAndSettle();
 
       final textField = find.byType(TextField);
@@ -243,7 +307,7 @@ void main() {
       await tester.enterText(textField, 'Ger');
       await tester.pump(const Duration(milliseconds: 100));
       await tester.enterText(textField, 'Germ');
-      
+
       // Wait for debounce to complete
       await tester.pumpAndSettle(const Duration(seconds: 1));
 
@@ -253,8 +317,7 @@ void main() {
 
     testWidgets('should display icons in suggestions',
         (WidgetTester tester) async {
-      await tester.pumpWidget(
-          const MaterialApp(home: PaginatedTestPage()));
+      await tester.pumpWidget(const MaterialApp(home: PaginatedTestPage()));
       await tester.pumpAndSettle();
 
       final textField = find.byType(TextField);
