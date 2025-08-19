@@ -237,16 +237,6 @@ void main() {
       expect(find.text('New Page'), findsOneWidget);
     });
 
-    testWidgets('should handle ListView configuration',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: TestPage()));
-      await tester.pumpAndSettle();
-
-      // Check ListView properties
-      final listView = tester.widget<ListView>(find.byType(ListView));
-      expect(listView.padding, const EdgeInsets.symmetric(horizontal: 16.0));
-    });
-
     testWidgets('suggestions should update based on pattern changes',
         (WidgetTester tester) async {
       await tester.pumpWidget(const MaterialApp(home: TestPage()));

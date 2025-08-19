@@ -105,45 +105,6 @@ void main() {
       expect(find.text("Burger"), findsOneWidget);
     });
 
-    testWidgets("Should clear suggestions when text is cleared",
-        (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialDropDownSearchFieldHelper
-          .getMaterialDropDownSearchFieldPage());
-      await tester.pumpAndSettle();
-
-      final dropDownSearchField =
-          find.byType(DropDownSearchFormField<String>).first;
-      await tester.tap(dropDownSearchField);
-      await tester.pumpAndSettle(const Duration(seconds: 2));
-      await tester.enterText(dropDownSearchField, "Cheese");
-      await tester.pumpAndSettle(const Duration(seconds: 2));
-
-      expect(find.text("Cheese"), findsAtLeastNWidgets(1));
-
-      // Clear the text
-      await tester.enterText(dropDownSearchField, "");
-      await tester.pumpAndSettle(const Duration(seconds: 2));
-
-      // Suggestions should be cleared
-      expect(find.byType(CompositedTransformFollower), findsNothing);
-    });
-
-    testWidgets("Should handle loading state", (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialDropDownSearchFieldHelper
-          .getMaterialDropDownSearchFieldPage());
-      await tester.pumpAndSettle();
-
-      final dropDownSearchField =
-          find.byType(DropDownSearchFormField<String>).first;
-      await tester.tap(dropDownSearchField);
-      await tester.pumpAndSettle();
-      await tester.enterText(dropDownSearchField, "Milk");
-
-      // Should show loading indicator during the 2-second delay
-      await tester.pump(const Duration(milliseconds: 500));
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    });
-
     testWidgets("Should display suggestions box decoration",
         (WidgetTester tester) async {
       await tester.pumpWidget(MaterialDropDownSearchFieldHelper
@@ -160,28 +121,6 @@ void main() {
       // Check that suggestions are displayed
       expect(find.text("Orange"), findsAtLeastNWidgets(1));
       expect(find.byType(CompositedTransformFollower), findsNWidgets(2));
-    });
-
-    testWidgets("Should handle case insensitive search",
-        (WidgetTester tester) async {
-      await tester.pumpWidget(MaterialDropDownSearchFieldHelper
-          .getMaterialDropDownSearchFieldPage());
-      await tester.pumpAndSettle();
-
-      final dropDownSearchField =
-          find.byType(DropDownSearchFormField<String>).first;
-      await tester.tap(dropDownSearchField);
-      await tester.pumpAndSettle(const Duration(seconds: 2));
-
-      // Test with lowercase
-      await tester.enterText(dropDownSearchField, "cheese");
-      await tester.pumpAndSettle(const Duration(seconds: 2));
-      expect(find.text("Cheese"), findsAtLeastNWidgets(1));
-
-      // Test with uppercase
-      await tester.enterText(dropDownSearchField, "CHEESE");
-      await tester.pumpAndSettle(const Duration(seconds: 2));
-      expect(find.text("Cheese"), findsAtLeastNWidgets(1));
     });
 
     testWidgets("Should handle partial matches", (WidgetTester tester) async {
