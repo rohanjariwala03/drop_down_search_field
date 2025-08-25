@@ -18,6 +18,7 @@ class SuggestionsList<T> extends StatefulWidget {
   final SuggestionMultiSelectionCallback<T>? onSuggestionMultiSelected;
   final SuggestionsCallback<T>? suggestionsCallback;
   final ItemBuilder<T>? itemBuilder;
+  final ItemDisabledCallback<T>? itemDisabledCallback;
   final IndexedWidgetBuilder? itemSeparatorBuilder;
   final LayoutArchitecture? layoutArchitecture;
   final ScrollController? scrollController;
@@ -62,6 +63,7 @@ class SuggestionsList<T> extends StatefulWidget {
     this.onSuggestionMultiSelected,
     this.suggestionsCallback,
     this.itemBuilder,
+    this.itemDisabledCallback,
     this.itemSeparatorBuilder,
     this.layoutArchitecture,
     this.scrollController,
@@ -116,6 +118,8 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
   int _suggestionIndex = -1;
   int pageNumber = 0;
   final multiSelectSearchFieldFocus = FocusNode();
+  // Cache for disabled state to avoid repeated calls
+  final Map<T, bool> _disabledCache = <T, bool>{};
 
   _SuggestionsListState() {
     _controllerListener = () {
@@ -132,6 +136,7 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
             _isLoading = false;
             _suggestions = null;
             _suggestionsValid = true;
+            _clearDisabledCache(); // Clear cache when suggestions are cleared
           });
         }
         return;
@@ -195,9 +200,11 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
 
       if (event == LogicalKeyboardKey.arrowDown &&
           _suggestionIndex < suggestionsLength - 1) {
-        _suggestionIndex++;
+        _suggestionIndex = _findNextEnabledIndex(
+            _suggestionIndex + 1, suggestionsLength, true);
       } else if (event == LogicalKeyboardKey.arrowUp && _suggestionIndex > -1) {
-        _suggestionIndex--;
+        _suggestionIndex = _findNextEnabledIndex(
+            _suggestionIndex - 1, suggestionsLength, false);
       }
 
       if (_suggestionIndex > -1 && _suggestionIndex < _focusNodes.length) {
@@ -282,9 +289,13 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
           }
           _animationController!.forward(from: animationStart);
 
+          this._error = error;
+          this._isLoading = false;
+          this._suggestions = suggestions;
           _error = error;
           _isLoading = false;
           _suggestions = suggestions;
+          _clearDisabledCache(); // Clear cache when suggestions change
           _focusNodes = List.generate(
             _suggestions?.length ?? 0,
             (index) => FocusNode(onKeyEvent: (focusNode, event) {
@@ -469,6 +480,8 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
           itemBuilder: (BuildContext context, int index) {
             final suggestion = _suggestions!.elementAt(index);
             final focusNode = _focusNodes[index];
+            final isDisabled = _isItemDisabled(suggestion);
+
             return TextFieldTapRegion(
               child: widget.isMultiSelectDropdown
                   ? StatefulBuilder(
@@ -484,24 +497,28 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
                           controlAffinity: ListTileControlAffinity.leading,
                           title: widget.itemBuilder!(context, suggestion),
                           value: isSelected,
-                          onChanged: (bool? checked) {
-                            widget.onSuggestionMultiSelected!(
-                                suggestion, checked ?? false);
-                            setState(() {});
-                          },
+                          onChanged: isDisabled
+                              ? null
+                              : (bool? checked) {
+                                  widget.onSuggestionMultiSelected!(
+                                      suggestion, checked ?? false);
+                                  setState(() {});
+                                },
                         );
                       },
                     )
                   : InkWell(
                       focusColor: Theme.of(context).hoverColor,
                       focusNode: focusNode,
-                      child: widget.itemBuilder!(context, suggestion),
-                      onTap: () {
-                        // * we give the focus back to the text field
-                        widget.giveTextFieldFocus();
+                      onTap: isDisabled
+                          ? null
+                          : () {
+                              // * we give the focus back to the text field
+                              widget.giveTextFieldFocus();
 
-                        widget.onSuggestionSelected!(suggestion);
-                      },
+                              widget.onSuggestionSelected!(suggestion);
+                            },
+                      child: widget.itemBuilder!(context, suggestion),
                     ),
             );
           },
@@ -543,6 +560,7 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
       List.generate(_suggestions!.length, (index) {
         final suggestion = _suggestions!.elementAt(index);
         final focusNode = _focusNodes[index];
+        final isDisabled = _isItemDisabled(suggestion);
 
         return TextFieldTapRegion(
           child: widget.isMultiSelectDropdown
@@ -554,28 +572,32 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
                     return CheckboxListTile(
                       title: widget.itemBuilder!(context, suggestion),
                       value: isSelected,
-                      onChanged: (bool? checked) {
-                        // widget.controller?.text = widget.initiallySelectedItems
-                        //         ?.map((e) => e.toString())
-                        //         .join(', ') ??
-                        //     '';
-                        widget.onSuggestionMultiSelected!(
-                            suggestion, checked ?? false);
-                        setState(() {});
-                      },
+                      onChanged: isDisabled
+                          ? null
+                          : (bool? checked) {
+                              // widget.controller?.text = widget.initiallySelectedItems
+                              //         ?.map((e) => e.toString())
+                              //         .join(', ') ??
+                              //     '';
+                              widget.onSuggestionMultiSelected!(
+                                  suggestion, checked ?? false);
+                              setState(() {});
+                            },
                     );
                   },
                 )
               : InkWell(
                   focusColor: Theme.of(context).hoverColor,
                   focusNode: focusNode,
-                  child: widget.itemBuilder!(context, suggestion),
-                  onTap: () {
-                    // * we give the focus back to the text field
-                    widget.giveTextFieldFocus();
+                  onTap: isDisabled
+                      ? null
+                      : () {
+                          // * we give the focus back to the text field
+                          widget.giveTextFieldFocus();
 
-                    widget.onSuggestionSelected!(suggestion);
-                  },
+                          widget.onSuggestionSelected!(suggestion);
+                        },
+                  child: widget.itemBuilder!(context, suggestion),
                 ),
         );
       }),
@@ -627,5 +649,55 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
       mainAxisMargin: widget.decoration?.scrollBarDecoration?.mainAxisMargin,
       interactive: widget.decoration?.scrollBarDecoration?.interactive,
     );
+  }
+
+  /// Finds the next enabled item index for keyboard navigation
+  /// Returns -1 if no enabled item is found
+  int _findNextEnabledIndex(
+      int startIndex, int suggestionsLength, bool forward) {
+    if (widget.itemDisabledCallback == null) {
+      // If no disabled callback is provided, return the startIndex if within bounds
+      if (forward) {
+        return startIndex < suggestionsLength ? startIndex : -1;
+      } else {
+        return startIndex >= 0 ? startIndex : -1;
+      }
+    }
+
+    int currentIndex = startIndex;
+    while (forward ? (currentIndex < suggestionsLength) : (currentIndex >= 0)) {
+      final suggestion = _suggestions!.elementAt(currentIndex);
+      final isDisabled = _isItemDisabled(suggestion);
+
+      if (!isDisabled) {
+        return currentIndex;
+      }
+
+      currentIndex = forward ? currentIndex + 1 : currentIndex - 1;
+    }
+
+    return -1; // No enabled item found
+  }
+
+  /// Checks if an item is disabled using cache to avoid repeated calls
+  bool _isItemDisabled(T item) {
+    if (widget.itemDisabledCallback == null) {
+      return false;
+    }
+
+    // Check cache first
+    if (_disabledCache.containsKey(item)) {
+      return _disabledCache[item]!;
+    }
+
+    // Call the callback and cache the result
+    final isDisabled = widget.itemDisabledCallback!(item);
+    _disabledCache[item] = isDisabled;
+    return isDisabled;
+  }
+
+  /// Clears the disabled cache when suggestions change
+  void _clearDisabledCache() {
+    _disabledCache.clear();
   }
 }

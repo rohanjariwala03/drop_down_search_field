@@ -351,6 +351,22 @@ class DropDownSearchField<T> extends StatefulWidget {
   /// }
   /// ```
   final ItemBuilder<T> itemBuilder;
+
+  /// Called for each suggestion to determine if it should be disabled.
+  ///
+  /// This callback is optional. If provided, it is called for each suggestion
+  /// and expected to return a boolean indicating whether the suggestion should
+  /// be disabled. Disabled suggestions cannot be selected and don't respond to
+  /// hover or keyboard navigation.
+  ///
+  /// Example:
+  /// ```dart
+  /// itemDisabledCallback: (suggestion) {
+  ///   return suggestion.isDisabled; // Assuming your suggestion object has an isDisabled property
+  /// }
+  /// ```
+  final ItemDisabledCallback<T>? itemDisabledCallback;
+
   final IndexedWidgetBuilder? itemSeparatorBuilder;
 
   /// By default, we render the suggestions in a ListView, using
@@ -617,6 +633,7 @@ class DropDownSearchField<T> extends StatefulWidget {
     this.suggestionsCallback,
     this.paginatedSuggestionsCallback,
     required this.itemBuilder,
+    this.itemDisabledCallback,
     this.itemSeparatorBuilder,
     this.layoutArchitecture,
     this.intercepting = false,
@@ -919,6 +936,7 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
                 widget.onSuggestionMultiSelected!(suggestion, selected);
               },
         itemBuilder: widget.itemBuilder,
+        itemDisabledCallback: widget.itemDisabledCallback,
         itemSeparatorBuilder: widget.itemSeparatorBuilder,
         layoutArchitecture: widget.layoutArchitecture,
         direction: _suggestionsBox!.direction,
