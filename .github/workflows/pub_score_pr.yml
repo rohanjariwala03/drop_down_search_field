@@ -47,16 +47,23 @@ jobs:
           echo "score=$Score/$MaxScore" >> $GITHUB_OUTPUT
           echo "updatedOn=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_OUTPUT
 
+      - name: Delete old comments from GitHub Actions bot
+        run: |
+          comments=$(gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
+            --jq '.[] | select(.user.login=="github-actions[bot]") | .id')
+
+          for id in $comments; do
+            gh api repos/${{ github.repository }}/issues/comments/$id -X DELETE
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Post PR comment with pub.dev score
         uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            <!-- pubdev-dry-run -->
             ✅ Dry-run completed successfully.
             📝 **pub.dev dry-run & score report**
               - Score: ${{ steps.pana.outputs.score }}
               - Updated On: ${{ steps.pana.outputs.updatedOn }}
-          edit-mode: replace
-          body-includes: "<!-- pubdev-dry-run -->"
-          comment-author: "github-actions[bot]"
