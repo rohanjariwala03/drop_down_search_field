@@ -1,10 +1,8 @@
 name: Flutter Package Dry Run
 
 on:
-  workflow_run:
-    workflows: ["Flutter Package Dry Run"]
-    types:
-      - completed
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   dry-run:
