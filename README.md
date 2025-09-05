@@ -352,5 +352,4 @@ You can checkout detailed blog on medium.
 
 
 ## TODO
-- Add More Examples.
 - Give more customization options to users such as color, style and sizing.

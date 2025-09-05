@@ -1,24 +1,42 @@
 name: Publish to pub.dev
 
 on:
-  push:
-    tags:
-    - 'v[0-9]+.[0-9]+.[0-9]+'
+  release:
+    types: [published]
 
 jobs:
   publish:
-    permissions:
-      id-token: write
-
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout source
+        uses: actions/checkout@v4
 
-      - uses: dart-lang/setup-dart@v1
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: stable
 
       - name: Install dependencies
-        run: dart pub get
-        
-      - name: Publish
-        run: dart pub publish --force
+        run: flutter pub get
+
+      - name: Verify version matches tag
+        run: |
+          TAG_VERSION=${GITHUB_REF#refs/tags/}
+          PUBSPEC_VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+
+          if [ "v$PUBSPEC_VERSION" != "$TAG_VERSION" ]; then
+            echo "❌ Version mismatch!"
+            echo "pubspec.yaml version: $PUBSPEC_VERSION"
+            echo "GitHub release tag: $TAG_VERSION"
+            exit 1
+          fi
+          echo "✅ Version check passed: $PUBSPEC_VERSION"
+
+      - name: Publish package
+        env:
+          PUB_CREDENTIALS: ${{ secrets.PUB_CREDENTIALS }}
+        run: |
+          mkdir -p ~/.pub-cache
+          echo "$PUB_CREDENTIALS" > ~/.pub-cache/credentials.json
+          flutter pub publish --force
