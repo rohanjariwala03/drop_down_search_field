@@ -41,13 +41,10 @@ jobs:
           cat pana_report.json
 
           # Try to extract scores (fallbacks to "N/A" if missing)
-          HEALTH=$(jq -r '.scores.health // "N/A"' pana_report.json)
-          MAINTENANCE=$(jq -r '.scores.maintenance // "N/A"' pana_report.json)
-          POPULARITY=$(jq -r '.scores.popularity // "N/A"' pana_report.json)
+          Score=$(jq -r '.scores.grantedPoints // "N/A"' pana_report.json)
+          MaxScore=$(jq -r '.scores.maxPoints // "N/A"' pana_report.json)
 
-          echo "health=$HEALTH" >> $GITHUB_OUTPUT
-          echo "maintenance=$MAINTENANCE" >> $GITHUB_OUTPUT
-          echo "popularity=$POPULARITY" >> $GITHUB_OUTPUT
+          echo "score=$Score/$MaxScore" >> $GITHUB_OUTPUT
 
       - name: Post PR comment with pub.dev score
         uses: peter-evans/create-or-update-comment@v4
