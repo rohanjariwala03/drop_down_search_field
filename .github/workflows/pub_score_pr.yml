@@ -59,3 +59,4 @@ jobs:
               - Updated On: ${{ steps.pana.outputs.updatedOn }}
           edit-mode: replace
           body-includes: "<!-- pubdev-dry-run -->"
+          comment-author: "github-actions[bot]"
