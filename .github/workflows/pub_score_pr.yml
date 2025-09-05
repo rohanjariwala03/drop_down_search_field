@@ -51,10 +51,8 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
+            ✅ Dry-run completed successfully.
             📝 **pub.dev dry-run & score report**
-
-            ✅ Dry-run completed successfully.  
-            📊 **Pub.dev score**  
-            - Score: ${{ steps.pana.outputs.score }}
+              - Score: ${{ steps.pana.outputs.score }}
           edit-mode: replace
           body-includes: "<!-- pubdev-dry-run -->"
