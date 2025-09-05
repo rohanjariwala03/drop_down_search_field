@@ -54,7 +54,7 @@ jobs:
             📝 **pub.dev dry-run & score report**
 
             ✅ Dry-run completed successfully.  
-            📊 **Pana scores**  
-            - Health: ${{ steps.pana.outputs.health }}  
-            - Maintenance: ${{ steps.pana.outputs.maintenance }}  
-            - Popularity: ${{ steps.pana.outputs.popularity }}
+            📊 **Pub.dev score**  
+            - Score: ${{ steps.pana.outputs.score }}
+          edit-mode: replace
+          body-includes: "<!-- pubdev-dry-run -->"
