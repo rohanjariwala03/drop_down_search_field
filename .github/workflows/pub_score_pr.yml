@@ -1,0 +1,55 @@
+name: Flutter Package Dry Run
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Dry-run publish
+        run: flutter pub publish --dry-run
+
+      - name: Install pana
+        run: dart pub global activate pana
+
+      - name: Run pana and extract summary
+        id: pana
+        run: |
+          export PATH="$PATH:$HOME/.pub-cache/bin"
+          pana . --json > pana_report.json
+
+          # Extract key scores
+          HEALTH=$(jq '.scores.health ?? "N/A"' pana_report.json)
+          MAINTENANCE=$(jq '.scores.maintenance ?? "N/A"' pana_report.json)
+          DEPENDENCY=$(jq '.scores.dependency ?? "N/A"' pana_report.json)
+
+          echo "health=$HEALTH" >> $GITHUB_OUTPUT
+          echo "maintenance=$MAINTENANCE" >> $GITHUB_OUTPUT
+          echo "dependency=$DEPENDENCY" >> $GITHUB_OUTPUT
+
+      - name: Post PR comment with pub.dev score
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            📝 **pub.dev dry-run & score report**
+
+            ✅ Dry-run completed successfully.  
+            📊 **Pana scores**  
+            - Health: ${{ steps.pana.outputs.health }}  
+            - Maintenance: ${{ steps.pana.outputs.maintenance }}  
+            - Dependency: ${{ steps.pana.outputs.dependency }}
