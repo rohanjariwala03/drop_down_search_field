@@ -45,14 +45,17 @@ jobs:
           MaxScore=$(jq -r '.scores.maxPoints // "N/A"' pana_report.json)
 
           echo "score=$Score/$MaxScore" >> $GITHUB_OUTPUT
+          echo "updatedOn=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_OUTPUT
 
       - name: Post PR comment with pub.dev score
         uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
+            <!-- pubdev-dry-run -->
             ✅ Dry-run completed successfully.
             📝 **pub.dev dry-run & score report**
               - Score: ${{ steps.pana.outputs.score }}
+              - Updated On: ${{ steps.pana.outputs.updatedOn }}
           edit-mode: replace
           body-includes: "<!-- pubdev-dry-run -->"
