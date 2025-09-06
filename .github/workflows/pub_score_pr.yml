@@ -1,0 +1,69 @@
+name: Flutter Package Dry Run
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          flutter-version: "3.32.6"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Dry-run publish
+        run: flutter pub publish --dry-run
+
+      - name: Install pana
+        run: dart pub global activate pana
+
+      - name: Run pana and extract summary
+        id: pana
+        run: |
+          export PATH="$PATH:$HOME/.pub-cache/bin"
+          pana . --json > pana_report.json
+
+          echo "🔎 Pana raw output:"
+          cat pana_report.json
+
+          # Try to extract scores (fallbacks to "N/A" if missing)
+          Score=$(jq -r '.scores.grantedPoints // "N/A"' pana_report.json)
+          MaxScore=$(jq -r '.scores.maxPoints // "N/A"' pana_report.json)
+
+          echo "score=$Score/$MaxScore" >> $GITHUB_OUTPUT
+          echo "updatedOn=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_OUTPUT
+
+      - name: Delete old comments from GitHub Actions bot
+        run: |
+          comments=$(gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
+            --jq '.[] | select(.user.login=="github-actions[bot]") | .id')
+
+          for id in $comments; do
+            gh api repos/${{ github.repository }}/issues/comments/$id -X DELETE
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post PR comment with pub.dev score
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ✅ Dry-run completed successfully.
+            📝 **pub.dev dry-run & score report**
+              - Score: ${{ steps.pana.outputs.score }}
+              - Updated On: ${{ steps.pana.outputs.updatedOn }}

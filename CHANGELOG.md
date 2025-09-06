@@ -1,3 +1,8 @@
+## 1.2.0 - 05/09/2025
+- Support for disabled items in dropdown list
+- Added more test cases
+- Resolved issues requested by users.
+
 ## 1.1.3 - 11/04/2025
 - Hotfix release for Multi select dropdown.
 - Resolved issues requested by users.
