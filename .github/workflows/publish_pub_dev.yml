@@ -6,11 +6,16 @@ on:
 
 jobs:
   publish:
+    permissions:
+      id-token: write
+
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -35,9 +40,4 @@ jobs:
           echo "✅ Version check passed: $PUBSPEC_VERSION"
 
       - name: Publish package
-        env:
-          PUB_CREDENTIALS: ${{ secrets.PUB_CREDENTIALS }}
-        run: |
-          mkdir -p ~/.pub-cache
-          echo "$PUB_CREDENTIALS" > ~/.pub-cache/credentials.json
-          flutter pub publish --force
+        run: dart pub publish --force
