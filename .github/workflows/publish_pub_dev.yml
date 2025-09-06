@@ -1,9 +1,8 @@
 name: Publish to pub.dev
-
 on:
-  release:
-    types: [published]
-
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
 jobs:
   publish:
     permissions:
@@ -12,16 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - uses: dart-lang/setup-dart@v1
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: "stable"
-          flutter-version: "3.32.6"
 
       - name: Install dependencies
         run: flutter pub get
