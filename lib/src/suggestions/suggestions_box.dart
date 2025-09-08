@@ -92,29 +92,9 @@ class SuggestionsBox {
   void resize() {
     // check to see if widget is still mounted
     // user may have closed the widget with the keyboard still open
-    if (widgetMounted && overlayEntry != null) {
-      try {
-        _adjustMaxHeightAndOrientation();
-        // Schedule the markNeedsBuild for the next frame to avoid layout conflicts
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (widgetMounted && overlayEntry != null) {
-            overlayEntry!.markNeedsBuild();
-          }
-        });
-      } catch (e) {
-        // If there's a layout issue, delay the resize until the next frame
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (widgetMounted && overlayEntry != null) {
-            try {
-              _adjustMaxHeightAndOrientation();
-              overlayEntry!.markNeedsBuild();
-            } catch (e) {
-              // If it still fails, there might be a more serious issue
-              // Log or handle the error as needed
-            }
-          }
-        });
-      }
+    if (widgetMounted) {
+      _adjustMaxHeightAndOrientation();
+      overlayEntry!.markNeedsBuild();
     }
   }
 
@@ -124,17 +104,8 @@ class SuggestionsBox {
     DropDownSearchField widget = context.widget as DropDownSearchField;
 
     RenderBox? box = context.findRenderObject() as RenderBox?;
-    if (box == null || !box.hasSize || !box.attached) {
+    if (box == null || box.hasSize == false) {
       return;
-    }
-
-    // Additional check to ensure the render object is in a valid state
-    try {
-      if (box.debugNeedsLayout) {
-        return; // Don't proceed if the box needs layout
-      }
-    } catch (e) {
-      return; // If we can't check the layout state, it's safer to return
     }
 
     textBoxWidth = box.size.width;
