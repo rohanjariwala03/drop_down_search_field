@@ -18,5 +18,3 @@ typedef SuggestionMultiSelectionCallback<T> = void Function(
     T suggestion, bool selected);
 
 typedef ChipBuilder<T> = Widget Function(BuildContext context, T itemData);
-
-typedef ItemDisabledCallback<T> = bool Function(T itemData);
