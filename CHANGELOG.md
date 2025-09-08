@@ -1,4 +1,4 @@
-## 1.2.1 - 08/09/2025
+## 1.2.2 - 08/09/2025
 - Hotfix release for the overlay issue
 
 ## 1.2.0 - 05/09/2025
