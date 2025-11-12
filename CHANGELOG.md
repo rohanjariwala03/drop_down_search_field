@@ -1,3 +1,6 @@
+## 1.2.2+1 - 12/11/2025
+- Supporting suffixIcon for searchable dropdown.
+
 ## 1.2.2 - 08/09/2025
 - Hotfix release for the overlay issue
 
