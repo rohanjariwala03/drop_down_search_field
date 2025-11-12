@@ -121,7 +121,7 @@ class SuggestionsBox {
   // See if there's enough room in the desired direction for the overlay to display
   // correctly. If not, try the opposite direction if things look more roomy there
   void _adjustMaxHeightAndOrientation() {
-    DropDownSearchField widget = context.widget as DropDownSearchField;
+    Widget widget = context.widget;
 
     RenderBox? box = context.findRenderObject() as RenderBox?;
     if (box == null || !box.hasSize || !box.attached) {
@@ -187,7 +187,7 @@ class SuggestionsBox {
   double _calculateMaxHeight(
       AxisDirection direction,
       RenderBox box,
-      DropDownSearchField widget,
+      dynamic widget,
       double windowHeight,
       MediaQuery rootMediaQuery,
       double keyboardHeight,
