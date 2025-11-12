@@ -1,3 +1,6 @@
+## 1.2.0+1 - 12/11/2025
+- Supporting suffixIcon for searchable dropdown.
+
 ## 1.2.0 - 05/09/2025
 - Support for disabled items in dropdown list
 - Added more test cases
