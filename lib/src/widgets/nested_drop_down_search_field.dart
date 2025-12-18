@@ -9,7 +9,6 @@ import 'package:drop_down_search_field/src/nested_item_widgets/nested_item_model
 import 'package:drop_down_search_field/src/type_def.dart';
 import 'package:drop_down_search_field/src/multi_selection_widgets/multi_select_drop_down_box_configuration.dart';
 import 'package:drop_down_search_field/src/multi_selection_widgets/multi_select_dropdown_display_widget.dart';
-import 'package:drop_down_search_field/src/widgets/fractional_translation_widget.dart';
 import 'package:drop_down_search_field/src/widgets/search_field_configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -460,7 +459,7 @@ class _NestedDropDownSearchFieldState<T>
                     widget.suggestionsBoxVerticalOffset
                 : -widget.suggestionsBoxVerticalOffset),
         child: RepaintBoundary(
-          child: SafeFractionalTranslation(
+          child: FractionalTranslation(
             translation: _suggestionsBox!.direction == AxisDirection.down
                 ? const Offset(0, 0)
                 : const Offset(0.0, -1.0),
