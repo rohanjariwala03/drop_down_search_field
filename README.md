@@ -1,9 +1,16 @@
-<meta name='keywords' content='flutter, drop_down_search_field, autocomplete, customizable, floating, type_ahead'>
+<meta name='keywords' content='flutter, drop_down_search_field, autocomplete, customizable, floating, type_ahead, nested_dropdown, hierarchical, multi_select, tree_view'>
 
 [![Pub](https://img.shields.io/pub/v/drop_down_search_field)](https://pub.dev/packages/drop_down_search_field)
 
 # Flutter DropDownSearchField
-A DropDownSearchField (autocomplete) widget for Flutter, where you can show suggestions to users as they type
+A powerful and highly customizable DropDownSearchField (autocomplete) widget for Flutter that supports flat lists, multi-selection, and **hierarchical nested data structures**. Perfect for categories, organizational structures, file systems, or any data with parent-child relationships.
+
+**Key Features:**
+- 🔍 **Smart Autocomplete** - Type-ahead search with debouncing and filtering
+- 🌳 **Nested/Hierarchical Dropdowns** - Support for unlimited nesting levels with expand/collapse
+- 🏷️ **Multi-Selection** - Select multiple items with chip display and custom logic  
+- 📱 **Highly Customizable** - Extensive styling and behavior customization options
+- ⚡ **Performance Optimized** - Pagination support and efficient rendering for large datasets
 
 <img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/master/drop_down_search_field.gif">
 
@@ -12,21 +19,78 @@ A DropDownSearchField (autocomplete) widget for Flutter, where you can show sugg
 <img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/master/multi_select_dropdown_search_field.gif">
 
 ## Features
-* Displays suggestions in a floating overlay above other widgets.
-* Allows customization of the suggestion appearance using a builder function.
-* Enables specification of the action when a user taps on a suggestion.
-* Supports all parameters typically used with TextFields, including decoration, 
-  custom TextEditingController, and text styling.
-* Offers two versions: a standard version and a FormField version that includes validation and submission features.
-* Highly customizable with options to modify the suggestion box decoration, 
-  loading bar, animation, debounce duration, and more.
-* Supports multi-select dropdowns.
-* Supports paginated suggestions.
+
+### Core Functionality
+* **Floating Overlay**: Displays suggestions in a floating overlay above other widgets
+* **Customizable Appearance**: Full customization of suggestion appearance using builder functions
+* **TextField Integration**: Supports all standard TextField parameters including decoration, controllers, and styling
+* **Form Support**: Available as both standalone widget and FormField with validation
+* **Highly Configurable**: Extensive customization options for suggestion box decoration, loading states, animations, debounce duration, and more
+
+### Advanced Features
+* **Multi-Select Dropdown**: Select multiple items with chip display and custom selection logic
+* **Nested/Hierarchical Dropdown**: Support for multi-level nested data structures with expand/collapse functionality
+* **Paginated Suggestions**: Load suggestions in batches for improved performance with large datasets
+* **Disabled Items**: Mark specific items as non-selectable while keeping them visible
+* **Smart Search**: Intelligent filtering with support for nested item searching and auto-expansion
+
+### Nested Dropdown Capabilities
+* **Hierarchical Data Structure**: Display data in tree-like structures with unlimited nesting levels
+* **Expand/Collapse Controls**: Interactive expand/collapse icons for parent items
+* **Multi-Level Selection**: Select items at any level of the hierarchy
+* **Auto-Expansion**: Automatic expansion when searching through nested items
+* **Customizable Indentation**: Configurable child item indentation for visual hierarchy
+* **Parent/Child Selection Logic**: Control whether parent items are selectable or just organizational
+* **Smart Filtering**: Search functionality that shows matching branches and auto-expands relevant sections
 
 ## Installation
 See the [installation instructions on pub](https://pub.dartlang.org/packages/drop_down_search_field#-installing-tab-).
 
 Note: As for DropDownSearchField 1.X this package is based on Dart 3.0 (null-safety). You may also want to explore the new built in Flutter 2 widgets that have similar behavior.
+
+## Quick Start
+
+### Basic Dropdown
+```dart
+import 'package:drop_down_search_field/drop_down_search_field.dart';
+
+DropDownSearchField(
+  suggestionsCallback: (pattern) async {
+    return ['Apple', 'Banana', 'Cherry']
+        .where((item) => item.toLowerCase().contains(pattern.toLowerCase()));
+  },
+  itemBuilder: (context, suggestion) {
+    return ListTile(title: Text(suggestion));
+  },
+  onSuggestionSelected: (suggestion) {
+    print('Selected: $suggestion');
+  },
+)
+```
+
+### Nested Dropdown
+```dart
+NestedDropDownSearchField<String>(
+  nestedSuggestionsCallback: (pattern) async {
+    return [
+      NestedItem(
+        value: 'fruits',
+        label: 'Fruits',
+        children: [
+          NestedItem(value: 'apple', label: 'Apple'),
+          NestedItem(value: 'banana', label: 'Banana'),
+        ],
+      ),
+    ];
+  },
+  nestedItemBuilder: (context, item, depth) {
+    return ListTile(title: Text(item.label ?? item.value));
+  },
+  onNestedSuggestionSelected: (item) {
+    print('Selected: ${item.value}');
+  },
+)
+```
 
 ## Usage examples
 You can import the package with:
@@ -130,12 +194,12 @@ Form(
           onSaved: (value) => this._selectedFruit = value,
         ),
         SizedBox(height: 10.0,),
-        RaisedButton(
+        ElevatedButton(
           child: Text('Submit'),
           onPressed: () {
             if (this._formKey.currentState.validate()) {
               this._formKey.currentState.save();
-              Scaffold.of(context).showSnackBar(SnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text('Your Favorite Fruit is ${this._selectedFruit}')
               ));
             }
@@ -144,6 +208,123 @@ Form(
       ],
     ),
   ),
+)
+```
+
+### Example 3: Nested Dropdown
+Here's an example of using the nested dropdown functionality for hierarchical data:
+
+```dart
+NestedDropDownSearchField<String>(
+  textFieldConfiguration: TextFieldConfiguration(
+    decoration: InputDecoration(
+      border: OutlineInputBorder(),
+      hintText: 'Search categories...',
+      prefixIcon: Icon(Icons.search),
+    ),
+  ),
+  nestedSuggestionsCallback: (pattern) async {
+    return [
+      NestedItem(
+        value: 'Technology',
+        label: 'Technology',
+        icon: Icons.computer,
+        children: [
+          NestedItem(value: 'Flutter', label: 'Flutter'),
+          NestedItem(value: 'JavaScript', label: 'JavaScript'),
+          NestedItem(
+            value: 'Databases',
+            label: 'Database Systems',
+            children: [
+              NestedItem(value: 'MySQL', label: 'MySQL'),
+              NestedItem(value: 'PostgreSQL', label: 'PostgreSQL'),
+              NestedItem(value: 'MongoDB', label: 'MongoDB'),
+            ],
+          ),
+        ],
+      ),
+      NestedItem(
+        value: 'Science',
+        label: 'Science',
+        icon: Icons.science,
+        children: [
+          NestedItem(
+            value: 'Physics',
+            label: 'Physics',
+            children: [
+              NestedItem(value: 'Quantum Mechanics'),
+              NestedItem(value: 'Thermodynamics'),
+            ],
+          ),
+        ],
+      ),
+    ];
+  },
+  nestedItemBuilder: (context, item, depth) {
+    return ListTile(
+      leading: item.icon != null
+          ? Icon(item.icon as IconData)
+          : (depth > 0 ? Icon(Icons.subdirectory_arrow_right) : null),
+      title: Text(
+        item.label ?? item.value,
+        style: TextStyle(
+          fontWeight: item.hasChildren ? FontWeight.w600 : FontWeight.normal,
+        ),
+      ),
+      subtitle: item.hasChildren ? Text('${item.children!.length} items') : null,
+      dense: depth > 0,
+    );
+  },
+  onNestedSuggestionSelected: (item) {
+    print('Selected: ${item.label ?? item.value}');
+  },
+  nestedDropdownConfiguration: NestedDropdownConfiguration(
+    childIndentation: 16.0,
+    allowParentSelection: true,
+    autoExpandOnSearch: true,
+    showExpandIcons: true,
+    initiallyExpanded: false,
+  ),
+)
+```
+
+### Example 4: Multi-Select Nested Dropdown
+For multi-selection with nested items:
+
+```dart
+NestedDropDownSearchField<String>(
+  textFieldConfiguration: TextFieldConfiguration(
+    decoration: InputDecoration(
+      border: OutlineInputBorder(),
+      hintText: 'Select multiple items...',
+    ),
+  ),
+  nestedSuggestionsCallback: getSuggestions,
+  nestedItemBuilder: nestedItemBuilder,
+  onNestedSuggestionMultiSelected: (item, isSelected) {
+    if (isSelected) {
+      selectedItems.add(item);
+      // Auto-select children when parent is selected
+      if (item.hasChildren) {
+        selectedItems.addAll(item.selectableDescendants);
+      }
+    } else {
+      selectedItems.remove(item);
+      // Auto-deselect children when parent is deselected
+      if (item.hasChildren) {
+        selectedItems.removeWhere((i) => 
+          item.selectableDescendants.contains(i));
+      }
+    }
+  },
+  chipBuilder: (context, item) {
+    return Chip(
+      label: Text(item.label ?? item.value),
+      onDeleted: () => removeSelectedItem(item),
+    );
+  },
+  isMultiSelectDropdown: true,
+  initiallySelectedItems: selectedItems,
 )
 ```
 In the `textFieldConfiguration`, we assign the `_dropDownSearchController` to 
@@ -225,6 +406,155 @@ of 150 ms for the animations. DropDownSearchField has a delay of 170 ms to compe
 the end of the animation can be properly detected and fixed using the solution above, this temporary fix 
 will work most of the time. If the suggestions box is too small, closing and reopening the keyboard will 
 usually fix the issue.
+
+## Nested Dropdown Feature Guide
+
+The nested dropdown functionality allows you to display hierarchical data in an intuitive tree-like structure. This is perfect for categories, organizational structures, file systems, or any data with parent-child relationships.
+
+### Key Concepts
+
+#### NestedItem Model
+The `NestedItem<T>` class is the core of the nested dropdown system:
+```dart
+NestedItem<String>(
+  value: 'parentId',              // Unique identifier
+  label: 'Display Name',          // Optional display text
+  icon: Icons.folder,             // Optional icon
+  children: [                     // Child items
+    NestedItem(value: 'child1', label: 'Child 1'),
+    NestedItem(value: 'child2', label: 'Child 2'),
+  ],
+  isExpanded: false,              // Expansion state
+  isSelectable: true,             // Can be selected
+  isDisabled: false,              // Is disabled
+  metadata: {'key': 'value'},     // Custom data
+)
+```
+
+### Configuration Options
+
+#### NestedDropdownConfiguration
+Configure the behavior and appearance of your nested dropdown:
+
+```dart
+NestedDropdownConfiguration(
+  // Visual settings
+  childIndentation: 16.0,         // Indentation per level
+  showExpandIcons: true,          // Show expand/collapse icons
+  expandIcon: Icons.expand_more,  // Custom expand icon
+  collapseIcon: Icons.expand_less,// Custom collapse icon
+  
+  // Behavior settings
+  allowParentSelection: true,     // Can select parent items
+  autoExpandOnSearch: true,       // Auto-expand when searching
+  collapseOnOpen: false,          // Collapse all on open
+  initiallyExpanded: false,       // Expand all initially
+  showOnlyMatchingBranches: true, // Show only matching items
+)
+```
+
+### Advanced Features
+
+#### Smart Selection Logic
+Handle parent-child relationships in multi-select mode:
+```dart
+onNestedSuggestionMultiSelected: (item, isSelected) {
+  if (isSelected) {
+    // Select the item
+    selectedItems.add(item);
+    
+    // Auto-select all children when parent is selected
+    if (item.hasChildren) {
+      selectedItems.addAll(item.selectableDescendants);
+    }
+  } else {
+    // Deselect the item
+    selectedItems.remove(item);
+    
+    // Auto-deselect all children when parent is deselected
+    if (item.hasChildren) {
+      for (final child in item.selectableDescendants) {
+        selectedItems.removeWhere((i) => i.value == child.value);
+      }
+    }
+  }
+}
+```
+
+#### Custom Item Builder
+Create custom widgets for each hierarchy level:
+```dart
+nestedItemBuilder: (context, item, depth) {
+  return ListTile(
+    leading: _buildLeadingIcon(item, depth),
+    title: Text(
+      item.label ?? item.value,
+      style: TextStyle(
+        fontWeight: item.hasChildren ? FontWeight.w600 : FontWeight.normal,
+        fontSize: 14 - (depth * 0.5), // Smaller text for deeper levels
+      ),
+    ),
+    subtitle: item.hasChildren 
+      ? Text('${item.children!.length} items', style: TextStyle(fontSize: 12))
+      : null,
+    contentPadding: EdgeInsets.only(left: 16.0 + (depth * 12.0)),
+    dense: depth > 0,
+  );
+}
+
+Widget _buildLeadingIcon(NestedItem item, int depth) {
+  if (item.icon != null) {
+    return Icon(item.icon as IconData, size: 20);
+  }
+  
+  if (depth == 0) return Icon(Icons.folder, size: 20);
+  if (depth == 1) return Icon(Icons.subdirectory_arrow_right, size: 16);
+  return Icon(Icons.circle, size: 8);
+}
+```
+
+#### Filtering and Search
+The nested dropdown supports intelligent filtering:
+- **Branch Matching**: Shows entire branches when any item matches
+- **Auto-Expansion**: Automatically expands matching branches
+- **Recursive Search**: Searches through all hierarchy levels
+
+### Utility Methods
+
+The `NestedItem` class provides helpful utility methods:
+
+```dart
+final item = NestedItem(...);
+
+// Check properties
+bool hasChildren = item.hasChildren;
+bool isLeaf = item.isLeaf;
+
+// Expansion control
+item.expand();                    // Expand this item
+item.collapse();                  // Collapse this item
+item.expand(recursive: true);     // Expand recursively
+item.toggleExpansion();           // Toggle expansion state
+
+// Find items
+final found = item.findByValue('targetValue');
+final allDescendants = item.allDescendants;
+final selectableOnly = item.selectableDescendants;
+
+// Create copies
+final copy = item.copyWith(
+  label: 'New Label',
+  isExpanded: true,
+);
+```
+
+### Best Practices
+
+1. **Performance**: For large datasets, implement lazy loading in `nestedSuggestionsCallback`
+2. **UX**: Use meaningful icons and labels to help users understand hierarchy
+3. **Accessibility**: Test with screen readers and keyboard navigation
+4. **Consistency**: Maintain consistent indentation and styling across levels
+5. **Feedback**: Provide visual feedback for expand/collapse actions
 
 ## Customizations
 DropDownSearchField widgets consist of a TextField and a suggestion box that shows
@@ -352,4 +682,8 @@ You can checkout detailed blog on medium.
 
 
 ## TODO
-- Give more customization options to users such as color, style and sizing.
+- Enhanced nested dropdown animations and transitions
+- More built-in item builder templates for common use cases
+- Improved accessibility features for nested structures
+- Performance optimizations for very large nested datasets
+- Additional keyboard navigation options for nested items

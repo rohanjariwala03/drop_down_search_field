@@ -1,3 +1,9 @@
+## 1.3.0 - 18/12/2025
+- Feature: Nested/Hierarchical Dropdown Support
+- Comprehensive README updates with nested dropdown examples
+- Edge case testing for dropdown item operations
+- UI/UX Improvements
+
 ## 1.2.0 - 05/09/2025
 - Support for disabled items in dropdown list
 - Added more test cases
