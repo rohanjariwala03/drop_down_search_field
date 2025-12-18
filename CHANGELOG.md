@@ -1,3 +1,9 @@
+## 1.3.0 - 18/12/2025
+- Feature: Nested/Hierarchical Dropdown Support
+- Comprehensive README updates with nested dropdown examples
+- Edge case testing for dropdown item operations
+- UI/UX Improvements
+
 ## 1.2.2+1 - 12/11/2025
 - Supporting suffixIcon for searchable dropdown.
 

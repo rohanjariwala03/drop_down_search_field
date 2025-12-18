@@ -3,6 +3,7 @@ import 'package:example/example_widgets/multi_select_example.dart';
 import 'package:example/example_widgets/paginated_suggestion_example.dart';
 import 'package:example/example_widgets/form_field_example.dart';
 import 'package:example/example_widgets/disabled_items_example.dart';
+import 'package:example/example_widgets/nested_dropdown_example.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(const MyApp());
@@ -79,6 +80,18 @@ class _MyAppState extends State<MyApp> {
                         );
                       },
                       child: const Text('Disabled Items Example'),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const NestedDropdownExample()),
+                        );
+                      },
+                      child: const Text('Nested Dropdown Example'),
                     ),
                   ],
                 ),

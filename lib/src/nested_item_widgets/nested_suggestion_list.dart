@@ -1,26 +1,49 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:drop_down_search_field/drop_down_search_field.dart';
 import 'package:drop_down_search_field/src/keyboard_suggestion_selection_notifier.dart';
 import 'package:drop_down_search_field/src/should_refresh_suggestion_focus_index_notifier.dart';
+import 'package:drop_down_search_field/src/nested_item_widgets/nested_item_model.dart';
+import 'package:drop_down_search_field/src/suggestions/suggestions_box.dart';
+import 'package:drop_down_search_field/src/suggestions/suggestions_box_decoration.dart';
+import 'package:drop_down_search_field/src/suggestions/suggestions_box_controller.dart';
+import 'package:drop_down_search_field/src/type_def.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
-/// Renders all the suggestions using a ListView as default.  If
-/// `layoutArchitecture` is specified, uses that instead.
+// Helper class to represent flattened nested items
+class _FlattenedNestedItem<T> {
+  final NestedItem<T> item;
+  final int depth;
 
-class SuggestionsList<T> extends StatefulWidget {
+  _FlattenedNestedItem(this.item, this.depth);
+}
+
+/// Renders nested suggestions in a hierarchical dropdown list
+///
+/// Supported list layout architectures:
+/// ```dart
+/// [
+///    NestedItem(
+///        value: 'Item1',
+///        children: [
+///          NestedItem(value: 'SubItem1'),
+///          NestedItem(value: 'SubItem2'),
+///        ]
+///    ),
+///    ....
+/// ]
+/// ```
+class NestedSuggestionsList<T> extends StatefulWidget {
   final SuggestionsBox? suggestionsBox;
   final TextEditingController? controller;
   final bool getImmediateSuggestions;
-  final SuggestionSelectionCallback<T>? onSuggestionSelected;
-  final SuggestionMultiSelectionCallback<T>? onSuggestionMultiSelected;
-  final SuggestionsCallback<T>? suggestionsCallback;
-  final ItemBuilder<T>? itemBuilder;
-  final ItemDisabledCallback<T>? itemDisabledCallback;
+  final NestedSuggestionSelectionCallback<T>? onSuggestionSelected;
+  final NestedSuggestionMultiSelectionCallback<T>? onSuggestionMultiSelected;
+  final NestedSuggestionsCallback<T>? nestedSuggestionsCallback;
+  final NestedItemBuilder<T> itemBuilder;
+  final NestedItemDisabledCallback<T>? itemDisabledCallback;
   final IndexedWidgetBuilder? itemSeparatorBuilder;
-  final LayoutArchitecture? layoutArchitecture;
   final ScrollController? scrollController;
   final SuggestionsBoxDecoration? decoration;
   final Duration? debounceDuration;
@@ -45,15 +68,15 @@ class SuggestionsList<T> extends StatefulWidget {
   final KeyEventResult Function(FocusNode _, KeyEvent event) onKeyEvent;
   final bool hideKeyboardOnDrag;
   final bool displayAllSuggestionWhenTap;
-  final PaginatedSuggestionsCallback<T>? paginatedSuggestionsCallback;
   final bool isMultiSelectDropdown;
-  final List<T>? initiallySelectedItems;
+  final List<NestedItem<T>>? initiallySelectedItems;
   final SuggestionsBoxController? suggestionsBoxController;
   final Widget? textFieldWidget;
-  // Custom equality function
-  final bool Function(T item1, T item2)? equalityFunction;
+  final bool Function(NestedItem<T>, NestedItem<T>)? equalityFunction;
+  final NestedItemSearchCallback<T>? itemSearchCallback;
+  final NestedDropdownConfiguration nestedConfig;
 
-  const SuggestionsList({
+  const NestedSuggestionsList({
     super.key,
     required this.suggestionsBox,
     this.controller,
@@ -61,11 +84,10 @@ class SuggestionsList<T> extends StatefulWidget {
     this.getImmediateSuggestions = false,
     this.onSuggestionSelected,
     this.onSuggestionMultiSelected,
-    this.suggestionsCallback,
-    this.itemBuilder,
+    this.nestedSuggestionsCallback,
+    required this.itemBuilder,
     this.itemDisabledCallback,
     this.itemSeparatorBuilder,
-    this.layoutArchitecture,
     this.scrollController,
     this.decoration,
     this.debounceDuration,
@@ -88,27 +110,28 @@ class SuggestionsList<T> extends StatefulWidget {
     required this.onKeyEvent,
     required this.hideKeyboardOnDrag,
     required this.displayAllSuggestionWhenTap,
-    this.paginatedSuggestionsCallback,
     required this.isMultiSelectDropdown,
     this.initiallySelectedItems,
     required this.suggestionsBoxController,
     this.textFieldWidget,
-    this.equalityFunction, // Initialize the equality function
+    this.equalityFunction,
+    this.itemSearchCallback,
+    this.nestedConfig = const NestedDropdownConfiguration(),
   });
 
   @override
-  // ignore: library_private_types_in_public_api
-  _SuggestionsListState<T> createState() => _SuggestionsListState<T>();
+  State<NestedSuggestionsList<T>> createState() =>
+      _NestedSuggestionsListState<T>();
 }
 
-class _SuggestionsListState<T> extends State<SuggestionsList<T>>
+class _NestedSuggestionsListState<T> extends State<NestedSuggestionsList<T>>
     with SingleTickerProviderStateMixin {
-  Iterable<T>? _suggestions;
+  Iterable<NestedItem<T>>? _suggestions;
+  List<NestedItem<T>>? _filteredSuggestions;
   late bool _suggestionsValid;
   late VoidCallback _controllerListener;
   Timer? _debounceTimer;
   bool? _isLoading, _isQueued;
-  bool _paginationLoading = false;
   Object? _error;
   AnimationController? _animationController;
   String? _lastTextValue;
@@ -116,12 +139,11 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
       widget.scrollController ?? ScrollController();
   List<FocusNode> _focusNodes = [];
   int _suggestionIndex = -1;
-  int pageNumber = 0;
-  final multiSelectSearchFieldFocus = FocusNode();
-  // Cache for disabled state to avoid repeated calls
-  final Map<T, bool> _disabledCache = <T, bool>{};
 
-  _SuggestionsListState() {
+  // Cache for disabled state to avoid repeated calls
+  final Map<NestedItem<T>, bool> _disabledCache = <NestedItem<T>, bool>{};
+
+  _NestedSuggestionsListState() {
     _controllerListener = () {
       // If we came here because of a change in selected text, not because of
       // actual change in text
@@ -135,8 +157,9 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
           setState(() {
             _isLoading = false;
             _suggestions = null;
+            _filteredSuggestions = null;
             _suggestionsValid = true;
-            _clearDisabledCache(); // Clear cache when suggestions are cleared
+            _clearDisabledCache();
           });
         }
         return;
@@ -159,7 +182,7 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
   }
 
   @override
-  void didUpdateWidget(SuggestionsList<T> oldWidget) {
+  void didUpdateWidget(NestedSuggestionsList<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     widget.controller!.addListener(_controllerListener);
     _getSuggestions(widget.controller!.text);
@@ -168,7 +191,6 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Sending empty text when it's true so, that they can see whole list
     _getSuggestions(
         widget.displayAllSuggestionWhenTap ? '' : widget.controller!.text);
   }
@@ -194,9 +216,9 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
     widget.controller!.addListener(_controllerListener);
 
     widget.keyboardSuggestionSelectionNotifier.addListener(() {
-      final suggestionsLength = _suggestions?.length;
+      final suggestionsLength = _getVisibleSuggestions().length;
       final event = widget.keyboardSuggestionSelectionNotifier.value;
-      if (event == null || suggestionsLength == null) return;
+      if (event == null || suggestionsLength == 0) return;
 
       if (event == LogicalKeyboardKey.arrowDown &&
           _suggestionIndex < suggestionsLength - 1) {
@@ -221,32 +243,6 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
         _suggestionIndex = -1;
       }
     });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.paginatedSuggestionsCallback != null) {
-        _scrollController.addListener(() async {
-          if (_scrollController.position.pixels ==
-              _scrollController.position.maxScrollExtent) {
-            if (_isLoading ?? false) return;
-            _isLoading = true;
-            setState(() {
-              _paginationLoading = true;
-            });
-            final olderLength = _suggestions?.length;
-            pageNumber += 1;
-            await invalidateSuggestions();
-            if (olderLength == _suggestions?.length) {
-              pageNumber -= 1;
-            }
-            if (mounted) {
-              setState(() {
-                _paginationLoading = false;
-              });
-            }
-          }
-        });
-      }
-    });
   }
 
   Future<void> invalidateSuggestions() async {
@@ -254,36 +250,29 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
     await _getSuggestions(widget.controller!.text);
   }
 
-  Future<void> _getSuggestions(String suggestion) async {
+  Future<void> _getSuggestions(String pattern) async {
     if (_suggestionsValid) return;
     _suggestionsValid = true;
 
     if (mounted) {
       setState(() {
         _animationController!.forward(from: 1.0);
-
         _isLoading = true;
         _error = null;
       });
 
-      Iterable<T>? suggestions;
+      Iterable<NestedItem<T>>? suggestions;
       Object? error;
 
       try {
-        if (widget.paginatedSuggestionsCallback != null) {
-          suggestions = await widget.paginatedSuggestionsCallback!(suggestion);
-        } else {
-          suggestions = await widget.suggestionsCallback!(suggestion);
-        }
+        suggestions = await widget.nestedSuggestionsCallback!(pattern);
       } catch (e) {
         error = e;
       }
 
       if (mounted) {
-        // if it wasn't removed in the meantime
         setState(() {
           double? animationStart = widget.animationStart;
-          // allow suggestionsCallback to return null and not throw error here
           if (error != null || suggestions?.isEmpty == true) {
             animationStart = 1.0;
           }
@@ -292,9 +281,15 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
           _error = error;
           _isLoading = false;
           _suggestions = suggestions;
-          _clearDisabledCache(); // Clear cache when suggestions change
+          _clearDisabledCache();
+
+          // Filter and process suggestions based on search pattern
+          _filteredSuggestions = _filterSuggestions(suggestions, pattern);
+
+          // Generate focus nodes for all visible items
+          final visibleItems = _getVisibleSuggestions();
           _focusNodes = List.generate(
-            _suggestions?.length ?? 0,
+            visibleItems.length,
             (index) => FocusNode(onKeyEvent: (focusNode, event) {
               return widget.onKeyEvent(focusNode, event);
             }),
@@ -302,6 +297,101 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
         });
       }
     }
+  }
+
+  List<NestedItem<T>>? _filterSuggestions(
+      Iterable<NestedItem<T>>? suggestions, String pattern) {
+    if (suggestions == null || pattern.isEmpty) {
+      // Handle initial expansion/collapse state
+      if (widget.nestedConfig.collapseOnOpen) {
+        for (final item in suggestions ?? <NestedItem<T>>[]) {
+          item.collapse(recursive: true);
+        }
+      } else if (widget.nestedConfig.initiallyExpanded) {
+        for (final item in suggestions ?? <NestedItem<T>>[]) {
+          item.expand(recursive: true);
+        }
+      }
+      return suggestions?.toList();
+    }
+
+    final filtered = <NestedItem<T>>[];
+
+    for (final item in suggestions) {
+      final matchingItem = _filterNestedItem(item, pattern);
+      if (matchingItem != null) {
+        filtered.add(matchingItem);
+      }
+    }
+
+    return filtered;
+  }
+
+  NestedItem<T>? _filterNestedItem(NestedItem<T> item, String pattern) {
+    // Check if current item matches
+    final itemMatches = _itemMatches(item, pattern);
+
+    // Filter children recursively
+    final List<NestedItem<T>> matchingChildren = [];
+    if (item.hasChildren) {
+      for (final child in item.children!) {
+        final matchingChild = _filterNestedItem(child, pattern);
+        if (matchingChild != null) {
+          matchingChildren.add(matchingChild);
+        }
+      }
+    }
+
+    // If showing only matching branches and neither item nor children match, exclude
+    if (widget.nestedConfig.showOnlyMatchingBranches &&
+        !itemMatches &&
+        matchingChildren.isEmpty) {
+      return null;
+    }
+
+    // Create a copy with filtered children
+    final filteredItem = item.copyWith(
+      children: matchingChildren.isEmpty ? null : matchingChildren,
+    );
+
+    // Auto-expand if configured and there are matches
+    if (widget.nestedConfig.autoExpandOnSearch &&
+        pattern.isNotEmpty &&
+        (itemMatches || matchingChildren.isNotEmpty)) {
+      filteredItem.isExpanded = true;
+    }
+
+    return filteredItem;
+  }
+
+  bool _itemMatches(NestedItem<T> item, String pattern) {
+    // Use custom search callback if provided
+    if (widget.itemSearchCallback != null) {
+      return widget.itemSearchCallback!(item, pattern);
+    }
+
+    // Default search logic
+    final searchText = pattern.toLowerCase();
+    final itemLabel = (item.label ?? item.value.toString()).toLowerCase();
+    return itemLabel.contains(searchText);
+  }
+
+  List<NestedItem<T>> _getVisibleSuggestions() {
+    if (_filteredSuggestions == null) return [];
+
+    final List<NestedItem<T>> visible = [];
+
+    void addVisibleItems(List<NestedItem<T>> items) {
+      for (final item in items) {
+        visible.add(item);
+        if (item.hasChildren && item.isExpanded) {
+          addVisibleItems(item.children!);
+        }
+      }
+    }
+
+    addVisibleItems(_filteredSuggestions!);
+    return visible;
   }
 
   @override
@@ -316,8 +406,9 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
 
   @override
   Widget build(BuildContext context) {
-    bool isEmpty =
-        (_suggestions?.isEmpty ?? true) && widget.controller!.text == "";
+    bool isEmpty = (_filteredSuggestions?.isEmpty ?? true) &&
+        widget.controller!.text == "";
+
     if ((_suggestions == null || isEmpty) &&
         _isLoading == false &&
         _error == null) {
@@ -337,7 +428,7 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
       } else {
         child = createErrorWidget();
       }
-    } else if (_suggestions!.isEmpty) {
+    } else if (_filteredSuggestions!.isEmpty) {
       if (widget.hideOnEmpty!) {
         child = Container(height: 0);
       } else {
@@ -404,8 +495,8 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
   Widget createLoadingWidget() {
     Widget child;
 
-    if (widget.keepSuggestionsOnLoading! && _suggestions != null) {
-      if (_suggestions!.isEmpty) {
+    if (widget.keepSuggestionsOnLoading! && _filteredSuggestions != null) {
+      if (_filteredSuggestions!.isEmpty) {
         child = createNoItemsFoundWidget();
       } else {
         child = createSuggestionsWidget();
@@ -452,83 +543,33 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
   }
 
   Widget createSuggestionsWidget() {
-    if (widget.layoutArchitecture == null) {
-      return defaultSuggestionsWidget();
-    } else {
-      return customSuggestionsWidget();
-    }
-  }
+    // Flatten the nested structure into a linear list for ListView
+    final flattenedItems = _getFlattenedVisibleItems();
 
-  Widget defaultSuggestionsWidget() {
-    Widget child = Stack(
-      children: [
-        ListView.separated(
-          padding: EdgeInsets.zero,
-          primary: false,
-          shrinkWrap: true,
-          keyboardDismissBehavior: widget.hideKeyboardOnDrag
-              ? ScrollViewKeyboardDismissBehavior.onDrag
-              : ScrollViewKeyboardDismissBehavior.manual,
-          controller: _scrollController,
-          reverse: widget.suggestionsBox!.direction == AxisDirection.down
-              ? false
-              : widget.suggestionsBox!.autoFlipListDirection,
-          itemCount: _suggestions!.length,
-          itemBuilder: (BuildContext context, int index) {
-            final suggestion = _suggestions!.elementAt(index);
-            final focusNode = _focusNodes[index];
-            final isDisabled = _isItemDisabled(suggestion);
+    Widget child = ListView.separated(
+      padding: EdgeInsets.zero,
+      primary: false,
+      shrinkWrap: true,
+      keyboardDismissBehavior: widget.hideKeyboardOnDrag
+          ? ScrollViewKeyboardDismissBehavior.onDrag
+          : ScrollViewKeyboardDismissBehavior.manual,
+      controller: _scrollController,
+      reverse: widget.suggestionsBox!.direction == AxisDirection.down
+          ? false
+          : widget.suggestionsBox!.autoFlipListDirection,
+      itemCount: flattenedItems.length,
+      itemBuilder: (BuildContext context, int index) {
+        final itemData = flattenedItems[index];
+        final focusNode =
+            index < _focusNodes.length ? _focusNodes[index] : FocusNode();
 
-            return TextFieldTapRegion(
-              child: widget.isMultiSelectDropdown
-                  ? StatefulBuilder(
-                      builder: (context, setState) {
-                        final isSelected = widget.initiallySelectedItems?.any(
-                              (item) =>
-                                  widget.equalityFunction
-                                      ?.call(item, suggestion) ??
-                                  item == suggestion,
-                            ) ??
-                            false; // Use custom equality function
-                        return CheckboxListTile(
-                          controlAffinity: ListTileControlAffinity.leading,
-                          title: widget.itemBuilder!(context, suggestion),
-                          value: isSelected,
-                          onChanged: isDisabled
-                              ? null
-                              : (bool? checked) {
-                                  widget.onSuggestionMultiSelected!(
-                                      suggestion, checked ?? false);
-                                  setState(() {});
-                                },
-                        );
-                      },
-                    )
-                  : InkWell(
-                      focusColor: Theme.of(context).hoverColor,
-                      focusNode: focusNode,
-                      onTap: isDisabled
-                          ? null
-                          : () {
-                              // * we give the focus back to the text field
-                              widget.giveTextFieldFocus();
-
-                              widget.onSuggestionSelected!(suggestion);
-                            },
-                      child: widget.itemBuilder!(context, suggestion),
-                    ),
-            );
-          },
-          separatorBuilder: (BuildContext context, int index) =>
-              widget.itemSeparatorBuilder?.call(context, index) ??
-              const SizedBox.shrink(),
-        ),
-        if (_paginationLoading)
-          const Align(
-            alignment: Alignment.bottomCenter,
-            child: CircularProgressIndicator(),
-          ),
-      ],
+        return TextFieldTapRegion(
+          child: _buildFlatNestedItem(itemData, focusNode),
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) =>
+          widget.itemSeparatorBuilder?.call(context, index) ??
+          const SizedBox.shrink(),
     );
 
     if (widget.decoration!.hasScrollbar) {
@@ -552,85 +593,151 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
     return child;
   }
 
-  Widget customSuggestionsWidget() {
-    Widget child = widget.layoutArchitecture!(
-      List.generate(_suggestions!.length, (index) {
-        final suggestion = _suggestions!.elementAt(index);
-        final focusNode = _focusNodes[index];
-        final isDisabled = _isItemDisabled(suggestion);
+  // Get all visible items as a flat list with their depth information
+  List<_FlattenedNestedItem<T>> _getFlattenedVisibleItems() {
+    if (_filteredSuggestions == null) return [];
 
-        return TextFieldTapRegion(
-          child: widget.isMultiSelectDropdown
-              ? StatefulBuilder(
-                  builder: (context, setState) {
-                    final isSelected = widget.controller?.text
-                            .contains(suggestion.toString()) ??
-                        false;
-                    return CheckboxListTile(
-                      title: widget.itemBuilder!(context, suggestion),
-                      value: isSelected,
-                      onChanged: isDisabled
-                          ? null
-                          : (bool? checked) {
-                              // widget.controller?.text = widget.initiallySelectedItems
-                              //         ?.map((e) => e.toString())
-                              //         .join(', ') ??
-                              //     '';
-                              widget.onSuggestionMultiSelected!(
-                                  suggestion, checked ?? false);
-                              setState(() {});
-                            },
-                    );
-                  },
-                )
-              : InkWell(
-                  focusColor: Theme.of(context).hoverColor,
-                  focusNode: focusNode,
-                  onTap: isDisabled
-                      ? null
-                      : () {
-                          // * we give the focus back to the text field
-                          widget.giveTextFieldFocus();
+    final List<_FlattenedNestedItem<T>> flattened = [];
 
-                          widget.onSuggestionSelected!(suggestion);
-                        },
-                  child: widget.itemBuilder!(context, suggestion),
-                ),
-        );
-      }),
-      _scrollController,
-    );
+    void flattenItems(List<NestedItem<T>> items, int depth) {
+      for (final item in items) {
+        flattened.add(_FlattenedNestedItem<T>(item, depth));
 
-    if (widget.decoration!.hasScrollbar) {
-      child = Theme(
-        data: ThemeData(
-          scrollbarTheme: getScrollbarTheme(),
-        ),
-        child: MediaQuery.removePadding(
-          context: context,
-          removeTop: true,
-          child: Scrollbar(
-            controller: _scrollController,
-            child: child,
-          ),
-        ),
-      );
+        // Add children if item is expanded
+        if (item.hasChildren && item.isExpanded) {
+          flattenItems(item.children!, depth + 1);
+        }
+      }
     }
 
-    child = Stack(
-      children: [
-        child,
-        if (_paginationLoading)
-          const Align(
-            alignment: Alignment.bottomCenter,
-            child: CircularProgressIndicator(),
+    flattenItems(_filteredSuggestions!, 0);
+    return flattened;
+  }
+
+  // Build a single flattened nested item
+  Widget _buildFlatNestedItem(
+      _FlattenedNestedItem<T> itemData, FocusNode focusNode) {
+    final item = itemData.item;
+    final depth = itemData.depth;
+    final indentation =
+        (depth * widget.nestedConfig.childIndentation).clamp(0.0, 100.0);
+
+    // Check if item is disabled
+    final isDisabled =
+        item.isDisabled || (widget.itemDisabledCallback?.call(item) ?? false);
+
+    // Check if item is selected (for multi-select)
+    final isSelected = widget.initiallySelectedItems?.any((selectedItem) =>
+            widget.equalityFunction?.call(selectedItem, item) ??
+            selectedItem == item) ??
+        false;
+
+    // Check if item can be selected
+    final canSelect = item.isSelectable &&
+        !isDisabled &&
+        (widget.nestedConfig.allowParentSelection || item.isLeaf);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        focusNode: focusNode,
+        onTap: isDisabled ? null : () => _handleItemTap(item),
+        focusColor: Theme.of(context).hoverColor,
+        child: ListTile(
+          leading: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (item.hasChildren && widget.nestedConfig.showExpandIcons)
+                IconButton(
+                  onPressed: isDisabled ? null : () => _toggleExpansion(item),
+                  icon: Icon(
+                    item.isExpanded
+                        ? (widget.nestedConfig.collapseIcon ??
+                            Icons.expand_less)
+                        : (widget.nestedConfig.expandIcon ?? Icons.expand_more),
+                  ),
+                  iconSize: 20,
+                  padding: EdgeInsets.zero,
+                  constraints:
+                      const BoxConstraints(minWidth: 24, minHeight: 24),
+                ),
+              if (!item.hasChildren || !widget.nestedConfig.showExpandIcons)
+                const SizedBox(width: 25),
+              if (widget.isMultiSelectDropdown && canSelect)
+                Checkbox(
+                  value: isSelected,
+                  onChanged: !canSelect || isDisabled
+                      ? null
+                      : (bool? checked) {
+                          widget.onSuggestionMultiSelected
+                              ?.call(item, checked ?? false);
+                          setState(() {});
+                        },
+                ),
+            ],
           ),
-      ],
+          contentPadding: EdgeInsets.only(
+            left: 16.0 + indentation,
+            right: 16.0,
+          ),
+          title: widget.itemBuilder(context, item, depth),
+          dense: true,
+        ),
+      ),
     );
+  }
 
-    child = TextFieldTapRegion(child: child);
+  // Handle item tap
+  void _handleItemTap(NestedItem<T> item) {
+    final isDisabled =
+        item.isDisabled || (widget.itemDisabledCallback?.call(item) ?? false);
 
-    return child;
+    if (isDisabled) return;
+
+    // If item has children and we're not in multi-select mode, toggle expansion
+    if (item.hasChildren && !widget.isMultiSelectDropdown) {
+      _toggleExpansion(item);
+      return;
+    }
+
+    // Handle selection if item can be selected
+    final canSelect = item.isSelectable &&
+        !isDisabled &&
+        (widget.nestedConfig.allowParentSelection || item.isLeaf);
+
+    if (canSelect) {
+      if (widget.isMultiSelectDropdown) {
+        // In multi-select mode, also check if checkbox is allowed
+        final isSelected = widget.initiallySelectedItems?.any((selectedItem) =>
+                widget.equalityFunction?.call(selectedItem, item) ??
+                selectedItem == item) ??
+            false;
+        widget.onSuggestionMultiSelected?.call(item, !isSelected);
+        setState(() {});
+      } else {
+        widget.giveTextFieldFocus();
+        widget.onSuggestionSelected?.call(item);
+      }
+    } else if (item.hasChildren) {
+      // If can't select but has children, toggle expansion
+      _toggleExpansion(item);
+    }
+  }
+
+  // Toggle expansion state and refresh the UI
+  void _toggleExpansion(NestedItem<T> item) {
+    setState(() {
+      item.toggleExpansion();
+
+      // Regenerate focus nodes for new visible items
+      final flattenedItems = _getFlattenedVisibleItems();
+      _focusNodes = List.generate(
+        flattenedItems.length,
+        (index) => FocusNode(onKeyEvent: (focusNode, event) {
+          return widget.onKeyEvent(focusNode, event);
+        }),
+      );
+    });
   }
 
   ScrollbarThemeData? getScrollbarTheme() {
@@ -648,12 +755,9 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
     );
   }
 
-  /// Finds the next enabled item index for keyboard navigation
-  /// Returns -1 if no enabled item is found
   int _findNextEnabledIndex(
       int startIndex, int suggestionsLength, bool forward) {
     if (widget.itemDisabledCallback == null) {
-      // If no disabled callback is provided, return the startIndex if within bounds
       if (forward) {
         return startIndex < suggestionsLength ? startIndex : -1;
       } else {
@@ -662,38 +766,38 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
     }
 
     int currentIndex = startIndex;
-    while (forward ? (currentIndex < suggestionsLength) : (currentIndex >= 0)) {
-      final suggestion = _suggestions!.elementAt(currentIndex);
-      final isDisabled = _isItemDisabled(suggestion);
+    final visibleSuggestions = _getVisibleSuggestions();
 
-      if (!isDisabled) {
-        return currentIndex;
+    while (forward ? (currentIndex < suggestionsLength) : (currentIndex >= 0)) {
+      if (currentIndex < visibleSuggestions.length) {
+        final suggestion = visibleSuggestions[currentIndex];
+        final isDisabled = _isItemDisabled(suggestion);
+
+        if (!isDisabled) {
+          return currentIndex;
+        }
       }
 
       currentIndex = forward ? currentIndex + 1 : currentIndex - 1;
     }
 
-    return -1; // No enabled item found
+    return -1;
   }
 
-  /// Checks if an item is disabled using cache to avoid repeated calls
-  bool _isItemDisabled(T item) {
+  bool _isItemDisabled(NestedItem<T> item) {
     if (widget.itemDisabledCallback == null) {
       return false;
     }
 
-    // Check cache first
     if (_disabledCache.containsKey(item)) {
       return _disabledCache[item]!;
     }
 
-    // Call the callback and cache the result
     final isDisabled = widget.itemDisabledCallback!(item);
     _disabledCache[item] = isDisabled;
     return isDisabled;
   }
 
-  /// Clears the disabled cache when suggestions change
   void _clearDisabledCache() {
     _disabledCache.clear();
   }
