@@ -289,9 +289,6 @@ class _SuggestionsListState<T> extends State<SuggestionsList<T>>
           }
           _animationController!.forward(from: animationStart);
 
-          this._error = error;
-          this._isLoading = false;
-          this._suggestions = suggestions;
           _error = error;
           _isLoading = false;
           _suggestions = suggestions;
