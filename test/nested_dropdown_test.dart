@@ -38,20 +38,6 @@ void main() {
       expect(item.isExpanded, isFalse);
     });
 
-    test('should create NestedItem with isAllowedCheck false', () {
-      final item = NestedItem<String>(
-        value: 'category',
-        label: 'Category Header',
-        children: [
-          NestedItem<String>(value: 'child1', label: 'Child 1'),
-          NestedItem<String>(value: 'child2', label: 'Child 2'),
-        ],
-      );
-
-      expect(item.isSelectable, isTrue); // Still selectable, just no checkbox
-      expect(item.hasChildren, isTrue);
-    });
-
     test('should expand recursively', () {
       final item = NestedItem<String>(
         value: 'root',
@@ -168,7 +154,6 @@ void main() {
       final copy = original.copyWith(
         label: 'Modified Label',
         isExpanded: true,
-        isAllowedCheck: false,
       );
 
       expect(copy.value, equals('original')); // unchanged

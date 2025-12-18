@@ -127,7 +127,6 @@ class NestedItem<T> {
     bool? isExpanded,
     bool? isSelectable,
     bool? isDisabled,
-    bool? isAllowedCheck,
     dynamic icon,
     Map<String, dynamic>? metadata,
   }) {
