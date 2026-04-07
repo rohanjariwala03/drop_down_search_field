@@ -150,7 +150,6 @@ class _MultiSelectDropdownDisplayWidgetState<T>
                         _scrollController,
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      spacing: 5,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: widget.initiallySelectedItems.map((item) {
