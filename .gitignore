@@ -30,3 +30,7 @@ migrate_working_dir/
 build/
 
 android/local.properties
+
+# Generated Flutter environment config (contains machine-specific paths)
+**/flutter_export_environment.sh
+**/Flutter/ephemeral/

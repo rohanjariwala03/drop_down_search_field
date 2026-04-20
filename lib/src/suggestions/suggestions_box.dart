@@ -18,6 +18,8 @@ class SuggestionsBox {
   double maxHeight = 300.0;
   double textBoxWidth = 100.0;
   double textBoxHeight = 100.0;
+  double textBoxAbsX = 0.0;
+  double textBoxAbsY = 0.0;
   late double directionUpOffset;
 
   SuggestionsBox(
@@ -37,7 +39,7 @@ class SuggestionsBox {
   }
 
   void close() {
-    if (!isOpened) return;
+    if (!isOpened || !widgetMounted) return;
     assert(overlayEntry != null);
     overlayEntry!.remove();
     isOpened = false;
@@ -111,8 +113,9 @@ class SuggestionsBox {
     textBoxWidth = box.size.width;
     textBoxHeight = box.size.height;
 
-    // top of text box
-    double textBoxAbsY = box.localToGlobal(Offset.zero).dy;
+    // absolute position of text box
+    textBoxAbsX = box.localToGlobal(Offset.zero).dx;
+    textBoxAbsY = box.localToGlobal(Offset.zero).dy;
 
     // height of window
     double windowHeight = MediaQuery.of(context).size.height;
