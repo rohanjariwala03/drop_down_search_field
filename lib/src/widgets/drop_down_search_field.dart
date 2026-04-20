@@ -1002,6 +1002,7 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
             Positioned.fill(
               child: GestureDetector(
                 onTap: () {
+                  _focusNode?.unfocus();
                   _effectiveFocusNode?.unfocus();
                   _suggestionsBox?.close();
                 },

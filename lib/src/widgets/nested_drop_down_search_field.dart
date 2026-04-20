@@ -482,6 +482,7 @@ class _NestedDropDownSearchFieldState<T>
             Positioned.fill(
               child: GestureDetector(
                 onTap: () {
+                  _focusNode?.unfocus();
                   _effectiveFocusNode?.unfocus();
                   _suggestionsBox?.close();
                 },
