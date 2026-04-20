@@ -449,67 +449,62 @@ class _NestedDropDownSearchFieldState<T>
         }
       }
 
-      final Widget compositedFollower = CompositedTransformFollower(
-        link: _layerLink,
-        showWhenUnlinked: false,
-        offset: Offset(
-            widget.suggestionsBoxDecoration.offsetX,
-            _suggestionsBox!.direction == AxisDirection.down
-                ? _suggestionsBox!.textBoxHeight +
-                    widget.suggestionsBoxVerticalOffset
-                : -widget.suggestionsBoxVerticalOffset),
-        child: RepaintBoundary(
-          child: FractionalTranslation(
-            translation: _suggestionsBox!.direction == AxisDirection.down
-                ? const Offset(0, 0)
-                : const Offset(0.0, -1.0),
-            child: Listener(
-              onPointerDown: (_) {
-                _areSuggestionsFocused = true;
-              },
-              onPointerUp: (_) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _areSuggestionsFocused = false;
-                });
-              },
-              onPointerCancel: (_) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _areSuggestionsFocused = false;
-                });
-              },
-              child: TextFieldTapRegion(
-                onTapOutside: (e) {
-                  if (widget.suggestionsBoxDecoration
-                      .closeSuggestionBoxWhenTapOutside) {
-                    if (!_areSuggestionsFocused &&
-                        (_suggestionsBox?.isOpened ?? false)) {
-                      _focusNode?.unfocus();
-                      _suggestionsBox?.close();
-                    }
-                  }
-                },
-                child: suggestionsList,
-              ),
-            ),
-          ),
+      final bool isDown = _suggestionsBox!.direction == AxisDirection.down;
+      final double left = _suggestionsBox!.textBoxAbsX +
+          widget.suggestionsBoxDecoration.offsetX;
+
+      final Widget suggestionsContent = Listener(
+        onPointerDown: (_) {
+          _areSuggestionsFocused = true;
+        },
+        onPointerUp: (_) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _areSuggestionsFocused = false;
+          });
+        },
+        onPointerCancel: (_) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _areSuggestionsFocused = false;
+          });
+        },
+        child: TextFieldTapRegion(
+          child: suggestionsList,
         ),
       );
 
-      return MediaQuery.of(context).accessibleNavigation
-          ? Semantics(
-              container: true,
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: w),
-                  child: compositedFollower,
-                ),
+      final Widget content = MediaQuery.of(context).accessibleNavigation
+          ? Semantics(container: true, child: suggestionsContent)
+          : suggestionsContent;
+
+      return Stack(
+        children: [
+          if (widget.suggestionsBoxDecoration.closeSuggestionBoxWhenTapOutside)
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: () {
+                  _effectiveFocusNode?.unfocus();
+                  _suggestionsBox?.close();
+                },
+                behavior: HitTestBehavior.opaque,
               ),
-            )
-          : Positioned(
-              width: w,
-              child: compositedFollower,
-            );
+            ),
+          Positioned(
+            left: left,
+            top: isDown
+                ? _suggestionsBox!.textBoxAbsY +
+                    _suggestionsBox!.textBoxHeight +
+                    widget.suggestionsBoxVerticalOffset
+                : null,
+            bottom: !isDown
+                ? MediaQuery.of(context).size.height -
+                    _suggestionsBox!.textBoxAbsY +
+                    widget.suggestionsBoxVerticalOffset
+                : null,
+            width: w,
+            child: content,
+          ),
+        ],
+      );
     });
   }
 

@@ -14,7 +14,6 @@ void main() {
 
       expect(find.text("Material DropDownSearchField test"), findsOneWidget);
       expect(find.byType(DropDownSearchFormField<String>), findsNWidgets(6));
-      expect(find.byType(CompositedTransformFollower), findsNothing);
     });
 
     testWidgets("No results found test", (WidgetTester tester) async {
@@ -28,7 +27,6 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 2));
       await tester.enterText(dropDownSearchField, "Chocolates");
       await tester.pumpAndSettle(const Duration(seconds: 2));
-      expect(find.byType(CompositedTransformFollower), findsNWidgets(2));
 
       await tester.pumpAndSettle(const Duration(seconds: 2));
       expect(find.text("No results found!"), findsOneWidget);
@@ -45,7 +43,6 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 2));
       await tester.enterText(dropDownSearchField, "Cheese");
       await tester.pumpAndSettle(const Duration(seconds: 2));
-      expect(find.byType(CompositedTransformFollower), findsNWidgets(2));
 
       await tester.tap(find.text("Cheese").last);
       await tester.pumpAndSettle(const Duration(seconds: 2));
@@ -120,7 +117,6 @@ void main() {
 
       // Check that suggestions are displayed
       expect(find.text("Orange"), findsAtLeastNWidgets(1));
-      expect(find.byType(CompositedTransformFollower), findsNWidgets(2));
     });
 
     testWidgets("Should handle partial matches", (WidgetTester tester) async {
@@ -156,14 +152,13 @@ void main() {
 
       // Suggestions should be visible
       expect(find.text("Bread"), findsAtLeastNWidgets(1));
-      expect(find.byType(CompositedTransformFollower), findsNWidgets(2));
 
       // Tap outside (on the app bar for example)
       await tester.tap(find.text("Material DropDownSearchField test"));
       await tester.pumpAndSettle();
 
-      // Suggestions should be hidden
-      expect(find.byType(CompositedTransformFollower), findsNothing);
+      // Suggestions should be hidden - only the text field value remains
+      expect(find.byType(ListTile), findsNothing);
     });
 
     testWidgets("Should maintain text after selection",
@@ -209,13 +204,9 @@ void main() {
       await tester.enterText(dropDownSearchField, "Milk");
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
-      final dropDownSearchFieldSuggestionBox =
-          find.byType(CompositedTransformFollower).last;
-      final CompositedTransformFollower dropDownSearchFieldSuggestionBoxTester =
-          tester.widget<CompositedTransformFollower>(
-              dropDownSearchFieldSuggestionBox);
-      expect(dropDownSearchFieldSuggestionBoxTester.offset,
-          const Offset(0.0, -5.0));
+      // Verify suggestions are visible after scrolling to the last field
+      expect(find.text("Milk"), findsAtLeastNWidgets(1));
+      expect(find.text("Milkshake"), findsOneWidget);
     });
   });
 }

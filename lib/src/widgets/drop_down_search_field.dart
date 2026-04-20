@@ -963,78 +963,70 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
         }
       }
 
-      final Widget compositedFollower = CompositedTransformFollower(
-        link: _layerLink,
-        showWhenUnlinked: false,
-        offset: Offset(
-            widget.suggestionsBoxDecoration.offsetX,
-            _suggestionsBox!.direction == AxisDirection.down
-                ? _suggestionsBox!.textBoxHeight +
-                    widget.suggestionsBoxVerticalOffset
-                : -widget.suggestionsBoxVerticalOffset),
-        child: FractionalTranslation(
-          translation: _suggestionsBox!.direction == AxisDirection.down
-              ? const Offset(0, 0)
-              : const Offset(0.0, -1.0),
-          child: Listener(
-            onPointerDown: (_) {
-              // Mark that the user is interacting with the suggestions area.
-              // This prevents the focus listener and onTapOutside from closing
-              // the overlay before the tap gesture (InkWell/Checkbox) fires.
-              // PointerDown always dispatches before TapRegion's onTapOutside
-              // and before focus-change listeners, so this flag is set in time.
-              _areSuggestionsFocused = true;
-            },
-            onPointerUp: (_) {
-              // Reset after the current frame so tap handlers fire first.
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _areSuggestionsFocused = false;
-              });
-            },
-            onPointerCancel: (_) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                _areSuggestionsFocused = false;
-              });
-            },
-            child: TextFieldTapRegion(
-              onTapOutside: (e) {
-                if (widget.suggestionsBoxDecoration
-                    .closeSuggestionBoxWhenTapOutside) {
-                  if (!_areSuggestionsFocused &&
-                      (_suggestionsBox?.isOpened ?? false)) {
-                    _focusNode?.unfocus();
-                    _suggestionsBox?.close();
-                  }
-                }
-              },
-              child: suggestionsList,
-            ),
-          ),
+      final bool isDown = _suggestionsBox!.direction == AxisDirection.down;
+      final double left = _suggestionsBox!.textBoxAbsX +
+          widget.suggestionsBoxDecoration.offsetX;
+
+      final Widget suggestionsContent = Listener(
+        onPointerDown: (_) {
+          // Mark that the user is interacting with the suggestions area.
+          // This prevents the focus listener from closing the overlay
+          // before the tap gesture (InkWell/Checkbox) fires.
+          _areSuggestionsFocused = true;
+        },
+        onPointerUp: (_) {
+          // Reset after the current frame so tap handlers fire first.
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _areSuggestionsFocused = false;
+          });
+        },
+        onPointerCancel: (_) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _areSuggestionsFocused = false;
+          });
+        },
+        child: TextFieldTapRegion(
+          child: suggestionsList,
         ),
       );
 
-      // When wrapped in the Positioned widget, the suggestions box widget
-      // is placed before the Scaffold semantically. In order to have the
-      // suggestions box navigable from the search input or keyboard,
-      // Semantics > Align > ConstrainedBox are needed. This does not change
-      // the style visually. However, when VO/TB are not enabled it is
-      // necessary to use the Positioned widget to allow the elements to be
-      // properly tappable.
-      return MediaQuery.of(context).accessibleNavigation
-          ? Semantics(
-              container: true,
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: w),
-                  child: compositedFollower,
-                ),
+      final Widget content = MediaQuery.of(context).accessibleNavigation
+          ? Semantics(container: true, child: suggestionsContent)
+          : suggestionsContent;
+
+      return Stack(
+        children: [
+          // Full-screen barrier to prevent taps from reaching background
+          // widgets (e.g. text fields behind the overlay).
+          if (widget.suggestionsBoxDecoration.closeSuggestionBoxWhenTapOutside)
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: () {
+                  _effectiveFocusNode?.unfocus();
+                  _suggestionsBox?.close();
+                },
+                behavior: HitTestBehavior.opaque,
               ),
-            )
-          : Positioned(
-              width: w,
-              child: compositedFollower,
-            );
+            ),
+          // Suggestions positioned at the text field's absolute screen
+          // coordinates so that hit-testing aligns with the visual position.
+          Positioned(
+            left: left,
+            top: isDown
+                ? _suggestionsBox!.textBoxAbsY +
+                    _suggestionsBox!.textBoxHeight +
+                    widget.suggestionsBoxVerticalOffset
+                : null,
+            bottom: !isDown
+                ? MediaQuery.of(context).size.height -
+                    _suggestionsBox!.textBoxAbsY +
+                    widget.suggestionsBoxVerticalOffset
+                : null,
+            width: w,
+            child: content,
+          ),
+        ],
+      );
     });
   }
 
