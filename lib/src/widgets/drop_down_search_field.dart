@@ -976,17 +976,39 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
           translation: _suggestionsBox!.direction == AxisDirection.down
               ? const Offset(0, 0)
               : const Offset(0.0, -1.0),
-          child: TextFieldTapRegion(
-            onTapOutside: (e) {
-              if (widget
-                  .suggestionsBoxDecoration.closeSuggestionBoxWhenTapOutside) {
-                if (_suggestionsBox?.isOpened ?? false) {
-                  _focusNode?.unfocus();
-                  _suggestionsBox?.close();
-                }
-              }
+          child: Listener(
+            onPointerDown: (_) {
+              // Mark that the user is interacting with the suggestions area.
+              // This prevents the focus listener and onTapOutside from closing
+              // the overlay before the tap gesture (InkWell/Checkbox) fires.
+              // PointerDown always dispatches before TapRegion's onTapOutside
+              // and before focus-change listeners, so this flag is set in time.
+              _areSuggestionsFocused = true;
             },
-            child: suggestionsList,
+            onPointerUp: (_) {
+              // Reset after the current frame so tap handlers fire first.
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _areSuggestionsFocused = false;
+              });
+            },
+            onPointerCancel: (_) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _areSuggestionsFocused = false;
+              });
+            },
+            child: TextFieldTapRegion(
+              onTapOutside: (e) {
+                if (widget.suggestionsBoxDecoration
+                    .closeSuggestionBoxWhenTapOutside) {
+                  if (!_areSuggestionsFocused &&
+                      (_suggestionsBox?.isOpened ?? false)) {
+                    _focusNode?.unfocus();
+                    _suggestionsBox?.close();
+                  }
+                }
+              },
+              child: suggestionsList,
+            ),
           ),
         ),
       );

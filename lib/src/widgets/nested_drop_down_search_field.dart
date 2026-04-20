@@ -463,17 +463,33 @@ class _NestedDropDownSearchFieldState<T>
             translation: _suggestionsBox!.direction == AxisDirection.down
                 ? const Offset(0, 0)
                 : const Offset(0.0, -1.0),
-            child: TextFieldTapRegion(
-              onTapOutside: (e) {
-                if (widget.suggestionsBoxDecoration
-                    .closeSuggestionBoxWhenTapOutside) {
-                  if (_suggestionsBox?.isOpened ?? false) {
-                    _focusNode?.unfocus();
-                    _suggestionsBox?.close();
-                  }
-                }
+            child: Listener(
+              onPointerDown: (_) {
+                _areSuggestionsFocused = true;
               },
-              child: suggestionsList,
+              onPointerUp: (_) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _areSuggestionsFocused = false;
+                });
+              },
+              onPointerCancel: (_) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _areSuggestionsFocused = false;
+                });
+              },
+              child: TextFieldTapRegion(
+                onTapOutside: (e) {
+                  if (widget.suggestionsBoxDecoration
+                      .closeSuggestionBoxWhenTapOutside) {
+                    if (!_areSuggestionsFocused &&
+                        (_suggestionsBox?.isOpened ?? false)) {
+                      _focusNode?.unfocus();
+                      _suggestionsBox?.close();
+                    }
+                  }
+                },
+                child: suggestionsList,
+              ),
             ),
           ),
         ),

@@ -37,7 +37,7 @@ class SuggestionsBox {
   }
 
   void close() {
-    if (!isOpened) return;
+    if (!isOpened || !widgetMounted) return;
     assert(overlayEntry != null);
     overlayEntry!.remove();
     isOpened = false;
