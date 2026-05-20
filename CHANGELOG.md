@@ -1,3 +1,7 @@
+## 1.3.0+1 - 20/05/2026
+- Supporting validator for Multi Select Dropdown
+- Resolved issues requested by users.
+
 ## 1.3.0 - 18/12/2025
 - Feature: Nested/Hierarchical Dropdown Support
 - Comprehensive README updates with nested dropdown examples
