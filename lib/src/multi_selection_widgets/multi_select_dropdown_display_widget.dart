@@ -27,10 +27,10 @@ class MultiSelectDropdownDisplayWidget<T> extends StatefulWidget {
   /// This property allows you to customize the appearance and behavior of the dropdown box
   final DropdownBoxConfiguration dropdownBoxConfiguration;
 
-  /// validator for the dropdown
+  /// The error text to display below the dropdown
   ///
-  /// This property allows you to validate the dropdown
-  // final FormFieldValidator<List<T>>? validator;
+  /// This is typically set by the form field's validator
+  final String? errorText;
 
   const MultiSelectDropdownDisplayWidget(
       {required this.chipBuilder,
@@ -38,7 +38,7 @@ class MultiSelectDropdownDisplayWidget<T> extends StatefulWidget {
       required this.textFieldConfiguration,
       required this.focusNode,
       this.dropdownBoxConfiguration = const DropdownBoxConfiguration(),
-      // this.validator,
+      this.errorText,
       super.key});
 
   @override
@@ -49,17 +49,6 @@ class MultiSelectDropdownDisplayWidget<T> extends StatefulWidget {
 class _MultiSelectDropdownDisplayWidgetState<T>
     extends State<MultiSelectDropdownDisplayWidget<T>> {
   final ScrollController _scrollController = ScrollController();
-  // String? errorText;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   WidgetsBinding.instance.addPostFrameCallback((duration) {
-  //     if (widget.validator != null) {
-  //     errorText = widget.validator!(widget.initiallySelectedItems);
-  //   }
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -108,15 +97,7 @@ class _MultiSelectDropdownDisplayWidgetState<T>
       decoration: widget.dropdownBoxConfiguration.decoration.copyWith(
         suffixIcon: widget.dropdownBoxConfiguration.decoration.suffixIcon ??
             const Icon(Icons.arrow_drop_down),
-        // errorText: errorText,
-        // errorBorder: errorText != null
-        //     ? widget.dropdownBoxConfiguration.decoration.errorBorder ??
-        //         const UnderlineInputBorder(borderSide: BorderSide(color: Colors.red))
-        //     : null,
-        // focusedErrorBorder: errorText != null
-        //     ? widget.dropdownBoxConfiguration.decoration.focusedErrorBorder ??
-        //         const UnderlineInputBorder(borderSide: BorderSide(color: Colors.red))
-        //     : null,
+        errorText: widget.errorText,
       ),
     );
     return InputDecorator(

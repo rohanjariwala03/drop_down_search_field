@@ -1046,7 +1046,7 @@ class _DropDownSearchFieldState<T> extends State<DropDownSearchField<T>>
                     widget.multiSelectDropdownBoxConfiguration ??
                         const DropdownBoxConfiguration(),
                 chipBuilder: widget.chipBuilder,
-                // validator: widget.validator,
+                errorText: widget.textFieldConfiguration.decoration.errorText,
               )
             : textFieldWidget(),
       ),

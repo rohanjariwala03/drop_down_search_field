@@ -32,7 +32,7 @@ class MultiSelectDropdownSearchFormField<T> extends FormField<List<T>> {
     this.dropdownBoxConfiguration,
     this.multiSelectEquality,
     required this.chipBuilder,
-    // super.validator,
+    super.validator,
     ErrorBuilder? errorBuilder,
     WidgetBuilder? noItemsFoundBuilder,
     WidgetBuilder? loadingBuilder,
