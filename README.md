@@ -774,7 +774,7 @@ It has `open()`, `close()`, `toggle()` and `resize()`.
 | Parameter | Default | What it does |
 | --- | --- | --- |
 | `minCharsForSuggestions` | `0` | Characters needed before the callback is called. |
-| `getImmediateSuggestions` | `false` | Fetch suggestions as soon as the field is built. The box still opens only on focus. |
+| `getImmediateSuggestions` | `false` | Request suggestions using the current text when the suggestions list initializes on opening the box; does not preload an unfocused field. |
 | `keepSuggestionsOnSuggestionSelected` | `false` | Keep the box open after a selection. |
 | `hideKeyboard` | `false` | Make the text field read-only so the keyboard never opens. |
 | `hideKeyboardOnDrag` | `false` | Hide the keyboard when the user scrolls the list. Requires `hideSuggestionsOnKeyboardHide: false`. |
