@@ -3,58 +3,73 @@
 [![Pub](https://img.shields.io/pub/v/drop_down_search_field)](https://pub.dev/packages/drop_down_search_field)
 
 # Flutter DropDownSearchField
-A powerful and highly customizable DropDownSearchField (autocomplete) widget for Flutter that supports flat lists, multi-selection, and **hierarchical nested data structures**. Perfect for categories, organizational structures, file systems, or any data with parent-child relationships.
+A customizable DropDownSearchField (autocomplete) widget for Flutter. It handles flat lists, multi-selection, and nested (hierarchical) data such as categories, org charts or folder trees.
 
-**Key Features:**
-- 🔍 **Smart Autocomplete** - Type-ahead search with debouncing and filtering
-- 🌳 **Nested/Hierarchical Dropdowns** - Support for unlimited nesting levels with expand/collapse
-- 🏷️ **Multi-Selection** - Select multiple items with chip display and custom logic  
-- 📱 **Highly Customizable** - Extensive styling and behavior customization options
-- ⚡ **Performance Optimized** - Pagination support and efficient rendering for large datasets
+- Type-ahead search with debouncing
+- Nested dropdowns with expand/collapse, any depth
+- Multi-select with chips
+- Paginated loading for long lists
+- Styling and behavior options for both the text field and the suggestions box
 
-<img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/master/drop_down_search_field.gif">
+<img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/main/drop_down_search_field.gif">
 
-<img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/master/paginated_dropdown_search_field.gif">
+<img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/main/paginated_dropdown_search_field.gif">
 
-<img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/master/multi_select_dropdown_search_field.gif">
+<img src="https://raw.githubusercontent.com/rohanjariwala03/drop_down_search_field/main/multi_select_dropdown_search_field.gif">
 
 ## Features
 
 ### Core Functionality
-* **Floating Overlay**: Displays suggestions in a floating overlay above other widgets
-* **Customizable Appearance**: Full customization of suggestion appearance using builder functions
-* **TextField Integration**: Supports all standard TextField parameters including decoration, controllers, and styling
-* **Form Support**: Available as both standalone widget and FormField with validation
-* **Highly Configurable**: Extensive customization options for suggestion box decoration, loading states, animations, debounce duration, and more
+* Suggestions show in an overlay that floats above other widgets.
+* You decide how each suggestion looks through a builder function.
+* The text field accepts the usual `TextField` parameters (decoration, controller, style and so on).
+* Comes as a plain widget and as a `FormField` with validation.
+* You can change the suggestions box decoration, loader, animation, debounce duration and more.
 
 ### Advanced Features
-* **Multi-Select Dropdown**: Select multiple items with chip display and custom selection logic
-* **Nested/Hierarchical Dropdown**: Support for multi-level nested data structures with expand/collapse functionality
-* **Paginated Suggestions**: Load suggestions in batches for improved performance with large datasets
-* **Disabled Items**: Mark specific items as non-selectable while keeping them visible
-* **Smart Search**: Intelligent filtering with support for nested item searching and auto-expansion
+* Multi-select dropdown with chips and your own selection logic.
+* Nested dropdown for multi-level data with expand/collapse.
+* Paginated suggestions that load more items as the user scrolls.
+* Disabled items that stay visible but can't be selected.
+* Search inside nested items, with matching branches expanded automatically.
 
 ### Nested Dropdown Capabilities
-* **Hierarchical Data Structure**: Display data in tree-like structures with unlimited nesting levels
-* **Expand/Collapse Controls**: Interactive expand/collapse icons for parent items
-* **Multi-Level Selection**: Select items at any level of the hierarchy
-* **Auto-Expansion**: Automatic expansion when searching through nested items
-* **Customizable Indentation**: Configurable child item indentation for visual hierarchy
-* **Parent/Child Selection Logic**: Control whether parent items are selectable or just organizational
-* **Smart Filtering**: Search functionality that shows matching branches and auto-expands relevant sections
+* Tree-like display with no limit on nesting depth.
+* Expand/collapse icons on parent items.
+* Select items at any level, or make parents group headers only.
+* Configurable indentation per level.
+* Search shows only matching branches and expands them.
 
 ## Installation
-See the [installation instructions on pub](https://pub.dartlang.org/packages/drop_down_search_field#-installing-tab-).
+Add the package to your `pubspec.yaml`:
 
-Note: As for DropDownSearchField 1.X this package is based on Dart 3.0 (null-safety). You may also want to explore the new built in Flutter 2 widgets that have similar behavior.
+```yaml
+dependencies:
+  drop_down_search_field: ^1.3.0+1
+```
+
+Or run `flutter pub add drop_down_search_field`.
+
+Requires Dart 3.0.5 or newer and Flutter 3.10.0 or newer.
+
+## Recent changes
+- 1.3.0+1: `MultiSelectDropdownSearchFormField` now runs its `validator`, and the error text shows under the chip box.
+- 1.3.0+1: Tapping outside an open suggestions box closes it without the tap reaching widgets behind it. Taps on suggestions are no longer dropped when the text field loses focus.
+- 1.3.0: Added `NestedDropDownSearchField` for hierarchical data.
+- 1.2.2+1: `DropDownSearchFormField` uses the `suffixIcon` from your decoration. It falls back to a dropdown arrow.
+- 1.2.0: Added `itemDisabledCallback` to show items that can't be selected.
+
+See [CHANGELOG.md](https://github.com/rohanjariwala03/drop_down_search_field/blob/main/CHANGELOG.md) for the full list.
 
 ## Quick Start
+
+`displayAllSuggestionWhenTap` and `isMultiSelectDropdown` are required on `DropDownSearchField` and `NestedDropDownSearchField`.
 
 ### Basic Dropdown
 ```dart
 import 'package:drop_down_search_field/drop_down_search_field.dart';
 
-DropDownSearchField(
+DropDownSearchField<String>(
   suggestionsCallback: (pattern) async {
     return ['Apple', 'Banana', 'Cherry']
         .where((item) => item.toLowerCase().contains(pattern.toLowerCase()));
@@ -65,6 +80,8 @@ DropDownSearchField(
   onSuggestionSelected: (suggestion) {
     print('Selected: $suggestion');
   },
+  displayAllSuggestionWhenTap: false,
+  isMultiSelectDropdown: false,
 )
 ```
 
@@ -89,6 +106,8 @@ NestedDropDownSearchField<String>(
   onNestedSuggestionSelected: (item) {
     print('Selected: ${item.value}');
   },
+  displayAllSuggestionWhenTap: true,
+  isMultiSelectDropdown: false,
 )
 ```
 
@@ -127,37 +146,37 @@ DropDownSearchField(
       builder: (context) => ProductPage(product: suggestion)
     ));
   },
+  displayAllSuggestionWhenTap: false,
+  isMultiSelectDropdown: false,
 )
 ```
-In the code above, the `textFieldConfiguration` property allows us to
-configure the displayed `TextField` as we want. In this example, we are
-configuring the `autofocus`, `style` and `decoration` properties.
+`textFieldConfiguration` configures the displayed `TextField`. Here we set
+`autofocus`, `style` and `decoration`.
 
-The `suggestionsCallback` is called with the search string that the user
-types, and is expected to return a `List` of data either synchronously or
-asynchronously. In this example, we are calling an asynchronous function
-called `BackendService.getSuggestions` which fetches the list of
-suggestions.
+`suggestionsCallback` is called with the text the user typed and returns an
+`Iterable` of suggestions, either synchronously or as a `Future`. Here it calls
+an async `BackendService.getSuggestions`.
 
-The `itemBuilder` is called to build a widget for each suggestion.
-In this example, we build a simple `ListTile` that shows the name and the
-price of the item. Please note that you shouldn't provide an `onTap`
-callback here. The DropDownSearchField widget takes care of that.
+`itemBuilder` builds a widget for each suggestion. Here it's a `ListTile` with
+the item's name and price. Don't set an `onTap` on it; DropDownSearchField
+handles taps.
 
-The `onSuggestionSelected` is a callback called when the user taps a
-suggestion. In this example, when the user taps a
-suggestion, we navigate to a page that shows us the information of the
-tapped product.
+`onSuggestionSelected` is called when the user taps a suggestion. Here we open
+a page for the tapped product.
+
+`displayAllSuggestionWhenTap` controls what gets passed to the callback when the
+box opens. With `true` it is called with an empty string, so the user sees the
+whole list. With `false` it gets the current text.
 
 ### Example 2:
-Here's another example, where we use the DropDownSearchFormField inside a `Form`:
+Here's `DropDownSearchFormField` inside a `Form`:
 ```dart
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 final TextEditingController _dropDownSearchController = TextEditingController();
-String _selectedFruit;
+String? _selectedFruit;
 ...
 Form(
-  key: this._formKey,
+  key: _formKey,
   child: Padding(
     padding: EdgeInsets.all(32.0),
     child: Column(
@@ -167,11 +186,11 @@ Form(
         ),
         DropDownSearchFormField(
           textFieldConfiguration: TextFieldConfiguration(
-            controller: this._dropDownSearchController,
+            controller: _dropDownSearchController,
             decoration: InputDecoration(
               labelText: 'Fruit'
             )
-          ),          
+          ),
           suggestionsCallback: (pattern) {
             return FruitsService.getSuggestions(pattern);
           },
@@ -184,23 +203,24 @@ Form(
             return suggestionsBox;
           },
           onSuggestionSelected: (suggestion) {
-            this._dropDownSearchController.text = suggestion;
+            _dropDownSearchController.text = suggestion;
           },
           validator: (value) {
-            if (value.isEmpty) {
+            if (value == null || value.isEmpty) {
               return 'Please select a fruit';
             }
+            return null;
           },
-          onSaved: (value) => this._selectedFruit = value,
+          onSaved: (value) => _selectedFruit = value,
         ),
         SizedBox(height: 10.0,),
         ElevatedButton(
           child: Text('Submit'),
           onPressed: () {
-            if (this._formKey.currentState.validate()) {
-              this._formKey.currentState.save();
+            if (_formKey.currentState!.validate()) {
+              _formKey.currentState!.save();
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Your Favorite Fruit is ${this._selectedFruit}')
+                content: Text('Your Favorite Fruit is $_selectedFruit')
               ));
             }
           },
@@ -210,9 +230,59 @@ Form(
   ),
 )
 ```
+We pass `_dropDownSearchController` (a `TextEditingController`) as the
+`controller` in `textFieldConfiguration`. When a suggestion is selected,
+`onSuggestionSelected` writes it into the text field.
 
-### Example 3: Nested Dropdown
-Here's an example of using the nested dropdown functionality for hierarchical data:
+`validator` works like any `FormField.validator`. Here it shows an error if the
+field is empty. `onSaved` stores the value in `_selectedFruit`.
+
+`transitionBuilder` returns `suggestionsBox` as is, which turns off the
+open animation.
+
+`DropDownSearchFormField` shows a dropdown arrow as its suffix icon. Set
+`suffixIcon` in the decoration to use your own.
+
+### Example 3: Multi-Select Form Field
+`MultiSelectDropdownSearchFormField` shows the selected items as chips and
+supports a `validator`. The validator receives the items picked in the
+dropdown. Pass `initialValue` if the field starts with a selection.
+
+```dart
+final List<String> _selectedNames = [];
+...
+MultiSelectDropdownSearchFormField<String>(
+  textFieldConfiguration: TextFieldConfiguration(
+    decoration: InputDecoration(hintText: 'Type to search'),
+  ),
+  suggestionsCallback: (pattern) => getSuggestions(pattern),
+  itemBuilder: (context, suggestion) => ListTile(title: Text(suggestion)),
+  initiallySelectedItems: _selectedNames,
+  onMultiSuggestionSelected: (suggestion, isSelected) {
+    setState(() {
+      isSelected ? _selectedNames.add(suggestion) : _selectedNames.remove(suggestion);
+    });
+  },
+  chipBuilder: (context, item) => Chip(label: Text(item)),
+  validator: (selected) =>
+      (selected == null || selected.isEmpty) ? 'Pick at least one name' : null,
+  displayAllSuggestionWhenTap: true,
+  dropdownBoxConfiguration: DropdownBoxConfiguration(
+    decoration: InputDecoration(
+      border: OutlineInputBorder(),
+      hintText: 'Selected Items',
+    ),
+    scrollbarConfiguration: ScrollbarConfiguration(thickness: 5),
+  ),
+)
+```
+`dropdownBoxConfiguration` styles the box that holds the chips, and
+`scrollbarConfiguration` styles its scrollbar. If your item type doesn't
+implement `==`, pass `multiSelectEquality` so selected items are matched
+correctly.
+
+### Example 4: Nested Dropdown
+Here's the nested dropdown with hierarchical data:
 
 ```dart
 NestedDropDownSearchField<String>(
@@ -285,10 +355,12 @@ NestedDropDownSearchField<String>(
     showExpandIcons: true,
     initiallyExpanded: false,
   ),
+  displayAllSuggestionWhenTap: true,
+  isMultiSelectDropdown: false,
 )
 ```
 
-### Example 4: Multi-Select Nested Dropdown
+### Example 5: Multi-Select Nested Dropdown
 For multi-selection with nested items:
 
 ```dart
@@ -312,7 +384,7 @@ NestedDropDownSearchField<String>(
       selectedItems.remove(item);
       // Auto-deselect children when parent is deselected
       if (item.hasChildren) {
-        selectedItems.removeWhere((i) => 
+        selectedItems.removeWhere((i) =>
           item.selectableDescendants.contains(i));
       }
     }
@@ -325,27 +397,40 @@ NestedDropDownSearchField<String>(
   },
   isMultiSelectDropdown: true,
   initiallySelectedItems: selectedItems,
+  displayAllSuggestionWhenTap: true,
 )
 ```
-In the `textFieldConfiguration`, we assign the `_dropDownSearchController` to 
-the `controller` property. This controller is a `TextEditingController`. 
-When a suggestion is selected, we utilize the `onSuggestionSelected` callback 
-to update the value of the `TextField` with the selected suggestion.
 
-The `validator` callback serves a similar purpose as any `FormField.validator` function. 
-In our specific example, it verifies whether a value has been entered and displays 
-an error message if it hasn't. The `onSaved` callback is employed to store the field's 
-value in the `_selectedFruit` member variable.
+### Paginated Suggestions
+Pass `paginatedSuggestionsCallback` instead of `suggestionsCallback` (provide
+one or the other, not both). When the user scrolls to the end of the list, the
+callback is called again with the same pattern and a loader shows at the
+bottom. The callback doesn't get a page number, so track the page yourself and
+return the full list so far with the next batch appended. If a call returns no
+new items, the list stays as it is.
 
-With the `transitionBuilder`, we have the flexibility to customize the animation 
-of the suggestion box. In the given illustration, we immediately return the 
-suggestionsBox without any animation.
+```dart
+paginatedSuggestionsCallback: (pattern) async {
+  return await repository.loadMore(pattern); // previous items + next page
+},
+```
+
+### Disabled Items
+Use `itemDisabledCallback` to keep an item in the list but block selection.
+Disabled items also skip hover and keyboard navigation.
+
+```dart
+itemDisabledCallback: (suggestion) => suggestion['disabled'] as bool,
+```
+
+For nested dropdowns, use `nestedItemDisabledCallback` or set `isDisabled` on
+the `NestedItem`.
 
 ### Alternative Layout Architecture:
 
-By default, DropDownSearchField uses a `ListView` to render the items created by `itemBuilder`. 
-If you specify a `layoutArchitecture` component, it will use this component instead. For example, 
-here's how we render the items in a grid using the standard `GridView`:
+By default, DropDownSearchField renders the `itemBuilder` widgets in a `ListView`.
+Pass `layoutArchitecture` to lay them out yourself. For example, a grid with
+the standard `GridView`:
 
 ```dart
 DropDownSearchField(
@@ -370,13 +455,12 @@ DropDownSearchField(
 ```
 
 ### Animations
-Placing DropDownSearchField in widgets with animations may cause the suggestions box 
-to resize incorrectly. Since animation times are variable, this has to be 
-corrected manually at the end of the animation. You will need to add a 
-SuggestionsBoxController described below and the following code for the 
-AnimationController.
+Placing DropDownSearchField in widgets with animations may cause the suggestions box
+to resize incorrectly. Since animation times vary, you need to correct this
+manually when the animation ends. Add a `SuggestionsBoxController` (described
+below) and the following code for the `AnimationController`:
 ```dart
-void Function(AnimationStatus) _statusListener;
+late void Function(AnimationStatus) _statusListener;
 
 @override
 void initState() {
@@ -392,29 +476,28 @@ void initState() {
 }
 
 @override
-  void dispose() {
-    _animationController.removeStatusListener(_statusListener);
-    _animationController.dispose();
-    super.dispose();
+void dispose() {
+  _animationController.removeStatusListener(_statusListener);
+  _animationController.dispose();
+  super.dispose();
 }
 ```
 
 #### Dialogs
-There is a known issue with opening dialogs where the suggestions box will sometimes appear too small. 
-This is a timing issue caused by the animations described above. Currently, `showDialog` has a duration 
-of 150 ms for the animations. DropDownSearchField has a delay of 170 ms to compensate for this. Until 
-the end of the animation can be properly detected and fixed using the solution above, this temporary fix 
-will work most of the time. If the suggestions box is too small, closing and reopening the keyboard will 
-usually fix the issue.
+There is a known issue with dialogs where the suggestions box sometimes appears too small.
+It's the same timing problem described above. `showDialog` animates for 150 ms, and
+DropDownSearchField waits 170 ms to compensate. This works most of the time. If the box
+is still too small, closing and reopening the keyboard usually fixes it.
 
 ## Nested Dropdown Feature Guide
 
-The nested dropdown functionality allows you to display hierarchical data in an intuitive tree-like structure. This is perfect for categories, organizational structures, file systems, or any data with parent-child relationships.
+The nested dropdown shows hierarchical data as a tree. Use it for categories, org
+structures, file systems, or any data with parent-child relationships.
 
 ### Key Concepts
 
 #### NestedItem Model
-The `NestedItem<T>` class is the core of the nested dropdown system:
+`NestedItem<T>` is the building block of the nested dropdown:
 ```dart
 NestedItem<String>(
   value: 'parentId',              // Unique identifier
@@ -431,38 +514,42 @@ NestedItem<String>(
 )
 ```
 
+Two `NestedItem`s are equal when their `value` and `label` match. Pass
+`nestedEqualityFunction` to `NestedDropDownSearchField` to compare them another way.
+
 ### Configuration Options
 
 #### NestedDropdownConfiguration
-Configure the behavior and appearance of your nested dropdown:
+Controls how the nested dropdown looks and behaves. Values shown are the defaults:
 
 ```dart
 NestedDropdownConfiguration(
   // Visual settings
   childIndentation: 16.0,         // Indentation per level
   showExpandIcons: true,          // Show expand/collapse icons
-  expandIcon: Icons.expand_more,  // Custom expand icon
-  collapseIcon: Icons.expand_less,// Custom collapse icon
-  
+  expandIcon: null,               // Custom expand icon, e.g. Icons.expand_more
+  collapseIcon: null,             // Custom collapse icon, e.g. Icons.expand_less
+  expansionAnimationDuration: Duration(milliseconds: 200),
+
   // Behavior settings
-  allowParentSelection: true,     // Can select parent items
+  allowParentSelection: false,    // Can select parent items
   autoExpandOnSearch: true,       // Auto-expand when searching
   collapseOnOpen: false,          // Collapse all on open
-  initiallyExpanded: false,       // Expand all initially
+  initiallyExpanded: false,       // Expand all on open (ignored if collapseOnOpen is true)
   showOnlyMatchingBranches: true, // Show only matching items
 )
 ```
 
 ### Advanced Features
 
-#### Smart Selection Logic
+#### Parent and Child Selection
 Handle parent-child relationships in multi-select mode:
 ```dart
 onNestedSuggestionMultiSelected: (item, isSelected) {
   if (isSelected) {
     // Select the item
     selectedItems.add(item);
-    
+
     // Auto-select all children when parent is selected
     if (item.hasChildren) {
       selectedItems.addAll(item.selectableDescendants);
@@ -470,7 +557,7 @@ onNestedSuggestionMultiSelected: (item, isSelected) {
   } else {
     // Deselect the item
     selectedItems.remove(item);
-    
+
     // Auto-deselect all children when parent is deselected
     if (item.hasChildren) {
       for (final child in item.selectableDescendants) {
@@ -482,7 +569,7 @@ onNestedSuggestionMultiSelected: (item, isSelected) {
 ```
 
 #### Custom Item Builder
-Create custom widgets for each hierarchy level:
+Build a different widget for each level of the tree:
 ```dart
 nestedItemBuilder: (context, item, depth) {
   return ListTile(
@@ -494,7 +581,7 @@ nestedItemBuilder: (context, item, depth) {
         fontSize: 14 - (depth * 0.5), // Smaller text for deeper levels
       ),
     ),
-    subtitle: item.hasChildren 
+    subtitle: item.hasChildren
       ? Text('${item.children!.length} items', style: TextStyle(fontSize: 12))
       : null,
     contentPadding: EdgeInsets.only(left: 16.0 + (depth * 12.0)),
@@ -506,7 +593,7 @@ Widget _buildLeadingIcon(NestedItem item, int depth) {
   if (item.icon != null) {
     return Icon(item.icon as IconData, size: 20);
   }
-  
+
   if (depth == 0) return Icon(Icons.folder, size: 20);
   if (depth == 1) return Icon(Icons.subdirectory_arrow_right, size: 16);
   return Icon(Icons.circle, size: 8);
@@ -514,14 +601,21 @@ Widget _buildLeadingIcon(NestedItem item, int depth) {
 ```
 
 #### Filtering and Search
-The nested dropdown supports intelligent filtering:
-- **Branch Matching**: Shows entire branches when any item matches
-- **Auto-Expansion**: Automatically expands matching branches
-- **Recursive Search**: Searches through all hierarchy levels
+The nested dropdown filters the tree you return from `nestedSuggestionsCallback`,
+so the callback can return the whole tree. By default an item matches when its
+`label` (or `value.toString()`) contains the typed text, ignoring case. All levels
+are searched. Parents of a match stay visible, and with `autoExpandOnSearch` they
+are expanded.
+
+To change the matching rule, pass `nestedItemSearchCallback`:
+```dart
+nestedItemSearchCallback: (item, pattern) =>
+    item.value.toLowerCase().startsWith(pattern.toLowerCase()),
+```
 
 ### Utility Methods
 
-The `NestedItem` class provides helpful utility methods:
+`NestedItem` has a few helpers:
 
 ```dart
 final item = NestedItem(...);
@@ -550,135 +644,148 @@ final copy = item.copyWith(
 
 ### Best Practices
 
-1. **Performance**: For large datasets, implement lazy loading in `nestedSuggestionsCallback`
-2. **UX**: Use meaningful icons and labels to help users understand hierarchy
-3. **Accessibility**: Test with screen readers and keyboard navigation
-4. **Consistency**: Maintain consistent indentation and styling across levels
-5. **Feedback**: Provide visual feedback for expand/collapse actions
+1. For large trees, load data lazily in `nestedSuggestionsCallback`.
+2. Use clear icons and labels so users can tell the levels apart.
+3. Test with screen readers and keyboard navigation.
+4. Keep indentation and styling consistent across levels.
+5. Give visual feedback when items expand or collapse.
 
 ## Customizations
-DropDownSearchField widgets consist of a TextField and a suggestion box that shows
-as the user types. Both are highly customizable
+DropDownSearchField widgets consist of a TextField and a suggestions box that shows
+as the user types. You can customize both.
 
 ### Customizing the TextField
-You can customize the text field using the `textFieldConfiguration` property.
-You provide this property with an instance of `TextFieldConfiguration`,
-which allows you to configure all the usual properties of `TextField`, like
-`decoration`, `style`, `controller`, `focusNode`, `autofocus`, `enabled`,
-etc.
+Use the `textFieldConfiguration` property. It takes a `TextFieldConfiguration`,
+which accepts the usual `TextField` properties such as `decoration`, `style`,
+`controller`, `focusNode`, `autofocus` and `enabled`.
 
 ### Customizing the suggestions box
-DropDownSearchField provides default configurations for the suggestions box. You can,
-however, override most of them. This is done by passing a `SuggestionsBoxDecoration` 
-to the `suggestionsBoxDecoration` property.
+The suggestions box has sensible defaults. To override them, pass a
+`SuggestionsBoxDecoration` to the `suggestionsBoxDecoration` property.
 
-Use the `offsetX` property in `SuggestionsBoxDecoration` to shift the suggestions box along the x-axis. 
-You may also pass BoxConstraints to `constraints` in `SuggestionsBoxDecoration` to adjust the width 
-and height of the suggestions box. Using the two together will allow the suggestions box to be placed 
-almost anywhere.
+Use `offsetX` in `SuggestionsBoxDecoration` to shift the box along the x-axis,
+and `constraints` (a `BoxConstraints`) to set its width and height. Together they
+let you place the box almost anywhere.
 
 #### Customizing the loader, the error and the "no items found" message
-You can use the `loadingBuilder`, `errorBuilder` and `noItemsFoundBuilder` to
-customize their corresponding widgets. For example, to show a custom error
-widget:
+Use `loadingBuilder`, `errorBuilder` and `noItemsFoundBuilder` to replace the
+default widgets. For example, a custom error widget:
 ```dart
-errorBuilder: (BuildContext context, Object error) =>
+errorBuilder: (BuildContext context, Object? error) =>
   Text(
     '$error',
     style: TextStyle(
-      color: Theme.of(context).errorColor
+      color: Theme.of(context).colorScheme.error
     )
   )
 ```
 
-By default, the suggestions box will maintain the old suggestions while new 
-suggestions are being retrieved. To show a circular progress indicator 
-during retrieval instead, set `keepSuggestionsOnLoading` to false.
+By default, the suggestions box keeps the old suggestions while new ones load.
+To show a circular progress indicator instead, set `keepSuggestionsOnLoading` to false.
 
 #### Hiding the suggestions box
-There are three scenarios when you can hide the suggestions box.
+There are three cases where you can hide the suggestions box.
 
-Set `hideOnLoading` to true to hide the box while suggestions are being 
-retrieved. This will also ignore the `loadingBuilder`. Set `hideOnEmpty` 
-to true to hide the box when there are no suggestions. This will also ignore 
-the `noItemsFoundBuilder`. Set `hideOnError` to true to hide the box when there 
-is an error retrieving suggestions. This will also ignore the `errorBuilder`.
+Set `hideOnLoading` to true to hide the box while suggestions load. This also
+ignores `loadingBuilder`. Set `hideOnEmpty` to true to hide it when there are no
+suggestions. This also ignores `noItemsFoundBuilder`. Set `hideOnError` to true
+to hide it when loading fails. This also ignores `errorBuilder`.
 
-By default, the suggestions box will automatically hide when the keyboard is hidden. 
-To change this behavior, set `hideSuggestionsOnKeyboardHide` to false.
+By default, the suggestions box hides when the keyboard hides. To change this,
+set `hideSuggestionsOnKeyboardHide` to false.
+
+Tapping outside the box closes it, and the tap doesn't reach widgets behind it.
+Set `closeSuggestionBoxWhenTapOutside` to false in `SuggestionsBoxDecoration`
+to turn this off.
 
 #### Customizing the decoration of the suggestions box
-You can also customize the decoration of the suggestions box using the
-`suggestionsBoxDecoration` property. For example, to remove the elevation
-of the suggestions box, you can write:
+`suggestionsBoxDecoration` also controls the look of the box. For example, to
+remove its elevation:
 ```dart
 suggestionsBoxDecoration: SuggestionsBoxDecoration(
   elevation: 0.0
 )
 ```
 
+To style the box's scrollbar, set `scrollBarDecoration`. It covers thumb color,
+thickness, radius, margins and visibility:
+```dart
+suggestionsBoxDecoration: SuggestionsBoxDecoration(
+  scrollBarDecoration: ScrollBarDecoration(
+    thumbColor: Colors.orange,
+    thickness: 10,
+  ),
+)
+```
+
 #### Customizing the debounce duration
-The suggestions box does not fire for each character the user types. Instead,
-we wait until the user is idle for a duration of time, and then call the
-`suggestionsCallback`. The duration defaults to 300 milliseconds, but can be
-configured using the `debounceDuration` parameter.
+The callback doesn't fire on every keystroke. It waits until the user stops
+typing for a while, then calls `suggestionsCallback`. The wait defaults to
+300 milliseconds. Change it with `debounceDuration`.
 
 #### Customizing the animation
-You can customize the suggestion box animation through 3 parameters: the
-`animationDuration`, the `animationStart`, and the `transitionBuilder`.
+Three parameters control the suggestions box animation: `animationDuration`,
+`animationStart` and `transitionBuilder`.
 
-The `animationDuration` specifies how long the animation should take, while the
-`animationStart` specified what point (between 0.0 and 1.0) the animation
-should start from. The `transitionBuilder` accepts the `suggestionsBox` and
-`animationController` as parameters, and should return a widget that uses
-the `animationController` to animate the display of the `suggestionsBox`.
-For example:
+`animationDuration` sets how long the animation takes. `animationStart` sets the
+point (between 0.0 and 1.0) where it starts. `transitionBuilder` receives the
+`suggestionsBox` and the `animationController` and returns a widget that uses the
+controller to animate the box. For example:
 ```dart
 transitionBuilder: (context, suggestionsBox, animationController) =>
   FadeTransition(
     child: suggestionsBox,
     opacity: CurvedAnimation(
-      parent: animationController,
+      parent: animationController!,
       curve: Curves.fastOutSlowIn
     ),
   )
 ```
-This uses [FadeTransition](https://docs.flutter.io/flutter/widgets/FadeTransition-class.html)
-to fade the `suggestionsBox` into the view. Note how the
-`animationController` was provided as the parent of the animation.
+This uses [FadeTransition](https://api.flutter.dev/flutter/widgets/FadeTransition-class.html)
+to fade in the `suggestionsBox`. Note that `animationController` is the parent
+of the animation.
 
-In order to fully remove the animation, `transitionBuilder` should simply
-return the `suggestionsBox`. This callback could also be used to wrap the
-`suggestionsBox` with any desired widgets, not necessarily for animation.
+To remove the animation, return `suggestionsBox` as is. You can also use this
+callback to wrap the box in other widgets, not only for animation.
 
 #### Customizing the offset of the suggestions box
-By default, the suggestions box is displayed 5 pixels below the `TextField`.
-You can change this by changing the `suggestionsBoxVerticalOffset` property.
+By default, the suggestions box shows 5 pixels below the `TextField`.
+Change this with `suggestionsBoxVerticalOffset`.
 
 #### Customizing the direction of the suggestions list
-By default, the suggestions list expands downwards. However, you can customize the growth direction 
-by using the `direction` property. It allows you to choose between `AxisDirection.down` or `AxisDirection.up`. 
-If you set it to `AxisDirection.up`, the list will grow in an upward direction. This means that the first 
-suggestion will be positioned at the bottom of the list, while the last suggestion will appear at the top.
+By default, the list grows downward. Set `direction` to `AxisDirection.up` to
+show the box above the field. The list then grows upward, with the first
+suggestion at the bottom. Only `AxisDirection.down` and `AxisDirection.up`
+are allowed.
 
-By setting the `autoFlipDirection` property to `true`, the suggestions list will automatically flip 
-its direction whenever it detects insufficient space in the current direction. This feature is 
-particularly beneficial when the DropDownSearchField is placed within a scrollable widget or when 
-the developer wants to ensure that the list is always visible regardless of the user's screen size.
+Set `autoFlipDirection` to `true` to flip the direction when there isn't enough
+room. This helps when the field is inside a scrollable widget or on small
+screens. `autoFlipMinHeight` (default 64.0) sets the space below which it flips,
+and `autoFlipListDirection` (default true) controls whether the list order flips too.
 
 #### Controlling the suggestionsBox
-You can manually control the suggestions box by creating a `SuggestionsBoxController` instance and 
-assigning it to the `suggestionsBoxController` property. This enables you to have control over opening, 
-closing, toggling, or resizing the suggestions box as per your requirements.
+Create a `SuggestionsBoxController` and pass it to `suggestionsBoxController`.
+It has `open()`, `close()`, `toggle()` and `resize()`.
 
-You can also customize suggestion box scroll bar by using property called `scrollBarDecoration` inside `suggestionsBoxDecoration`. This allows you to control color, thickness, margin and more.
+#### Other parameters
+| Parameter | Default | What it does |
+| --- | --- | --- |
+| `minCharsForSuggestions` | `0` | Characters needed before the callback is called. |
+| `getImmediateSuggestions` | `false` | Fetch suggestions as soon as the field is built. The box still opens only on focus. |
+| `keepSuggestionsOnSuggestionSelected` | `false` | Keep the box open after a selection. |
+| `hideKeyboard` | `false` | Make the text field read-only so the keyboard never opens. |
+| `hideKeyboardOnDrag` | `false` | Hide the keyboard when the user scrolls the list. Requires `hideSuggestionsOnKeyboardHide: false`. |
+| `onSuggestionsBoxToggle` | | Called with `true`/`false` when the box opens or closes. |
+| `itemSeparatorBuilder` | | Builds a separator between suggestions. |
+| `scrollController` | | Controls scrolling of the suggestions list. |
+| `intercepting` | `false` | Works around [Flutter issue 98507](https://github.com/flutter/flutter/issues/98507), for example a dropdown over a Google Map on Flutter Web. |
 
 <!-- ## Blog
 You can checkout detailed blog on medium.
 [drop_down_search_field](https://medium.com/@rohanjariwala03/dropdown-with-future-search-option-818a7dc1196) -->
 
 ## How you can help
-[Contribution Guidelines](https://github.com/rohanjariwala03/drop_down_search_field/blob/master/CONTRIBUTING.md)
+[Contribution Guidelines](https://github.com/rohanjariwala03/drop_down_search_field/blob/main/CONTRIBUTING.md)
 
 
 ## TODO
