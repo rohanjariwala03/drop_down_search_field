@@ -246,7 +246,10 @@ open animation.
 ### Example 3: Multi-Select Form Field
 `MultiSelectDropdownSearchFormField` shows the selected items as chips and
 supports a `validator`. The validator receives the items picked in the
-dropdown. Pass `initialValue` if the field starts with a selection.
+dropdown. For preselected items, set `initiallySelectedItems: _selectedNames`
+and `initialValue: List<String>.of(_selectedNames)` so the displayed selection
+and form value start in sync. Use separate lists because the form field and
+this example's selection callback each update their own list.
 
 ```dart
 final List<String> _selectedNames = [];
