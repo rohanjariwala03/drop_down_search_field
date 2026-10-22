@@ -1,3 +1,6 @@
+## 1.3.0+2 - 22/10/2026
+- Update project description and readme file
+
 ## 1.3.0+1 - 20/05/2026
 - Supporting validator for Multi Select Dropdown
 - Resolved issues requested by users.
